@@ -11,14 +11,7 @@ const IndexPage = () => (
   <Layout>
     <Seo title="Home" />
     <div className="text-sm font-normal text-gray-600">
-      <Link to="/" className="text-secondary-400">
-        Startseite
-      </Link>{" "}
-      /{" "}
-      <Link to="/page-2" className="text-secondary-400">
-        Unterseite
-      </Link>{" "}
-      / Unterunterseite
+      Sie sind hier: Startseite
     </div>
     <Carousel />
     <div class="prose my-8 mx-auto">

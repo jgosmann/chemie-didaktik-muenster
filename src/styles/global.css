@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  a,
+  .prose a {
+    @apply text-secondary-800;
+    @apply no-underline;
+  }
+
+  a:hover,
+  a:active,
+  .prose a:hover,
+  .prose a:active {
+    @apply underline;
+  }
+
+  a:visited,
+  .prose a:visited {
+    @apply text-secondary-600;
+  }
+}

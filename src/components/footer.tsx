@@ -21,7 +21,10 @@ const Footer = () => (
       TODO: spam protected email
     </div>
     <div className="w-1/3 min-w-max box-border p-3 text-center">
-      <a href="https://www.uni-muenster.de/Chemie.dc/">
+      <a
+        href="https://www.uni-muenster.de/Chemie.dc/"
+        className="text-gray-100 visited:text-gray-100"
+      >
         https://www.uni-muenster.de/Chemie.dc/
       </a>
     </div>

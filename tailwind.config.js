@@ -11,10 +11,22 @@ module.exports = {
       white: colors.white,
       gray: colors.gray,
     },
-    extend: {},
+    extend: {
+      typography: {
+        DEFAULT: {
+          css: {
+            a: {
+              textDecoration: "none",
+            },
+          },
+        },
+      },
+    },
   },
   variants: {
-    extend: {},
+    extend: {
+      textColor: ["visited"],
+    },
   },
   plugins: [require("@tailwindcss/typography")],
 }
