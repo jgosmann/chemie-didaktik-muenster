@@ -1,0 +1,78 @@
+.slick-next,
+.slick-prev {
+  font-size: 0;
+  line-height: 0;
+  color: transparent;
+}
+
+.slick-next::before,
+.slick-prev::before {
+  font-size: 2rem;
+  line-height: 2.5rem;
+  color: white;
+  mix-blend-mode: darken;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.3);
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 50%;
+  z-index: 1;
+  transition: 0.2s ease-out background;
+}
+
+.slick-next:hover::before,
+.slick-next:focus::before,
+.slick-prev:hover::before,
+.slick-prev:focus::before {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.slick-next::before {
+  content: "❮";
+  transform: scaleX(-1) translateY(-50%);
+  right: 1.5rem;
+}
+
+.slick-prev::before {
+  content: "❮";
+  left: 1.5rem;
+}
+
+.slick-dots {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+
+.slick-dots li {
+  display: inline-block;
+  margin: 0.25rem;
+  justify-content: center;
+}
+
+.slick-dots button {
+  font-size: 0;
+  line-height: 0;
+  color: transparent;
+}
+
+.slick-dots button::before {
+  content: "";
+  display: block;
+  line-height: 1;
+  background: rgba(0, 0, 0, 0.3);
+  transition: 0.2s ease-out background;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
+.slick-dots .slick-active button::before {
+  background: black;
+}

@@ -5,6 +5,7 @@ import { StaticImage } from "gatsby-plugin-image"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import Card from "../components/card"
+import Carousel from "../components/carousel"
 
 const IndexPage = () => (
   <Layout>
@@ -18,6 +19,17 @@ const IndexPage = () => (
         Unterseite
       </Link>{" "}
       / Unterunterseite
+    </div>
+    <Carousel />
+    <div class="prose my-8 mx-auto">
+      <p>
+        Herzlich Willkommen auf der Seite des Arbeitskreises von Annette Marohn!
+      </p>
+      <p>
+        Hier finden Sie neue Unterrichtskonzepte mit Material, welches Sie
+        kostenlos herunterladen und nutzen können.
+      </p>
+      <p>Wer wir sind und was diese Website soll erfahren Sie TODO.</p>
     </div>
     <div className="flex flex-wrap gap-8 m-8 justify-center">
       <Card title="choice²learn">
@@ -42,7 +54,7 @@ const IndexPage = () => (
       >
         <ul>
           <li>Sprachsensibler Unterricht</li>
-          <li>Johenstone-Dreieck</li>
+          <li>Johnestone-Dreieck</li>
           <li>Differenzierung</li>
           <li>Analog und Digital</li>
           <li>Für hetoregene Lerngruppen</li>
