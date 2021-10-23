@@ -26,7 +26,7 @@ const Layout = ({ children }) => {
   return (
     <div className="flex flex-col h-screen">
       <Header />
-      <div className="flex-grow">
+      <div className="flex-grow px-8">
         <main>{children}</main>
       </div>
       <Footer />

@@ -4,9 +4,9 @@ import { StaticImage } from "gatsby-plugin-image"
 import wwuLogo from "../images/wwu.svg"
 
 const Footer = () => (
-  <footer className="bg-gray-500 text-white text-xs flex flex-wrap justify-around place-items-center mt-24">
+  <footer className="bg-gray-400 text-gray-100 text-xs flex flex-wrap justify-around place-items-center mt-24">
     <div className="w-1/3 min-w-max box-border p-3 flex-shrink">
-      <span className="uppercase">Kontakt</span>
+      <span className="uppercase font-semibold">Kontakt</span>
       <br />
       Westfälische Wilhelms-Universität Münster
       <br />

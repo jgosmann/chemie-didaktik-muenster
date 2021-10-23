@@ -5,6 +5,7 @@
   "version": "0.1.0",
   "author": "jan@hyper-world.de",
   "dependencies": {
+    "@tailwindcss/typography": "^0.4.1",
     "gatsby": "^4.0.0",
     "gatsby-plugin-gatsby-cloud": "^4.0.0",
     "gatsby-plugin-image": "^2.0.0",

@@ -1,3 +1,4 @@
+const { table } = require("console")
 const colors = require("tailwindcss/colors")
 
 module.exports = {
@@ -6,6 +7,7 @@ module.exports = {
   theme: {
     colors: {
       primary: colors.orange,
+      secondary: colors.blue,
       white: colors.white,
       gray: colors.gray,
     },
@@ -14,5 +16,5 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 }
