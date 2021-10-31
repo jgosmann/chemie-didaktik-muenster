@@ -6,9 +6,11 @@ exports.createPages = async ({ actions, graphql }) => {
       allContentfulConceptPage {
         nodes {
           id
+          title
           slug
           linkedContent {
             id
+            title
             slug
           }
         }
@@ -24,12 +26,14 @@ exports.createPages = async ({ actions, graphql }) => {
   const conceptPageTemplate = require.resolve("./src/templates/conceptPage.tsx")
   const detailsPageTemplate = require.resolve("./src/templates/detailsPage.tsx")
 
+  const baseCrumb = { title: "Startseite", slug: "" }
+
   result.data.allContentfulConceptPage.nodes.forEach(conceptPage => {
-    const { slug, id, linkedContent } = conceptPage
+    const { title, slug, id, linkedContent } = conceptPage
     createPage({
       path: `/${slug}`,
       component: conceptPageTemplate,
-      context: { id },
+      context: { id, crumbs: [baseCrumb, { title, slug }] },
     })
 
     if (linkedContent) {
@@ -37,7 +41,14 @@ exports.createPages = async ({ actions, graphql }) => {
         createPage({
           path: `/${slug}/${subpage.slug}`,
           component: detailsPageTemplate,
-          context: { id: subpage.id },
+          context: {
+            id: subpage.id,
+            crumbs: [
+              baseCrumb,
+              { title, slug },
+              { title: subpage.title, slug: subpage.slug },
+            ],
+          },
         })
       })
     }

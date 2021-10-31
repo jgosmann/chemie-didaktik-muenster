@@ -3,6 +3,7 @@ import { graphql, Link } from "gatsby"
 import { StaticImage } from "gatsby-plugin-image"
 import { renderRichText } from "gatsby-source-contentful/rich-text"
 import * as React from "react"
+import Breadcrumbs from "../components/breadcrumbs"
 import BtnLink from "../components/btnLink"
 import Card from "../components/card"
 import Layout from "../components/layout"
@@ -30,7 +31,7 @@ export const query = graphql`
   }
 `
 
-const DetailsPage = ({ data }) => {
+const DetailsPage = ({ data, pageContext: { crumbs } }) => {
   const { title, slug, longVideo, description } = data.contentfulDetailsPage
   const richTextRenderOptions = {
     renderNode: {
@@ -42,9 +43,7 @@ const DetailsPage = ({ data }) => {
   return (
     <Layout>
       <Seo title="Page two" />
-      <div className="text-sm font-normal text-gray-600">
-        Sie sind hier: <Link to="/">Startseite</Link> / choice²learn / xxx
-      </div>
+      <Breadcrumbs crumbs={crumbs} />
       <div className="flex justify-center gap-8 flex-row-reverse flex-wrap my-8 items-start">
         {longVideo && longVideo.length > 0 && (
           <video

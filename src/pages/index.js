@@ -7,6 +7,7 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 import Card from "../components/card"
 import SloganCarousel from "../components/sloganCarousel"
+import Breadcrumbs from "../components/breadcrumbs"
 
 const IndexPage = () => {
   const conceptPages = useStaticQuery(graphql`
@@ -33,9 +34,7 @@ const IndexPage = () => {
   return (
     <Layout>
       <Seo title="Home" />
-      <div className="text-sm font-normal text-gray-600">
-        Sie sind hier: Startseite
-      </div>
+      <Breadcrumbs crumbs={[{ title: "Startseite", slug: "" }]} />
       <SloganCarousel />
       <div class="prose my-8 mx-auto">
         <p>

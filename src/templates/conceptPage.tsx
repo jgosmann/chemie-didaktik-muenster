@@ -2,6 +2,7 @@ import { graphql, Link } from "gatsby"
 import { StaticImage } from "gatsby-plugin-image"
 import { renderRichText } from "gatsby-source-contentful/rich-text"
 import * as React from "react"
+import Breadcrumbs from "../components/breadcrumbs"
 import BtnLink from "../components/btnLink"
 import Card from "../components/card"
 import Layout from "../components/layout"
@@ -38,7 +39,7 @@ export const query = graphql`
   }
 `
 
-const ConceptPage = ({ data }) => {
+const ConceptPage = ({ data, pageContext: { crumbs } }) => {
   const {
     title,
     slug,
@@ -49,9 +50,7 @@ const ConceptPage = ({ data }) => {
   return (
     <Layout>
       <Seo title="Page two" />
-      <div className="text-sm font-normal text-gray-600">
-        Sie sind hier: <Link to="/">Startseite</Link> / choice²learn
-      </div>
+      <Breadcrumbs crumbs={crumbs} />
       {longVideo && longVideo.length > 0 && (
         <video
           controls
