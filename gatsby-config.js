@@ -1,3 +1,7 @@
+require("dotenv").config({
+  path: `.env.${process.env.NODE_ENV}`,
+})
+
 module.exports = {
   siteMetadata: {
     title: `Gatsby Default Starter`,
@@ -9,6 +13,14 @@ module.exports = {
     `gatsby-plugin-react-helmet`,
     `gatsby-plugin-image`,
     {
+      resolve: `gatsby-source-contentful`,
+      options: {
+        spaceId: `if5ucaiwm6fb`,
+        // Learn about environment variables: https://gatsby.dev/env-vars
+        accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
+      },
+    },
+    {
       resolve: `gatsby-source-filesystem`,
       options: {
         name: `images`,
@@ -16,6 +28,7 @@ module.exports = {
       },
     },
     `gatsby-transformer-sharp`,
+    `gatsby-transformer-remark`,
     `gatsby-plugin-sharp`,
     {
       resolve: `gatsby-plugin-manifest`,
@@ -34,6 +47,6 @@ module.exports = {
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
     // `gatsby-plugin-offline`,
-    'gatsby-plugin-postcss',
+    "gatsby-plugin-postcss",
   ],
 }

@@ -5,7 +5,7 @@ import { StaticImage } from "gatsby-plugin-image"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import Card from "../components/card"
-import Carousel from "../components/carousel"
+import SloganCarousel from "../components/sloganCarousel"
 
 const IndexPage = () => (
   <Layout>
@@ -13,7 +13,7 @@ const IndexPage = () => (
     <div className="text-sm font-normal text-gray-600">
       Sie sind hier: Startseite
     </div>
-    <Carousel />
+    <SloganCarousel />
     <div class="prose my-8 mx-auto">
       <p>
         Herzlich Willkommen auf der Seite des Arbeitskreises von Annette Marohn!
