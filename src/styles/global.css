@@ -20,4 +20,8 @@
   .prose a:visited {
     @apply text-secondary-600;
   }
+
+  .prose > ul > li > p:only-child {
+    margin: 0;
+  }
 }
