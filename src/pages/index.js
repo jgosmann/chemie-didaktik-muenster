@@ -1,6 +1,6 @@
 import * as React from "react"
 import { graphql, useStaticQuery } from "gatsby"
-import { GatsbyImage, StaticImage } from "gatsby-plugin-image"
+import { GatsbyImage } from "gatsby-plugin-image"
 import { renderRichText } from "gatsby-source-contentful/rich-text"
 
 import Layout from "../components/layout"
@@ -13,10 +13,12 @@ const IndexPage = () => {
     query ConceptPagesQuery {
       allContentfulConceptPage {
         nodes {
+          id
           title
           titleImage {
             gatsbyImageData(layout: CONSTRAINED, height: 24)
           }
+          slug
           shortDescription {
             raw
           }
@@ -56,7 +58,9 @@ const IndexPage = () => {
           )
           return (
             <Card
+              key={conceptPage.id}
               title={titleImage || conceptPage.title}
+              link={"/" + conceptPage.slug}
               video={conceptPage.video.secure_url}
             >
               {conceptPage.shortDescription &&

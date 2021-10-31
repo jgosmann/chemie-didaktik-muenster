@@ -6,7 +6,7 @@ export interface CardProps {
   title: React.ReactNode
   children: React.ReactNode
   download?: string
-  link?: string
+  link: string
   video?: string
 }
 
@@ -18,7 +18,7 @@ const Card = ({ title, video, children, download, link }: CardProps) => (
     <div className="flex flex-row flex-wrap justify-between m-2 mt-2">
       <div>{download && <a href={download}>Download</a>}</div>
       <div>
-        <Link to={link || "/page-2"} className="text-">
+        <Link to={link} className="text-">
           Alle Infos {">>"}
         </Link>
       </div>
