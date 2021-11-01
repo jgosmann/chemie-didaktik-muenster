@@ -39,11 +39,11 @@ const Carousel = () => {
       style={{ fontSize: 0 }}
     >
       {slogans.map(sloganData => (
-        <div key={sloganData.id} className="h-64 relative">
+        <div key={sloganData.id} className="h-64 relative overflow-hidden">
           <GatsbyImage
             image={sloganData.image.gatsbyImageData}
             alt={""}
-            className="absolute inset-0"
+            className="absolute inset-0 w-full h-full"
           />
           <div
             dangerouslySetInnerHTML={{
