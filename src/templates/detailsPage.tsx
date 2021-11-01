@@ -32,9 +32,7 @@ export const query = graphql`
       additionalBackground {
         raw
       }
-      aboutAuthor {
-        secure_url
-      }
+      ...ConceptNavAuthorMedia
     }
   }
 `
@@ -72,11 +70,7 @@ const DetailsPage = ({ data, pageContext: { crumbs } }) => {
         baseSlug={parent.slug}
         hasStudentPresentations={!!parent.studentPresentations}
         hasAdditionalBackground={!!parent.additionalBackground}
-        aboutAuthorVideoUrl={
-          parent.aboutAuthor &&
-          parent.aboutAuthor.length > 0 &&
-          parent.aboutAuthor[0].secure_url
-        }
+        aboutAuthorMedia={parent}
       />
     </Layout>
   )

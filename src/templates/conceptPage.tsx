@@ -43,9 +43,7 @@ export const query = graphql`
       additionalBackground {
         raw
       }
-      aboutAuthor {
-        secure_url
-      }
+      ...ConceptNavAuthorMedia
     }
   }
 `
@@ -58,7 +56,6 @@ const ConceptPage = ({ data, pageContext: { crumbs } }) => {
     linkedContent,
     studentPresentations,
     additionalBackground,
-    aboutAuthor,
   } = data.contentfulConceptPage
   return (
     <Layout>
@@ -95,9 +92,7 @@ const ConceptPage = ({ data, pageContext: { crumbs } }) => {
         baseSlug={slug}
         hasStudentPresentations={!!studentPresentations}
         hasAdditionalBackground={!!additionalBackground}
-        aboutAuthorVideoUrl={
-          aboutAuthor && aboutAuthor.length > 0 && aboutAuthor[0].secure_url
-        }
+        aboutAuthorMedia={data.contentfulConceptPage}
       />
     </Layout>
   )
