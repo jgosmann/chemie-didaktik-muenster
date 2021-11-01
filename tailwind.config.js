@@ -13,15 +13,25 @@ module.exports = {
       black: colors.black,
     },
     extend: {
-      typography: {
+      typography: theme => ({
         DEFAULT: {
           css: {
             a: {
+              color: theme("colors.secondary.600"),
               textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
+              },
+              "&:active": {
+                textDecoration: "underline",
+              },
+              "&:visited": {
+                color: theme("colors.secondary.800"),
+              },
             },
           },
         },
-      },
+      }),
     },
   },
   variants: {
