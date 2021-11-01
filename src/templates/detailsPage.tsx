@@ -1,12 +1,9 @@
 import { INLINES } from "@contentful/rich-text-types"
-import { graphql, Link } from "gatsby"
-import { StaticImage } from "gatsby-plugin-image"
+import { graphql } from "gatsby"
 import { renderRichText } from "gatsby-source-contentful/rich-text"
 import * as React from "react"
 import Breadcrumbs from "../components/breadcrumbs"
-import BtnLink from "../components/btnLink"
 import ConceptNav from "../components/conceptNav"
-import FaqBtnLink from "../components/faqBtnLink"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 
@@ -34,6 +31,9 @@ export const query = graphql`
       }
       additionalBackground {
         raw
+      }
+      aboutAuthor {
+        secure_url
       }
     }
   }
@@ -72,6 +72,11 @@ const DetailsPage = ({ data, pageContext: { crumbs } }) => {
         baseSlug={parent.slug}
         hasStudentPresentations={!!parent.studentPresentations}
         hasAdditionalBackground={!!parent.additionalBackground}
+        aboutAuthorVideoUrl={
+          parent.aboutAuthor &&
+          parent.aboutAuthor.length > 0 &&
+          parent.aboutAuthor[0].secure_url
+        }
       />
     </Layout>
   )

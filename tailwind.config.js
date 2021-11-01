@@ -10,6 +10,7 @@ module.exports = {
       secondary: colors.blue,
       white: colors.white,
       gray: colors.gray,
+      black: colors.black,
     },
     extend: {
       typography: {
@@ -25,7 +26,9 @@ module.exports = {
   },
   variants: {
     extend: {
-      textColor: ["visited"],
+      ringWidth: ["hover", "active"],
+      textColor: ["visited", "active"],
+      textDecoration: ["active"],
     },
   },
   plugins: [require("@tailwindcss/typography")],

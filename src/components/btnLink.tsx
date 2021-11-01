@@ -7,10 +7,7 @@ export interface BtnLinkProps {
 }
 
 const BtnLink = ({ to, children }: BtnLinkProps) => (
-  <Link
-    to={to}
-    className="w-44 min-w-max rounded-lg border p-3 flex justify-center place-items-center text-white hover:text-white active:text-white visited:text-white shadow bg-primary-400 hover:bg-primary-600 transition-colors ease-out hover:no-underline active:no-underline"
-  >
+  <Link to={to} className="btn">
     {children}
   </Link>
 )
