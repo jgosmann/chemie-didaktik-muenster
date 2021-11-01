@@ -5,15 +5,14 @@ import { renderRichText } from "gatsby-source-contentful/rich-text"
 import * as React from "react"
 import Breadcrumbs from "../components/breadcrumbs"
 import BtnLink from "../components/btnLink"
+import ConceptNav from "../components/conceptNav"
 import FaqBtnLink from "../components/faqBtnLink"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 
 export const query = graphql`
-  query DetailsPageQuery($id: String!) {
+  query DetailsPageQuery($id: String!, $parentId: String!) {
     contentfulDetailsPage(id: { eq: $id }) {
-      title
-      slug
       longVideo {
         secure_url
       }
@@ -28,11 +27,23 @@ export const query = graphql`
         }
       }
     }
+    parent: contentfulConceptPage(id: { eq: $parentId }) {
+      slug
+      studentPresentations {
+        raw
+      }
+      additionalBackground {
+        raw
+      }
+    }
   }
 `
 
 const DetailsPage = ({ data, pageContext: { crumbs } }) => {
-  const { title, slug, longVideo, description } = data.contentfulDetailsPage
+  const {
+    contentfulDetailsPage: { longVideo, description },
+    parent,
+  } = data
   const richTextRenderOptions = {
     renderNode: {
       [INLINES.ASSET_HYPERLINK]: ({ data }, children) => (
@@ -57,21 +68,11 @@ const DetailsPage = ({ data, pageContext: { crumbs } }) => {
           {description && renderRichText(description, richTextRenderOptions)}
         </div>
       </div>
-      <div className="flex flex-wrap gap-8 justify-center place-items-center items-stretch">
-        <BtnLink>Versuchsvideos</BtnLink>
-        <BtnLink>Weitere Hintergründe</BtnLink>
-        <BtnLink>
-          <span className="inline-block overflow-hidden rounded-full align-middle shadow-md mr-2">
-            <StaticImage
-              src="../images/person-dummy-thumb.png"
-              alt="Person XYZ"
-              className="h-12 w-12"
-            />
-          </span>
-          Person hinter dem Konzept
-        </BtnLink>
-        <FaqBtnLink />
-      </div>
+      <ConceptNav
+        baseSlug={parent.slug}
+        hasStudentPresentations={!!parent.studentPresentations}
+        hasAdditionalBackground={!!parent.additionalBackground}
+      />
     </Layout>
   )
 }

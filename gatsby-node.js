@@ -13,6 +13,12 @@ exports.createPages = async ({ actions, graphql }) => {
             title
             slug
           }
+          studentPresentations {
+            raw
+          }
+          additionalBackground {
+            raw
+          }
         }
       }
 
@@ -34,11 +40,21 @@ exports.createPages = async ({ actions, graphql }) => {
   const basicPageTemplate = require.resolve("./src/templates/basicPage.tsx")
   const conceptPageTemplate = require.resolve("./src/templates/conceptPage.tsx")
   const detailsPageTemplate = require.resolve("./src/templates/detailsPage.tsx")
+  const pureRichTextPageTemplate = require.resolve(
+    "./src/templates/pureRichTextPage.tsx"
+  )
 
   const baseCrumb = { title: "Startseite", slug: "" }
 
   result.data.allContentfulConceptPage.nodes.forEach(conceptPage => {
-    const { title, slug, id, linkedContent } = conceptPage
+    const {
+      title,
+      slug,
+      id,
+      linkedContent,
+      studentPresentations,
+      additionalBackground,
+    } = conceptPage
     createPage({
       path: `/${slug}`,
       component: conceptPageTemplate,
@@ -52,6 +68,7 @@ exports.createPages = async ({ actions, graphql }) => {
           component: detailsPageTemplate,
           context: {
             id: subpage.id,
+            parentId: id,
             crumbs: [
               baseCrumb,
               { title, slug },
@@ -59,6 +76,42 @@ exports.createPages = async ({ actions, graphql }) => {
             ],
           },
         })
+      })
+    }
+
+    if (studentPresentations) {
+      createPage({
+        path: `/${slug}/weitere-schuelervorstellungen`,
+        component: pureRichTextPageTemplate,
+        context: {
+          content: studentPresentations,
+          crumbs: [
+            baseCrumb,
+            { title, slug },
+            {
+              title: "Weitere Schülervorstellungen",
+              slug: "weitere-schuelervorstellungen",
+            },
+          ],
+        },
+      })
+    }
+
+    if (additionalBackground) {
+      createPage({
+        path: `/${slug}/weitere-hintergruende`,
+        component: pureRichTextPageTemplate,
+        context: {
+          content: studentPresentations,
+          crumbs: [
+            baseCrumb,
+            { title, slug },
+            {
+              title: "Weitere Schülervorstellungen",
+              slug: "weitere-hintergruende",
+            },
+          ],
+        },
       })
     }
   })

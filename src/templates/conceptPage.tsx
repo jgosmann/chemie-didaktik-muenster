@@ -5,6 +5,7 @@ import * as React from "react"
 import Breadcrumbs from "../components/breadcrumbs"
 import BtnLink from "../components/btnLink"
 import Card from "../components/card"
+import ConceptNav from "../components/conceptNav"
 import FaqBtnLink from "../components/faqBtnLink"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
@@ -36,6 +37,12 @@ export const query = graphql`
           }
         }
       }
+      studentPresentations {
+        raw
+      }
+      additionalBackground {
+        raw
+      }
     }
   }
 `
@@ -47,6 +54,8 @@ const ConceptPage = ({ data, pageContext: { crumbs } }) => {
     longVideo,
     description,
     linkedContent,
+    studentPresentations,
+    additionalBackground,
   } = data.contentfulConceptPage
   return (
     <Layout>
@@ -79,21 +88,11 @@ const ConceptPage = ({ data, pageContext: { crumbs } }) => {
           </Card>
         ))}
       </div>
-      <div className="flex flex-wrap gap-8 justify-center place-items-center items-stretch">
-        <BtnLink>Weitere Schülervorstellungen</BtnLink>
-        <BtnLink>Weitere Hintergründe</BtnLink>
-        <BtnLink>
-          <span className="inline-block overflow-hidden rounded-full align-middle shadow-md mr-2">
-            <StaticImage
-              src="../images/person-dummy-thumb.png"
-              alt="Person XYZ"
-              className="h-12 w-12"
-            />
-          </span>
-          Person hinter dem Konzept
-        </BtnLink>
-        <FaqBtnLink />
-      </div>
+      <ConceptNav
+        baseSlug={slug}
+        hasStudentPresentations={!!studentPresentations}
+        hasAdditionalBackground={!!additionalBackground}
+      />
     </Layout>
   )
 }
