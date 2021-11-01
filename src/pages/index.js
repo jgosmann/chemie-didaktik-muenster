@@ -36,7 +36,7 @@ const IndexPage = () => {
       <Seo title="Home" />
       <Breadcrumbs crumbs={[{ title: "Startseite", slug: "" }]} />
       <SloganCarousel />
-      <div class="prose my-8 mx-auto">
+      <div className="prose my-8 mx-auto">
         <p>
           Herzlich Willkommen auf der Seite des Arbeitskreises von Annette
           Marohn!

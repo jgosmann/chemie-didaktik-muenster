@@ -16,6 +16,7 @@ const Carousel = () => {
     query SlogansQuery {
       allContentfulSlogan {
         nodes {
+          id
           slogan {
             childMarkdownRemark {
               html
@@ -38,7 +39,7 @@ const Carousel = () => {
       style={{ fontSize: 0 }}
     >
       {slogans.map(sloganData => (
-        <div className="h-64 relative">
+        <div key={sloganData.id} className="h-64 relative">
           <GatsbyImage
             image={sloganData.image.gatsbyImageData}
             alt={""}
