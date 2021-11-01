@@ -1,5 +1,6 @@
 import * as React from "react"
-import { graphql, useStaticQuery } from "gatsby"
+import { INLINES } from "@contentful/rich-text-types"
+import { graphql, Link, useStaticQuery } from "gatsby"
 import { GatsbyImage } from "gatsby-plugin-image"
 import { renderRichText } from "gatsby-source-contentful/rich-text"
 
@@ -10,7 +11,10 @@ import SloganCarousel from "../components/sloganCarousel"
 import Breadcrumbs from "../components/breadcrumbs"
 
 const IndexPage = () => {
-  const conceptPages = useStaticQuery(graphql`
+  const {
+    allContentfulConceptPage: { nodes: conceptPages },
+    contentfulBasicPage,
+  } = useStaticQuery(graphql`
     query ConceptPagesQuery {
       allContentfulConceptPage {
         nodes {
@@ -28,8 +32,26 @@ const IndexPage = () => {
           }
         }
       }
+      contentfulBasicPage(slug: { eq: "einleitungstext" }) {
+        content {
+          raw
+          references {
+            contentful_id
+            __typename
+            slug
+          }
+        }
+      }
     }
-  `).allContentfulConceptPage.nodes
+  `)
+
+  const richTextRenderOptions = {
+    renderNode: {
+      [INLINES.ENTRY_HYPERLINK]: ({ data }, children) => (
+        <Link to={`/${data.target.slug}`}>{children}</Link>
+      ),
+    },
+  }
 
   return (
     <Layout>
@@ -37,15 +59,8 @@ const IndexPage = () => {
       <Breadcrumbs crumbs={[{ title: "Startseite", slug: "" }]} />
       <SloganCarousel />
       <div className="prose my-8 mx-auto">
-        <p>
-          Herzlich Willkommen auf der Seite des Arbeitskreises von Annette
-          Marohn!
-        </p>
-        <p>
-          Hier finden Sie neue Unterrichtskonzepte mit Material, welches Sie
-          kostenlos herunterladen und nutzen können.
-        </p>
-        <p>Wer wir sind und was diese Website soll erfahren Sie TODO.</p>
+        {contentfulBasicPage?.content &&
+          renderRichText(contentfulBasicPage.content, richTextRenderOptions)}
       </div>
       <div className="flex flex-wrap gap-8 m-8 justify-center">
         {conceptPages.map(conceptPage => {

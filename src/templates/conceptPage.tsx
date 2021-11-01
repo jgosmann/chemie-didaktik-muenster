@@ -5,6 +5,7 @@ import * as React from "react"
 import Breadcrumbs from "../components/breadcrumbs"
 import BtnLink from "../components/btnLink"
 import Card from "../components/card"
+import FaqBtnLink from "../components/faqBtnLink"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 
@@ -91,7 +92,7 @@ const ConceptPage = ({ data, pageContext: { crumbs } }) => {
           </span>
           Person hinter dem Konzept
         </BtnLink>
-        <BtnLink>FAQ</BtnLink>
+        <FaqBtnLink />
       </div>
     </Layout>
   )

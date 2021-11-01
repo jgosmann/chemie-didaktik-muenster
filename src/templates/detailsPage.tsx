@@ -5,7 +5,7 @@ import { renderRichText } from "gatsby-source-contentful/rich-text"
 import * as React from "react"
 import Breadcrumbs from "../components/breadcrumbs"
 import BtnLink from "../components/btnLink"
-import Card from "../components/card"
+import FaqBtnLink from "../components/faqBtnLink"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 
@@ -35,9 +35,9 @@ const DetailsPage = ({ data, pageContext: { crumbs } }) => {
   const { title, slug, longVideo, description } = data.contentfulDetailsPage
   const richTextRenderOptions = {
     renderNode: {
-      [INLINES.ASSET_HYPERLINK]: ({ data }, children) => {
-        return <a href={data.target.file.url}>{children}</a>
-      },
+      [INLINES.ASSET_HYPERLINK]: ({ data }, children) => (
+        <a href={data.target.file.url}>{children}</a>
+      ),
     },
   }
   return (
@@ -70,7 +70,7 @@ const DetailsPage = ({ data, pageContext: { crumbs } }) => {
           </span>
           Person hinter dem Konzept
         </BtnLink>
-        <BtnLink>FAQ</BtnLink>
+        <FaqBtnLink />
       </div>
     </Layout>
   )

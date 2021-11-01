@@ -15,6 +15,14 @@ exports.createPages = async ({ actions, graphql }) => {
           }
         }
       }
+
+      allContentfulBasicPage(filter: { isInlineContentOnly: { eq: false } }) {
+        nodes {
+          id
+          title
+          slug
+        }
+      }
     }
   `)
 
@@ -23,6 +31,7 @@ exports.createPages = async ({ actions, graphql }) => {
     return
   }
 
+  const basicPageTemplate = require.resolve("./src/templates/basicPage.tsx")
   const conceptPageTemplate = require.resolve("./src/templates/conceptPage.tsx")
   const detailsPageTemplate = require.resolve("./src/templates/detailsPage.tsx")
 
@@ -52,5 +61,14 @@ exports.createPages = async ({ actions, graphql }) => {
         })
       })
     }
+  })
+
+  result.data.allContentfulBasicPage.nodes.forEach(basicPage => {
+    const { title, slug, id } = basicPage
+    createPage({
+      path: `/${slug}`,
+      component: basicPageTemplate,
+      context: { id, crumbs: [baseCrumb, { title, slug }] },
+    })
   })
 }
