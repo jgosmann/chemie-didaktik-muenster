@@ -35,10 +35,12 @@ const IndexPage = () => {
       contentfulBasicPage(slug: { eq: "einleitungstext" }) {
         content {
           raw
-          references {
-            contentful_id
+          references: typesafeReferences {
             __typename
-            slug
+            ... on ContentfulBasicPage {
+              contentful_id
+              slug
+            }
           }
         }
       }

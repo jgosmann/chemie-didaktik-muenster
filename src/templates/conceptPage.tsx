@@ -15,6 +15,10 @@ export const query = graphql`
     contentfulConceptPage(id: { eq: $id }) {
       title
       slug
+      crumbs {
+        title
+        slug
+      }
       longVideo {
         secure_url
       }
@@ -24,7 +28,9 @@ export const query = graphql`
       linkedContent {
         id
         title
-        slug
+        crumbs {
+          slug
+        }
         shortVideo {
           secure_url
         }
@@ -48,9 +54,10 @@ export const query = graphql`
   }
 `
 
-const ConceptPage = ({ data, pageContext: { crumbs } }) => {
+const ConceptPage = ({ data }) => {
   const {
     slug,
+    crumbs,
     longVideo,
     description,
     linkedContent,
@@ -77,7 +84,7 @@ const ConceptPage = ({ data, pageContext: { crumbs } }) => {
           <Card
             key={subpage.id}
             title={subpage.title}
-            link={["", slug, subpage.slug].join("/")}
+            link={subpage.crumbs.map(c => c.slug).join("/")}
             download={subpage.downloadLink?.file.url}
             video={
               subpage.shortVideo?.length > 0 && subpage.shortVideo[0].secure_url

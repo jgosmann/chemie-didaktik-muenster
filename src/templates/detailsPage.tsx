@@ -10,16 +10,24 @@ import Seo from "../components/seo"
 export const query = graphql`
   query DetailsPageQuery($id: String!, $parentId: String!) {
     contentfulDetailsPage(id: { eq: $id }) {
+      crumbs {
+        title
+        slug
+      }
       longVideo {
         secure_url
       }
       description {
         raw
-        references {
-          contentful_id
+        references: typesafeReferences {
           __typename
-          file {
-            url
+          ... on ContentfulReference {
+            contentful_id
+          }
+          ... on ContentfulAsset {
+            file {
+              url
+            }
           }
         }
       }
@@ -37,15 +45,15 @@ export const query = graphql`
   }
 `
 
-const DetailsPage = ({ data, pageContext: { crumbs } }) => {
+const DetailsPage = ({ data }) => {
   const {
-    contentfulDetailsPage: { longVideo, description },
+    contentfulDetailsPage: { crumbs, longVideo, description },
     parent,
   } = data
   const richTextRenderOptions = {
     renderNode: {
       [INLINES.ASSET_HYPERLINK]: ({ data }, children) => (
-        <a href={data.target.file.url}>{children}</a>
+        <a href={data.target.file?.url}>{children}</a>
       ),
     },
   }
