@@ -1,7 +1,10 @@
+import {
+  faAngleDoubleRight,
+  faDownload,
+} from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Link } from "gatsby"
-import { StaticImage } from "gatsby-plugin-image"
 import * as React from "react"
-import YouTube from "react-youtube"
 import Video from "./video"
 
 export interface CardProps {
@@ -18,10 +21,18 @@ const Card = ({ title, video, children, download, link }: CardProps) => (
     {video && <Video url={video} width="256" height="160" />}
     <div className="prose leading-snug text-sm m-2 flex-grow">{children}</div>
     <div className="flex flex-row flex-wrap justify-between m-2 mt-2">
-      <div>{download && <a href={download}>Download</a>}</div>
+      <div>
+        {download && (
+          <a href={download}>
+            <FontAwesomeIcon icon={faDownload} className="mr-1" />
+            Download
+          </a>
+        )}
+      </div>
       <div>
         <Link to={link} className="text-">
-          Alle Infos {">>"}
+          Alle Infos
+          <FontAwesomeIcon icon={faAngleDoubleRight} className="ml-1 " />
         </Link>
       </div>
     </div>
