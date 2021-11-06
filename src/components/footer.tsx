@@ -1,6 +1,8 @@
 import * as React from "react"
 
 import wwuLogo from "../images/wwu.svg"
+import CryptedEmail from "./crypted/Email"
+import CryptedPhone from "./crypted/Phone"
 
 const Footer = () => (
   <footer className="bg-gray-400 text-gray-100 text-xs flex flex-wrap justify-around place-items-center mt-24">
@@ -15,9 +17,9 @@ const Footer = () => (
       <br />
       48149 Münster
       <br />
-      Tel.: +49 251 83-39468
+      Tel.: <CryptedPhone country="+49" area="251" block0="83" block1="39468" />
       <br />
-      TODO: spam protected email
+      <CryptedEmail name="chdid" domain="uni-muenster" tld="de" />
     </div>
     <div className="w-1/3 min-w-max box-border p-3 text-center">
       <a

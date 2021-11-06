@@ -20,6 +20,10 @@
   .prose > ul > li > p:only-child {
     margin: 0;
   }
+
+  footer a {
+    @apply text-gray-100;
+  }
 }
 
 @layer components {
@@ -34,4 +38,33 @@
 
 .max-h-80vh {
   max-height: 80vh;
+}
+
+.crypted-email {
+  font-size: 0;
+}
+
+.crypted-email::after {
+  content: attr(data-name) "@" attr(data-domain) "." attr(data-tld);
+  @apply text-xs;
+}
+
+.crypted-email:hover::after {
+  @apply underline;
+}
+
+.crypted-phone::after {
+  content: attr(data-country) "\202f"attr(data-area) "\202f"attr(data-block0)
+    "-" attr(data-block1);
+}
+
+@keyframes enlargeFade {
+  from {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(3, 3);
+    opacity: 0;
+  }
 }
