@@ -1,10 +1,9 @@
-import { INLINES } from "@contentful/rich-text-types"
 import { graphql } from "gatsby"
-import { renderRichText } from "gatsby-source-contentful/rich-text"
 import * as React from "react"
 import Breadcrumbs from "../components/breadcrumbs"
 import ConceptNav from "../components/conceptNav"
 import Layout from "../components/layout"
+import RichText from "../components/richText"
 import Seo from "../components/seo"
 
 export const query = graphql`
@@ -18,18 +17,7 @@ export const query = graphql`
         secure_url
       }
       description {
-        raw
-        references: typesafeReferences {
-          __typename
-          ... on ContentfulReference {
-            contentful_id
-          }
-          ... on ContentfulAsset {
-            file {
-              url
-            }
-          }
-        }
+        ...RichTextFragment
       }
     }
     parent: contentfulConceptPage(id: { eq: $parentId }) {
@@ -50,13 +38,6 @@ const DetailsPage = ({ data }) => {
     contentfulDetailsPage: { crumbs, longVideo, description },
     parent,
   } = data
-  const richTextRenderOptions = {
-    renderNode: {
-      [INLINES.ASSET_HYPERLINK]: ({ data }, children) => (
-        <a href={data.target.file?.url}>{children}</a>
-      ),
-    },
-  }
   return (
     <Layout>
       <Seo title="Page two" />
@@ -71,7 +52,7 @@ const DetailsPage = ({ data }) => {
           />
         )}
         <div className="prose">
-          {description && renderRichText(description, richTextRenderOptions)}
+          {description && <RichText content={description} />}
         </div>
       </div>
       <ConceptNav

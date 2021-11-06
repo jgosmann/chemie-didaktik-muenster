@@ -1,13 +1,10 @@
-import { graphql, Link } from "gatsby"
-import { StaticImage } from "gatsby-plugin-image"
-import { renderRichText } from "gatsby-source-contentful/rich-text"
+import { graphql } from "gatsby"
 import * as React from "react"
 import Breadcrumbs from "../components/breadcrumbs"
-import BtnLink from "../components/btnLink"
 import Card from "../components/card"
 import ConceptNav from "../components/conceptNav"
-import FaqBtnLink from "../components/faqBtnLink"
 import Layout from "../components/layout"
+import RichText from "../components/richText"
 import Seo from "../components/seo"
 
 export const query = graphql`
@@ -23,7 +20,7 @@ export const query = graphql`
         secure_url
       }
       description {
-        raw
+        ...RichTextFragment
       }
       linkedContent {
         id
@@ -35,7 +32,7 @@ export const query = graphql`
           secure_url
         }
         shortDescription {
-          raw
+          ...RichTextFragment
         }
         downloadLink {
           file {
@@ -44,10 +41,10 @@ export const query = graphql`
         }
       }
       studentPresentations {
-        raw
+        ...RichTextFragment
       }
       additionalBackground {
-        raw
+        ...RichTextFragment
       }
       ...ConceptNavAuthorMedia
     }
@@ -77,7 +74,9 @@ const ConceptPage = ({ data }) => {
         />
       )}
       {description && (
-        <div className="prose my-8 mx-auto">{renderRichText(description)}</div>
+        <div className="prose my-8 mx-auto">
+          <RichText content={description} />
+        </div>
       )}
       <div className="flex flex-wrap gap-8 m-8 justify-center">
         {linkedContent?.map(subpage => (
@@ -90,8 +89,9 @@ const ConceptPage = ({ data }) => {
               subpage.shortVideo?.length > 0 && subpage.shortVideo[0].secure_url
             }
           >
-            {subpage.shortDescription &&
-              renderRichText(subpage.shortDescription)}
+            {subpage.shortDescription && (
+              <RichText content={subpage.shortDescription} />
+            )}
           </Card>
         ))}
       </div>

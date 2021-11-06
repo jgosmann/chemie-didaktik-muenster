@@ -1,14 +1,13 @@
 import * as React from "react"
-import { INLINES } from "@contentful/rich-text-types"
-import { graphql, Link, useStaticQuery } from "gatsby"
+import { graphql, useStaticQuery } from "gatsby"
 import { GatsbyImage } from "gatsby-plugin-image"
-import { renderRichText } from "gatsby-source-contentful/rich-text"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import Card from "../components/card"
 import SloganCarousel from "../components/sloganCarousel"
 import Breadcrumbs from "../components/breadcrumbs"
+import RichText from "../components/richText"
 
 const IndexPage = () => {
   const {
@@ -25,7 +24,7 @@ const IndexPage = () => {
           }
           slug
           shortDescription {
-            raw
+            ...RichTextFragment
           }
           video: childContentfulConceptPageShortVideoJsonNode {
             secure_url
@@ -34,26 +33,11 @@ const IndexPage = () => {
       }
       contentfulBasicPage(slug: { eq: "einleitungstext" }) {
         content {
-          raw
-          references: typesafeReferences {
-            __typename
-            ... on ContentfulBasicPage {
-              contentful_id
-              slug
-            }
-          }
+          ...RichTextFragment
         }
       }
     }
   `)
-
-  const richTextRenderOptions = {
-    renderNode: {
-      [INLINES.ENTRY_HYPERLINK]: ({ data }, children) => (
-        <Link to={`/${data.target.slug}`}>{children}</Link>
-      ),
-    },
-  }
 
   return (
     <Layout>
@@ -61,8 +45,9 @@ const IndexPage = () => {
       <Breadcrumbs crumbs={[{ title: "Startseite", slug: "" }]} />
       <SloganCarousel />
       <div className="prose my-8 mx-auto">
-        {contentfulBasicPage?.content &&
-          renderRichText(contentfulBasicPage.content, richTextRenderOptions)}
+        {contentfulBasicPage?.content && (
+          <RichText content={contentfulBasicPage.content} />
+        )}
       </div>
       <div className="flex flex-wrap gap-8 m-8 justify-center">
         {conceptPages.map(conceptPage => {
@@ -79,8 +64,9 @@ const IndexPage = () => {
               link={"/" + conceptPage.slug}
               video={conceptPage.video.secure_url}
             >
-              {conceptPage.shortDescription &&
-                renderRichText(conceptPage.shortDescription)}
+              {conceptPage.shortDescription && (
+                <RichText content={conceptPage.shortDescription} />
+              )}
             </Card>
           )
         })}
