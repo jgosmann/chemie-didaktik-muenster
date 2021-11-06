@@ -31,3 +31,7 @@
 .breadcrumbs li:not(:last-child)::after {
   content: " / ";
 }
+
+.max-h-80vh {
+  max-height: 80vh;
+}

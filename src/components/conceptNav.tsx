@@ -1,10 +1,5 @@
 import { graphql } from "gatsby"
-import {
-  GatsbyImage,
-  GatsbyImageProps,
-  IGatsbyImageData,
-  StaticImage,
-} from "gatsby-plugin-image"
+import { GatsbyImage, IGatsbyImageData } from "gatsby-plugin-image"
 import * as React from "react"
 import BtnLink from "./btnLink"
 import FaqBtnLink from "./faqBtnLink"
@@ -15,16 +10,14 @@ export interface ConceptNavProps {
   hasStudentPresentations: boolean
   hasAdditionalBackground: boolean
   aboutAuthorMedia?: {
-    aboutAuthor?: Array<{ secure_url: string }>
+    aboutAuthorVideo?: string
     aboutAuthorPreview?: { title: string; gatsbyImageData: IGatsbyImageData }
   }
 }
 
 export const query = graphql`
   fragment ConceptNavAuthorMedia on ContentfulConceptPage {
-    aboutAuthor {
-      secure_url
-    }
+    aboutAuthorVideo
     aboutAuthorPreview {
       title
       gatsbyImageData(layout: FIXED, width: 42, height: 42)
@@ -38,10 +31,6 @@ const ConceptNav = ({
   hasAdditionalBackground,
   aboutAuthorMedia,
 }: ConceptNavProps) => {
-  const aboutAuthorVideoUrl =
-    aboutAuthorMedia?.aboutAuthor &&
-    aboutAuthorMedia?.aboutAuthor.length > 0 &&
-    aboutAuthorMedia?.aboutAuthor[0].secure_url
   const aboutAuthorPreview = aboutAuthorMedia?.aboutAuthorPreview
   return (
     <nav className="flex flex-wrap gap-8 justify-center place-items-center items-stretch">
@@ -55,8 +44,8 @@ const ConceptNav = ({
           Weitere Hintergründe
         </BtnLink>
       )}
-      {aboutAuthorVideoUrl && (
-        <VideoBtn videoUrl={aboutAuthorVideoUrl}>
+      {aboutAuthorMedia.aboutAuthorVideo && (
+        <VideoBtn videoUrl={aboutAuthorMedia.aboutAuthorVideo}>
           {aboutAuthorPreview && (
             <span className="inline-block overflow-hidden rounded-full align-middle shadow-md mr-2">
               <GatsbyImage

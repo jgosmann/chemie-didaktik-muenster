@@ -1,5 +1,7 @@
 import React, { useRef, useState } from "react"
+import YouTube from "react-youtube"
 import Overlay from "./overlay"
+import Video from "./video"
 
 export interface VideoBtnProps {
   children?: React.ReactNode
@@ -18,15 +20,16 @@ const VideoBtn = ({ children, videoUrl }: VideoBtnProps) => {
       <Overlay
         isActive={isOpen}
         onClose={() => {
-          video.current?.pause()
+          video.current?.pauseVideo()
           setIsOpen(false)
         }}
       >
-        <video
-          controls
+        <Video
+          url={videoUrl}
+          width="640"
+          height="400"
           ref={video}
-          src={videoUrl}
-          style={{ maxHeight: "80vh" }}
+          className="max-h-80vh"
         />
       </Overlay>
     </>

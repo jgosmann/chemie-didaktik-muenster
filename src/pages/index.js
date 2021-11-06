@@ -23,11 +23,9 @@ const IndexPage = () => {
             gatsbyImageData(layout: CONSTRAINED, height: 24)
           }
           slug
+          shortVideo
           shortDescription {
             ...RichTextFragment
-          }
-          video: childContentfulConceptPageShortVideoJsonNode {
-            secure_url
           }
         }
       }
@@ -62,7 +60,7 @@ const IndexPage = () => {
               key={conceptPage.id}
               title={titleImage || conceptPage.title}
               link={"/" + conceptPage.slug}
-              video={conceptPage.video.secure_url}
+              video={conceptPage.shortVideo}
             >
               {conceptPage.shortDescription && (
                 <RichText content={conceptPage.shortDescription} />

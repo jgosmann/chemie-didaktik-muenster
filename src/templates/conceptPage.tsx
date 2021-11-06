@@ -6,6 +6,7 @@ import ConceptNav from "../components/conceptNav"
 import Layout from "../components/layout"
 import RichText from "../components/richText"
 import Seo from "../components/seo"
+import Video from "../components/video"
 
 export const query = graphql`
   query ConceptPageQuery($id: String!) {
@@ -16,9 +17,7 @@ export const query = graphql`
         title
         slug
       }
-      longVideo {
-        secure_url
-      }
+      video
       description {
         ...RichTextFragment
       }
@@ -28,9 +27,7 @@ export const query = graphql`
         crumbs {
           slug
         }
-        shortVideo {
-          secure_url
-        }
+        shortVideo
         shortDescription {
           ...RichTextFragment
         }
@@ -55,7 +52,7 @@ const ConceptPage = ({ data }) => {
   const {
     slug,
     crumbs,
-    longVideo,
+    video,
     description,
     linkedContent,
     studentPresentations,
@@ -65,12 +62,12 @@ const ConceptPage = ({ data }) => {
     <Layout>
       <Seo title="Page two" />
       <Breadcrumbs crumbs={crumbs} />
-      {longVideo && longVideo.length > 0 && (
-        <video
-          controls
-          src={longVideo[0].secure_url}
+      {video && (
+        <Video
+          url={video}
           className="my-8 mx-auto rounded shadow"
-          style={{ maxHeight: "50vh" }}
+          width="640"
+          height="400"
         />
       )}
       {description && (
@@ -85,9 +82,7 @@ const ConceptPage = ({ data }) => {
             title={subpage.title}
             link={subpage.crumbs.map(c => c.slug).join("/")}
             download={subpage.downloadLink?.file.url}
-            video={
-              subpage.shortVideo?.length > 0 && subpage.shortVideo[0].secure_url
-            }
+            video={subpage.shortVideo}
           >
             {subpage.shortDescription && (
               <RichText content={subpage.shortDescription} />
