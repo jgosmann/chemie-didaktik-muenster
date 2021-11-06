@@ -23,20 +23,23 @@ const Breadcrumbs = ({ crumbs }: BreadcrumbsProps) => {
     ],
     []
   )
+  const liClasses = "inline"
   return (
     <nav className="text-sm font-normal text-gray-600">
       Sie sind hier:{" "}
-      {absolutePathCrumbs.map((crumb, i) => {
-        if (i < absolutePathCrumbs.length - 1) {
-          return (
-            <>
-              <Link to={crumb.absPath}>{crumb.title}</Link> /{" "}
-            </>
-          )
-        } else {
-          return crumb.title
-        }
-      })}
+      <ol className="inline breadcrumbs">
+        {absolutePathCrumbs.map((crumb, i) => {
+          if (i < absolutePathCrumbs.length - 1) {
+            return (
+              <li className={liClasses}>
+                <Link to={crumb.absPath}>{crumb.title}</Link>
+              </li>
+            )
+          } else {
+            return <li className={liClasses}>{crumb.title}</li>
+          }
+        })}
+      </ol>
     </nav>
   )
 }
