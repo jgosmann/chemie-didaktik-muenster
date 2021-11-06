@@ -8,7 +8,12 @@ exports.createSchemaCustomization = ({ actions }) => {
     extend(options, prevFieldConfig) {
       return {
         resolve: async (source, args, context, info) => {
+          if (source.internal.type === "ContentfulStartseite") {
+            return [baseCrumb]
+          }
+
           if (!source.slug) {
+            console.log(source)
             return null
           }
 
@@ -65,16 +70,16 @@ exports.createSchemaCustomization = ({ actions }) => {
     }
 
     interface Linkable {
-      crumbs: [Crumb!] @crumbs
+      crumbs: [Crumb!]! @crumbs
     }
 
     type ContentfulBasicPage implements Linkable {
-      crumbs: [Crumb!] @crumbs
+      crumbs: [Crumb!]! @crumbs
       content: Content
     }
 
     type ContentfulConceptPage implements Linkable {
-      crumbs: [Crumb!] @crumbs
+      crumbs: [Crumb!]! @crumbs
       shortDescription: Content
       description: Content
       studentPresentations: Content
@@ -82,11 +87,15 @@ exports.createSchemaCustomization = ({ actions }) => {
     }
 
     type ContentfulDetailsPage implements Linkable {
-      crumbs: [Crumb!] @crumbs
+      crumbs: [Crumb!]! @crumbs
       shortDescription: Content
       description: Content
     }
     
+    type ContentfulStartseite implements Linkable {
+      crumbs: [Crumb!]! @crumbs
+      content: Content
+    }    
   `)
 }
 
@@ -117,7 +126,7 @@ exports.createPages = async ({ actions, graphql }) => {
         }
       }
 
-      allContentfulBasicPage(filter: { isInlineContentOnly: { eq: false } }) {
+      allContentfulBasicPage {
         nodes {
           id
           crumbs {

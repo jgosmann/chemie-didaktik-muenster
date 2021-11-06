@@ -11,44 +11,45 @@ import RichText from "../components/richText"
 
 const IndexPage = () => {
   const {
-    allContentfulConceptPage: { nodes: conceptPages },
-    contentfulBasicPage,
+    allContentfulStartseite: { nodes },
   } = useStaticQuery(graphql`
     query ConceptPagesQuery {
-      allContentfulConceptPage {
+      allContentfulStartseite(limit: 1) {
         nodes {
-          id
-          title
-          titleImage {
-            gatsbyImageData(layout: CONSTRAINED, height: 24)
+          slogans {
+            ...SloganFragment
           }
-          slug
-          shortVideo
-          shortDescription {
+          content {
             ...RichTextFragment
           }
-        }
-      }
-      contentfulBasicPage(slug: { eq: "einleitungstext" }) {
-        content {
-          ...RichTextFragment
+          conceptPages {
+            id
+            title
+            titleImage {
+              gatsbyImageData(layout: CONSTRAINED, height: 24)
+            }
+            slug
+            shortVideo
+            shortDescription {
+              ...RichTextFragment
+            }
+          }
         }
       }
     }
   `)
+  const page = nodes[0]
 
   return (
     <Layout>
       <Seo title="Home" />
       <Breadcrumbs crumbs={[{ title: "Startseite", slug: "" }]} />
-      <SloganCarousel />
+      <SloganCarousel slogans={page.slogans} />
       <div className="prose my-8 mx-auto">
-        {contentfulBasicPage?.content && (
-          <RichText content={contentfulBasicPage.content} />
-        )}
+        {page.content && <RichText content={page.content} />}
       </div>
       <div className="flex flex-wrap gap-8 m-8 justify-center">
-        {conceptPages.map(conceptPage => {
+        {page.conceptPages.map(conceptPage => {
           const titleImage = conceptPage.titleImage && (
             <GatsbyImage
               image={conceptPage.titleImage.gatsbyImageData}

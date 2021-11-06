@@ -6,30 +6,21 @@ import "../styles/slick-theme.css"
 import { graphql, useStaticQuery } from "gatsby"
 import { GatsbyImage } from "gatsby-plugin-image"
 
-interface SlideProps {
-  children: React.ReactNode
-  className?: string
-}
-
-const Carousel = () => {
-  const slogans = useStaticQuery(graphql`
-    query SlogansQuery {
-      allContentfulSlogan {
-        nodes {
-          id
-          slogan {
-            childMarkdownRemark {
-              html
-            }
-          }
-          image {
-            gatsbyImageData(layout: FULL_WIDTH)
-          }
-        }
+export const query = graphql`
+  fragment SloganFragment on ContentfulSlogan {
+    id
+    slogan {
+      childMarkdownRemark {
+        html
       }
     }
-  `).allContentfulSlogan.nodes
+    image {
+      gatsbyImageData(layout: FULL_WIDTH)
+    }
+  }
+`
 
+const Carousel = ({ slogans }) => {
   return (
     <Slider
       autoplay
