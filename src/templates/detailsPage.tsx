@@ -11,6 +11,7 @@ import Video from "../components/video"
 export const query = graphql`
   query DetailsPageQuery($id: String!, $parentId: String!) {
     contentfulDetailsPage(id: { eq: $id }) {
+      title
       crumbs {
         title
         slug
@@ -35,12 +36,12 @@ export const query = graphql`
 
 const DetailsPage = ({ data }) => {
   const {
-    contentfulDetailsPage: { crumbs, video, description },
+    contentfulDetailsPage: { title, crumbs, video, description },
     parent,
   } = data
   return (
     <Layout>
-      <Seo title="Page two" />
+      <Seo title={title} />
       <Breadcrumbs crumbs={crumbs} />
       <div className="flex justify-center gap-8 flex-row-reverse flex-wrap my-8 items-start">
         {video && (

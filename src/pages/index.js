@@ -42,7 +42,7 @@ const IndexPage = () => {
 
   return (
     <Layout>
-      <Seo title="Home" />
+      <Seo title="Startseite" />
       <Breadcrumbs crumbs={[{ title: "Startseite", slug: "" }]} />
       <SloganCarousel slogans={page.slogans} />
       <div className="prose my-8 mx-auto">

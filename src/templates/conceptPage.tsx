@@ -50,6 +50,7 @@ export const query = graphql`
 
 const ConceptPage = ({ data }) => {
   const {
+    title,
     slug,
     crumbs,
     video,
@@ -60,7 +61,7 @@ const ConceptPage = ({ data }) => {
   } = data.contentfulConceptPage
   return (
     <Layout>
-      <Seo title="Page two" />
+      <Seo title={title} />
       <Breadcrumbs crumbs={crumbs} />
       {video && (
         <Video

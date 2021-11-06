@@ -184,6 +184,7 @@ exports.createPages = async ({ actions, graphql }) => {
         component: pureRichTextPageTemplate,
         context: {
           content: studentPresentations,
+          title: "Weitere Schülervorstellungen",
           crumbs: [
             ...crumbs,
             {
@@ -200,11 +201,12 @@ exports.createPages = async ({ actions, graphql }) => {
         path: `${crumbs.map(c => c.slug).join("/")}/weitere-hintergruende`,
         component: pureRichTextPageTemplate,
         context: {
-          content: studentPresentations,
+          content: additionalBackground,
+          title: "Weitere Hintergründe",
           crumbs: [
             ...crumbs,
             {
-              title: "Weitere Schülervorstellungen",
+              title: "Weitere Hintergründe",
               slug: "weitere-hintergruende",
             },
           ],

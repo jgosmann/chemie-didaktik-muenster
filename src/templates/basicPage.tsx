@@ -5,6 +5,7 @@ import PureRichTextPage from "./pureRichTextPage"
 export const query = graphql`
   query BasicPageQuery($id: String!) {
     contentfulBasicPage(id: { eq: $id }) {
+      title
       crumbs {
         title
         slug
@@ -34,8 +35,12 @@ export const query = graphql`
 `
 
 const DetailsPage = ({ data, pageContext }) => {
-  const { content, crumbs } = data.contentfulBasicPage
-  return <PureRichTextPage pageContext={{ ...pageContext, content, crumbs }} />
+  const { content, crumbs, title } = data.contentfulBasicPage
+  return (
+    <PureRichTextPage
+      pageContext={{ ...pageContext, content, crumbs, title }}
+    />
+  )
 }
 
 export default DetailsPage
