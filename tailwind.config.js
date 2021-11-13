@@ -6,7 +6,10 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     colors: {
-      primary: colors.orange,
+      primary: {
+        light: "#f77a40",
+        DEFAULT: "#e9530e",
+      },
       secondary: colors.blue,
       red: colors.red,
       white: colors.white,

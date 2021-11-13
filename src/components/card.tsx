@@ -17,7 +17,7 @@ export interface CardProps {
 
 const Card = ({ title, video, children, download, link }: CardProps) => (
   <div className="rounded shadow w-64 flex flex-col">
-    <h4 className="text-primary-700 m-2">{title}</h4>
+    <h4 className="text-primary m-2">{title}</h4>
     {video && <Video url={video} width="256" height="160" />}
     <div className="prose leading-snug text-sm m-2 flex-grow">{children}</div>
     <div className="flex flex-row flex-wrap justify-between m-2 mt-2">

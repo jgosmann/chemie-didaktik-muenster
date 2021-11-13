@@ -4,10 +4,10 @@ import { Link } from "gatsby"
 import { StaticImage } from "gatsby-plugin-image"
 
 const Header = () => (
-  <header className="bg-primary-300 flex flex-nowrap items-center justify-between shadow mb-4">
+  <header className="bg-primary flex flex-nowrap items-center justify-between shadow mb-4">
     <a href="https://www.uni-muenster.de/Chemie.dc/">
       <StaticImage
-        src="../images/cdm-logo.png"
+        src="../images/cdm-logo-white.png"
         alt="Chemie Didaktik Münster"
         height={48}
         className="m-3"
