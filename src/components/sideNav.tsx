@@ -1,8 +1,7 @@
-import { faTimes, faTimesCircle } from "@fortawesome/free-solid-svg-icons"
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { graphql, useStaticQuery } from "gatsby"
 import * as React from "react"
-import { useState } from "react"
 import Collapsible from "./collapsible"
 import ConceptTitle from "./conceptTitle"
 import CrumbLink from "./crumbLink"
@@ -69,10 +68,11 @@ const SideNav = ({ isOpen, onClose }: SideNavProps): JSX.Element => {
 
   return (
     <nav
-      className="fixed top-0 bg-gray-100 h-screen w-11/12 z-50 shadow p-8 overflow-scroll transition-transform"
-      style={{ transform: isOpen ? "translateX(0)" : "translate(-100%)" }}
+      className={`fixed lg:static top-0 bg-gray-100 text-lg lg:text-base h-screen lg:h-full w-11/12 lg:w-max z-50 lg:z-auto lg:shadow-lg p-8 overflow-scroll transform transition-transform ${
+        isOpen ? "translate-x-0 shadow-lg" : "-translate-x-full"
+      } lg:translate-x-0`}
     >
-      <ul className="divide-y divide-gray-400 text-lg">
+      <ul className="divide-y divide-gray-400">
         <TopItem>
           <TopLink crumbs={startPage.crumbs}>{startPage.title}</TopLink>
         </TopItem>
@@ -108,7 +108,7 @@ const SideNav = ({ isOpen, onClose }: SideNavProps): JSX.Element => {
       </ul>
       <button
         onClick={onClose}
-        className="absolute text-2xl text-gray-600 top-2 right-4"
+        className="absolute text-2xl text-gray-600 top-2 right-4 lg:hidden"
       >
         <FontAwesomeIcon icon={faTimesCircle} />
       </button>

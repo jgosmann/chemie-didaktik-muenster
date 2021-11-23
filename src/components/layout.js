@@ -21,22 +21,23 @@ const Layout = ({ children, crumbs }) => {
   return (
     <div className="flex flex-col h-screen">
       <Header />
-      <div className="flex-grow">
-        <div>
-          <SideNav
-            isOpen={isSideNavOpen}
-            onClose={() => setIsSideNavOpen(false)}
-          />
-          <main className="px-8 pt-4">
-            <div className="flex justify-between">
-              <Breadcrumbs crumbs={crumbs} />
-              <button onClick={() => setIsSideNavOpen(true)}>
-                <FontAwesomeIcon icon={faBars} />
-              </button>
-            </div>
-            {children}
-          </main>
-        </div>
+      <div className="flex flex-grow">
+        <SideNav
+          isOpen={isSideNavOpen}
+          onClose={() => setIsSideNavOpen(false)}
+        />
+        <main className="px-8 pt-4 mb-24 flex-grow">
+          <div className="flex justify-between">
+            <Breadcrumbs crumbs={crumbs} />
+            <button
+              onClick={() => setIsSideNavOpen(true)}
+              className="lg:hidden"
+            >
+              <FontAwesomeIcon icon={faBars} />
+            </button>
+          </div>
+          {children}
+        </main>
       </div>
       <Footer />
     </div>

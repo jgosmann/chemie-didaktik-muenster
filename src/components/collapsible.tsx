@@ -13,11 +13,11 @@ const Collapsible = ({ label, children }: CollapsibleProps): JSX.Element => {
 
   return (
     <>
-      <div className="flex justify-between">
+      <div className="flex justify-between gap-2">
         <div>{label}</div>
         <button
           onClick={() => setIsExpanded(isExpanded => !isExpanded)}
-          className="bg-gray-600 text-gray-200 rounded w-7 h-7"
+          className="bg-gray-600 text-gray-200 rounded w-7 h-7 flex-shrink-0"
         >
           <FontAwesomeIcon
             icon={isExpanded ? faChevronUp : faChevronDown}
