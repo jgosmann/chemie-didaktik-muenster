@@ -1,13 +1,12 @@
 import * as React from "react"
 import { graphql, useStaticQuery } from "gatsby"
-import { GatsbyImage } from "gatsby-plugin-image"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import Card from "../components/card"
 import SloganCarousel from "../components/sloganCarousel"
-import Breadcrumbs from "../components/breadcrumbs"
 import RichText from "../components/richText"
+import ConceptTitle from "../components/conceptTitle"
 
 const IndexPage = () => {
   const {
@@ -41,25 +40,23 @@ const IndexPage = () => {
   const page = nodes[0]
 
   return (
-    <Layout>
+    <Layout crumbs={[{ title: "Startseite", slug: "" }]}>
       <Seo title="Startseite" />
-      <Breadcrumbs crumbs={[{ title: "Startseite", slug: "" }]} />
       <SloganCarousel slogans={page.slogans} />
       <div className="prose my-8 mx-auto">
         {page.content && <RichText content={page.content} />}
       </div>
       <div className="flex flex-wrap gap-8 m-8 justify-center">
         {page.conceptPages.map(conceptPage => {
-          const titleImage = conceptPage.titleImage && (
-            <GatsbyImage
-              image={conceptPage.titleImage.gatsbyImageData}
-              alt={conceptPage.title}
-            />
-          )
           return (
             <Card
               key={conceptPage.id}
-              title={titleImage || conceptPage.title}
+              title={
+                <ConceptTitle
+                  title={conceptPage.title}
+                  titleImage={conceptPage.titleImage}
+                />
+              }
               link={"/" + conceptPage.slug}
               video={conceptPage.shortVideo}
             >

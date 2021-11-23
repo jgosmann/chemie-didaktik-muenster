@@ -60,9 +60,8 @@ const ConceptPage = ({ data }) => {
     additionalBackground,
   } = data.contentfulConceptPage
   return (
-    <Layout>
+    <Layout crumbs={crumbs}>
       <Seo title={title} />
-      <Breadcrumbs crumbs={crumbs} />
       {video && (
         <Video
           url={video}

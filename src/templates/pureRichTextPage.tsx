@@ -5,9 +5,8 @@ import RichText from "../components/richText"
 import Seo from "../components/seo"
 
 const PureRichTextPage = ({ pageContext: { content, crumbs, title } }) => (
-  <Layout>
+  <Layout crumbs={crumbs}>
     <Seo title={title} />
-    <Breadcrumbs crumbs={crumbs} />
     <div className="prose mx-auto">
       {content && <RichText content={content} />}
     </div>

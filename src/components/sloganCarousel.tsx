@@ -3,7 +3,7 @@ import Slider from "react-slick"
 
 import "../styles/slick.min.css"
 import "../styles/slick-theme.css"
-import { graphql, useStaticQuery } from "gatsby"
+import { graphql } from "gatsby"
 import { GatsbyImage } from "gatsby-plugin-image"
 
 export const query = graphql`

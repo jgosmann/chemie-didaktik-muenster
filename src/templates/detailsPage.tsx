@@ -40,9 +40,8 @@ const DetailsPage = ({ data }) => {
     parent,
   } = data
   return (
-    <Layout>
+    <Layout crumbs={crumbs}>
       <Seo title={title} />
-      <Breadcrumbs crumbs={crumbs} />
       <div className="flex justify-center gap-8 flex-row-reverse flex-wrap my-8 items-start">
         {video && (
           <Video

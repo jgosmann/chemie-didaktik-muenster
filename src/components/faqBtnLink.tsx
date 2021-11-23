@@ -1,4 +1,3 @@
-import { graphql, useStaticQuery } from "gatsby"
 import * as React from "react"
 import BtnLink from "./btnLink"
 
