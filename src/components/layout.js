@@ -26,7 +26,7 @@ const Layout = ({ children, crumbs }) => {
           isOpen={isSideNavOpen}
           onClose={() => setIsSideNavOpen(false)}
         />
-        <main className="px-8 pt-4 mb-24 flex-grow">
+        <main className="px-8 pt-4 mb-24 flex-grow overflow-hidden">
           <div className="flex justify-between">
             <Breadcrumbs crumbs={crumbs} />
             <button
