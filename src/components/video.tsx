@@ -18,7 +18,7 @@ const Video = React.forwardRef<any, VideoProps>(
     return (
       <YouTube
         videoId={videoId}
-        opts={{ width, height }}
+        opts={{ width, height, host: "https://www.youtube-nocookie.com" }}
         className={`max-w-full max-h-screen ${className}`}
         onReady={ev => {
           console.log("ready", ev.target)
