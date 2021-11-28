@@ -16,7 +16,10 @@ const CrumbLink = ({
   children,
   className,
 }: CrumbLinkProps): JSX.Element => (
-  <Link to={crumbs.map(({ slug }) => slug).join("/")} className={className}>
+  <Link
+    to={crumbs.map(({ slug }) => slug).join("/") + "/"}
+    className={className}
+  >
     {children}
   </Link>
 )

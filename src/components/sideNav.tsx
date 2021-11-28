@@ -1,6 +1,7 @@
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { graphql, useStaticQuery } from "gatsby"
+import { GatsbyImage } from "gatsby-plugin-image"
 import * as React from "react"
 import Collapsible from "./collapsible"
 import ConceptTitle from "./conceptTitle"
@@ -59,6 +60,12 @@ const SideNav = ({ isOpen, onClose }: SideNavProps): JSX.Element => {
                 slug
               }
             }
+            studentPresentations {
+              ...RichTextFragment
+            }
+            additionalBackground {
+              ...RichTextFragment
+            }
           }
         }
       }
@@ -97,6 +104,30 @@ const SideNav = ({ isOpen, onClose }: SideNavProps): JSX.Element => {
                       </CrumbLink>
                     </li>
                   ))}
+                  {!!conceptPage.studentPresentations && (
+                    <li className="py-1">
+                      <CrumbLink
+                        crumbs={[
+                          ...conceptPage.crumbs,
+                          { slug: "weitere-schuelervorstellungen" },
+                        ]}
+                      >
+                        Weitere Schülervorstellungen
+                      </CrumbLink>
+                    </li>
+                  )}
+                  {!!conceptPage.additionalBackground && (
+                    <li className="py-1">
+                      <CrumbLink
+                        crumbs={[
+                          ...conceptPage.crumbs,
+                          { slug: "weitere-hintergruende" },
+                        ]}
+                      >
+                        Weitere Hintergründe
+                      </CrumbLink>
+                    </li>
+                  )}
                 </ul>
               )}
             </Collapsible>
