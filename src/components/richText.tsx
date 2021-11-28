@@ -6,6 +6,8 @@ import {
   RenderRichTextData,
 } from "gatsby-source-contentful/rich-text"
 import * as React from "react"
+import { DefaultCryptedPhone } from "./crypted"
+import { DefaultCryptedEmail } from "./crypted"
 
 export const query = graphql`
   fragment RichTextFragment on Content {
@@ -30,8 +32,46 @@ export const query = graphql`
   }
 `
 
+const replacePlaceholder = (
+  text: any,
+  placeholder: string,
+  component: React.ReactNode
+) => {
+  if (typeof text === "string" && text.match(placeholder)) {
+    const parts = text.split(placeholder)
+    return parts.flatMap((part, index) => {
+      if (index > 0) {
+        return [component, part]
+      }
+      return [part]
+    })
+  }
+  return [text]
+}
+
 const richTextRenderOptions = {
   renderNode: {
+    [BLOCKS.PARAGRAPH]: (_, children) => {
+      const withLineBreaks = children.flatMap(child => {
+        if (typeof child === "string") {
+          return child.split("\n").flatMap((line, index) => {
+            if (index > 0) {
+              return [<br />, line]
+            }
+            return [line]
+          })
+        }
+        return [child]
+      })
+      const withCustomComponents = withLineBreaks
+        .flatMap(child =>
+          replacePlaceholder(child, "<!--telefon-->", <DefaultCryptedPhone />)
+        )
+        .flatMap(child =>
+          replacePlaceholder(child, "<!--email-->", <DefaultCryptedEmail />)
+        )
+      return <p>{withCustomComponents}</p>
+    },
     [INLINES.ASSET_HYPERLINK]: ({ data }, children) => {
       return <a href={data.target.file.url}>{children}</a>
     },

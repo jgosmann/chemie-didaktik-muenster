@@ -1,11 +1,10 @@
+import { Link } from "gatsby"
 import * as React from "react"
 
-import wwuLogo from "../images/wwu.svg"
-import CryptedEmail from "./crypted/Email"
-import CryptedPhone from "./crypted/Phone"
+import { DefaultCryptedEmail, DefaultCryptedPhone } from "./crypted"
 
 const Footer = () => (
-  <footer className="bg-gray-400 text-gray-100 text-xs flex flex-wrap justify-around place-items-center z-10">
+  <footer className="bg-gray-400 text-gray-100 text-xs flex flex-wrap justify-between place-items-top z-10">
     <div className="w-1/3 min-w-max box-border p-3 flex-shrink">
       <span className="uppercase font-semibold">Kontakt</span>
       <br />
@@ -17,25 +16,23 @@ const Footer = () => (
       <br />
       48149 Münster
       <br />
-      Tel.: <CryptedPhone country="+49" area="251" block0="83" block1="39468" />
+      Tel.: <DefaultCryptedPhone />
       <br />
-      <CryptedEmail name="chdid" domain="uni-muenster" tld="de" />
+      <DefaultCryptedEmail />
     </div>
-    <div className="w-1/3 min-w-max box-border p-3 text-center">
+    <div className="w-1/3 min-w-max box-border p-3 text-right">
+      <Link
+        className="text-gray-100 active:text-gray-100 hover:text-gray-100 visited:text-gray-100"
+        to="/datenschutzerklaerung"
+      >
+        Datenschutzerklärung
+      </Link>
+      <br />
       <a
         href="https://www.uni-muenster.de/Chemie.dc/"
         className="text-gray-100 visited:text-gray-100"
       >
         https://www.uni-muenster.de/Chemie.dc/
-      </a>
-    </div>
-    <div className="w-1/3 min-w-max box-border p-3 px-12">
-      <a href="https://www.uni-muenster.de/">
-        <img
-          src={wwuLogo}
-          alt="Logo of the WWU Münster"
-          className="float-right"
-        />
       </a>
     </div>
   </footer>

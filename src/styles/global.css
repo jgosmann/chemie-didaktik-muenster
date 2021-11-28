@@ -49,6 +49,10 @@
 
 .crypted-email::after {
   content: attr(data-name) "@" attr(data-domain) "." attr(data-tld);
+  @apply text-base;
+}
+
+footer .crypted-email::after {
   @apply text-xs;
 }
 
