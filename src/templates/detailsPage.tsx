@@ -17,6 +17,11 @@ export const query = graphql`
         slug
       }
       video
+      videoThumb {
+        childImageSharp {
+          gatsbyImageData(layout: FIXED, width: 640, height: 400)
+        }
+      }
       description {
         ...RichTextFragment
       }
@@ -36,7 +41,7 @@ export const query = graphql`
 
 const DetailsPage = ({ data }) => {
   const {
-    contentfulDetailsPage: { title, crumbs, video, description },
+    contentfulDetailsPage: { title, crumbs, video, videoThumb, description },
     parent,
   } = data
   return (
@@ -46,6 +51,7 @@ const DetailsPage = ({ data }) => {
         {video && (
           <Video
             url={video}
+            thumb={videoThumb}
             className="my-8 mx-auto rounded shadow"
             width="640"
             height="400"

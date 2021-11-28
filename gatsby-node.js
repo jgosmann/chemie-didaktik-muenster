@@ -1,3 +1,6 @@
+const { createRemoteFileNode } = require("gatsby-source-filesystem")
+const { extractVideoId } = require("./src/youtube-url-parser")
+
 const baseCrumb = { title: "Startseite", slug: "" }
 
 exports.createSchemaCustomization = ({ actions }) => {
@@ -84,12 +87,17 @@ exports.createSchemaCustomization = ({ actions }) => {
       description: Content
       studentPresentations: Content
       additionalBackground: Content
+      shortVideoThumb: File @link(from: "fields.shortVideoThumb")
+      videoThumb: File @link(from: "fields.videoThumb")
+      abourtAuthorVideoThumb: File @link(from: "fields.aboutAuthorVideoThumb")
     }
 
     type ContentfulDetailsPage implements Linkable {
       crumbs: [Crumb!]! @crumbs
       shortDescription: Content
       description: Content
+      shortVideoThumb: File @link(from: "fields.shortVideoThumb")
+      videoThumb: File @link(from: "fields.videoThumb")
     }
     
     type ContentfulStartseite implements Linkable {
@@ -97,6 +105,44 @@ exports.createSchemaCustomization = ({ actions }) => {
       content: Content
     }    
   `)
+}
+
+exports.onCreateNode = async ({
+  node,
+  actions: { createNode, createNodeField },
+  store,
+  cache,
+  createNodeId,
+}) => {
+  const createYoutubeThumbNode = async fieldName => {
+    if (node[fieldName]) {
+      const videoId = extractVideoId(node[fieldName])
+      const fileNode = await createRemoteFileNode({
+        url: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+        parentNodeId: node.id,
+        createNode,
+        createNodeId,
+        cache,
+        store,
+      })
+      if (fileNode) {
+        createNodeField({ node, name: `${fieldName}Thumb`, value: fileNode.id })
+      }
+    }
+  }
+
+  if (node.internal.type === "ContentfulConceptPage") {
+    await Promise.all([
+      createYoutubeThumbNode("shortVideo"),
+      createYoutubeThumbNode("video"),
+      createYoutubeThumbNode("aboutAuthorVideo"),
+    ])
+  } else if (node.internal.type === "ContentfulDetailsPage") {
+    await Promise.all([
+      createYoutubeThumbNode("shortVideo"),
+      createYoutubeThumbNode("video"),
+    ])
+  }
 }
 
 exports.createPages = async ({ actions, graphql }) => {

@@ -29,6 +29,11 @@ const IndexPage = () => {
             }
             slug
             shortVideo
+            shortVideoThumb {
+              childImageSharp {
+                ...CardVideoThumbFragment
+              }
+            }
             shortDescription {
               ...RichTextFragment
             }
@@ -58,7 +63,12 @@ const IndexPage = () => {
                 />
               }
               link={"/" + conceptPage.slug}
-              video={conceptPage.shortVideo}
+              video={
+                conceptPage.shortVideo && {
+                  url: conceptPage.shortVideo,
+                  thumb: conceptPage.shortVideoThumb,
+                }
+              }
             >
               {conceptPage.shortDescription && (
                 <RichText content={conceptPage.shortDescription} />

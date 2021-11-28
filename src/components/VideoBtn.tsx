@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react"
-import YouTube from "react-youtube"
 import Overlay from "./overlay"
-import Video from "./video"
+import YoutubeConsent from "./youtubeConsent"
+import YoutubeVideo from "./youtubeVideo"
 
 export interface VideoBtnProps {
   children?: React.ReactNode
@@ -10,11 +10,12 @@ export interface VideoBtnProps {
 
 const VideoBtn = ({ children, videoUrl }: VideoBtnProps) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [hasConsent, setHasConsent] = useState(false)
   const video = useRef(null)
 
   return (
     <>
-      <button className="btn" onClick={() => setIsOpen(true)}>
+      <button className="btn primary" onClick={() => setIsOpen(true)}>
         {children}
       </button>
       <Overlay
@@ -24,13 +25,23 @@ const VideoBtn = ({ children, videoUrl }: VideoBtnProps) => {
           setIsOpen(false)
         }}
       >
-        <Video
-          url={videoUrl}
-          width="640"
-          height="400"
-          ref={video}
-          className="max-h-80vh"
-        />
+        {hasConsent ? (
+          <YoutubeVideo
+            url={videoUrl}
+            width="640"
+            height="400"
+            ref={video}
+            className="max-h-80vh"
+          />
+        ) : (
+          <YoutubeConsent
+            onConsentGiven={() => setHasConsent(true)}
+            onConsentDenied={() => {
+              setHasConsent(false)
+              setIsOpen(false)
+            }}
+          />
+        )}
       </Overlay>
     </>
   )

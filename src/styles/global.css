@@ -28,7 +28,10 @@
 
 @layer components {
   .btn {
-    @apply w-44 min-w-max rounded-lg border p-3 flex justify-center place-items-center text-white hover:text-white active:text-white visited:text-white shadow bg-primary-light hover:bg-primary transition-colors ease-out hover:no-underline active:no-underline;
+    @apply w-44 min-w-max rounded-lg border p-3 flex justify-center place-items-center text-black hover:text-black active:text-black visited:text-black shadow bg-gray-200 hover:bg-gray-300 transition-colors ease-out hover:no-underline active:no-underline;
+  }
+  .primary {
+    @apply text-white hover:text-white active:text-white visited:text-white bg-primary-light hover:bg-primary;
   }
 }
 

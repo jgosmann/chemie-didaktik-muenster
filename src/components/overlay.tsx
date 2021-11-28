@@ -9,6 +9,7 @@ export interface OverlayProps {
 const activeStyle: CSSProperties = {
   opacity: 1,
   pointerEvents: "auto",
+  zIndex: 50,
 }
 const inactiveStyle: CSSProperties = {
   opacity: 0,

@@ -18,6 +18,11 @@ export const query = graphql`
         slug
       }
       video
+      videoThumb {
+        childImageSharp {
+          gatsbyImageData(layout: FIXED, width: 640, height: 400)
+        }
+      }
       description {
         ...RichTextFragment
       }
@@ -28,6 +33,11 @@ export const query = graphql`
           slug
         }
         shortVideo
+        shortVideoThumb {
+          childImageSharp {
+            ...CardVideoThumbFragment
+          }
+        }
         shortDescription {
           ...RichTextFragment
         }
@@ -54,6 +64,7 @@ const ConceptPage = ({ data }) => {
     slug,
     crumbs,
     video,
+    videoThumb,
     description,
     linkedContent,
     studentPresentations,
@@ -65,6 +76,7 @@ const ConceptPage = ({ data }) => {
       {video && (
         <Video
           url={video}
+          thumb={videoThumb}
           className="my-8 mx-auto rounded shadow"
           width="640"
           height="400"
@@ -82,7 +94,12 @@ const ConceptPage = ({ data }) => {
             title={subpage.title}
             link={subpage.crumbs.map(c => c.slug).join("/")}
             download={subpage.downloadLink?.file.url}
-            video={subpage.shortVideo}
+            video={
+              subpage.shortVideo && {
+                url: subpage.shortVideo,
+                thumb: subpage.shortVideoThumb,
+              }
+            }
           >
             {subpage.shortDescription && (
               <RichText content={subpage.shortDescription} />

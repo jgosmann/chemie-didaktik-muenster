@@ -7,7 +7,7 @@ export interface BtnLinkProps {
 }
 
 const BtnLink = ({ to, children }: BtnLinkProps) => (
-  <Link to={to} className="btn">
+  <Link to={to} className="btn primary">
     {children}
   </Link>
 )
