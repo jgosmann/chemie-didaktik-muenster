@@ -42,7 +42,7 @@ const Overlay = ({ children, isActive, onClose }: OverlayProps) => {
       className="fixed max-h-screen p-8 flex items-center justify-center inset-0 w-screen h-screen bg-black bg-opacity-75 transition-opacity overflow-scroll"
       style={isActive ? activeStyle : inactiveStyle}
     >
-      <div className="relative max-w-screen-md">
+      <div className="relative max-w-full mx-4">
         <div
           className="bg-white rounded-lg overflow-hidden"
           onClick={ev => ev.stopPropagation()}

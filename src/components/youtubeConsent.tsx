@@ -23,7 +23,7 @@ const YoutubeConsent = ({
   }, [onConsentGiven])
 
   return (
-    <div className="p-4">
+    <div className="p-4 max-w-prose max-h-80vh overflow-scroll">
       <p>
         Dieser Inhalt wird von einem Drittanbieter (www.youtube.com) gehosted.
         Mit der Anzeige dieses Inhaltes stimmen Sie den{" "}
@@ -32,7 +32,7 @@ const YoutubeConsent = ({
         </a>{" "}
         von www.youtube.com zu.
       </p>
-      <div className="flex justify-center gap-4 my-4">
+      <div className="flex justify-center gap-4 m-4">
         <button className="btn primary" onClick={handleConsent}>
           Den Inhalt anzeigen
         </button>
