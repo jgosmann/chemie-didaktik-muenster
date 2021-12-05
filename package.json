@@ -67,7 +67,8 @@
     "type-check": "tsc --noEmit",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "chromatic": "npx chromatic"
+    "chromatic": "npx chromatic",
+    "lint": "eslint src *.js .storybook"
   },
   "repository": {
     "type": "git",

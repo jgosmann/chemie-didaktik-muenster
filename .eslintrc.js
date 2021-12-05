@@ -6,9 +6,15 @@ module.exports = {
   extends: ["eslint:recommended", "plugin:storybook/recommended"],
   overrides: [
     {
-      files: ["gatsby-browser.js"],
+      files: ["gatsby-browser.js", ".storybook/*.js"],
       parserOptions: {
         sourceType: "module",
+      },
+    },
+    {
+      files: [".storybook/preview.js"],
+      env: {
+        browser: true,
       },
     },
     {
