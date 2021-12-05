@@ -5,14 +5,16 @@ import BtnLink from "./btnLink"
 import FaqBtnLink from "./faqBtnLink"
 import VideoBtn from "./VideoBtn"
 
+export interface AboutAuthorMedia {
+  aboutAuthorVideo?: string
+  aboutAuthorPreview?: { title: string; gatsbyImageData: IGatsbyImageData }
+}
+
 export interface ConceptNavProps {
   baseSlug: string
   hasStudentPresentations: boolean
   hasAdditionalBackground: boolean
-  aboutAuthorMedia?: {
-    aboutAuthorVideo?: string
-    aboutAuthorPreview?: { title: string; gatsbyImageData: IGatsbyImageData }
-  }
+  aboutAuthorMedia?: AboutAuthorMedia
 }
 
 export const query = graphql`
@@ -44,7 +46,7 @@ const ConceptNav = ({
           Weitere Hintergründe
         </BtnLink>
       )}
-      {aboutAuthorMedia.aboutAuthorVideo && (
+      {aboutAuthorMedia?.aboutAuthorVideo && (
         <VideoBtn videoUrl={aboutAuthorMedia.aboutAuthorVideo}>
           {aboutAuthorPreview && (
             <span className="inline-block overflow-hidden rounded-full align-middle shadow-md mr-2">

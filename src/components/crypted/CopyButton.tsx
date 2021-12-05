@@ -5,7 +5,12 @@ import PropTypes from "prop-types"
 
 import AnimatedButton from "../AnimatedButton"
 
-const CopyButton = ({ getCopyText, title }) => {
+export interface CopyButtonProps {
+  getCopyText: () => string
+  title?: string
+}
+
+const CopyButton = ({ getCopyText, title }: CopyButtonProps) => {
   const onClick = () => {
     navigator.clipboard.writeText(getCopyText())
   }
@@ -14,11 +19,6 @@ const CopyButton = ({ getCopyText, title }) => {
       <FontAwesomeIcon icon={faCopy} />
     </AnimatedButton>
   )
-}
-
-CopyButton.propTypes = {
-  getCopyText: PropTypes.func.isRequired,
-  title: PropTypes.string,
 }
 
 export default CopyButton

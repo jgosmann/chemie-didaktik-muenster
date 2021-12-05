@@ -3,20 +3,29 @@ import PropTypes from "prop-types"
 
 import CopyButton from "./CopyButton"
 
-const CryptedEmail = ({ name, domain, tld }) => {
-  const elem = useRef(null)
+export interface CryptedEmailProps {
+  name: string
+  domain: string
+  tld: string
+}
+
+const CryptedEmail = ({ name, domain, tld }: CryptedEmailProps) => {
+  const elem = useRef<HTMLButtonElement>(null)
 
   const getEmail = () => {
-    return (
-      elem.current.getAttribute("data-name") +
-      "@" +
-      elem.current.getAttribute("data-domain") +
-      "." +
-      elem.current.getAttribute("data-tld")
-    )
+    if (elem?.current) {
+      return (
+        elem.current.getAttribute("data-name") +
+        "@" +
+        elem.current.getAttribute("data-domain") +
+        "." +
+        elem.current.getAttribute("data-tld")
+      )
+    }
+    return ""
   }
 
-  const onClick = ev => {
+  const onClick = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     ev.preventDefault()
     window.location.href = `mailto:${getEmail()}`
   }
@@ -36,12 +45,6 @@ const CryptedEmail = ({ name, domain, tld }) => {
       <CopyButton getCopyText={getEmail} />
     </>
   )
-}
-
-CryptedEmail.propTypes = {
-  name: PropTypes.string,
-  domain: PropTypes.string,
-  tld: PropTypes.string,
 }
 
 export default CryptedEmail

@@ -1,6 +1,16 @@
 import { graphql } from "gatsby"
 import * as React from "react"
-import PureRichTextPage from "./pureRichTextPage"
+import { Breadcrumb } from "../components/breadcrumbs"
+import { RichTextFragment } from "../components/richText"
+import PureRichTextPage, { PureRichTextPageProps } from "./pureRichTextPage"
+
+interface BasicPageQuery {
+  contentfulBasicPage: {
+    title: string
+    crumbs: Breadcrumb[]
+    content: RichTextFragment
+  }
+}
 
 export const query = graphql`
   query BasicPageQuery($id: String!) {
@@ -34,7 +44,15 @@ export const query = graphql`
   }
 `
 
-const DetailsPage = ({ data, pageContext }) => {
+export interface DetailsPageProps {
+  data: BasicPageQuery
+  pageContext: Omit<
+    PureRichTextPageProps["pageContext"],
+    "content" | "crumbs" | "title"
+  >
+}
+
+const DetailsPage = ({ data, pageContext }: DetailsPageProps) => {
   const { content, crumbs, title } = data.contentfulBasicPage
   return (
     <PureRichTextPage

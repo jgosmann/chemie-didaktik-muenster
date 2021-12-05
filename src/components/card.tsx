@@ -4,7 +4,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { graphql, Link } from "gatsby"
-import { IGatsbyImageData, ImageDataLike } from "gatsby-plugin-image"
+import { ImageDataLike } from "gatsby-plugin-image"
 import * as React from "react"
 import Video from "./video"
 

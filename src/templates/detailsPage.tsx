@@ -1,12 +1,17 @@
+import {
+  ContentfulRichTextGatsbyReference,
+  RenderRichTextData,
+} from "gatsby-source-contentful/rich-text"
 import { graphql } from "gatsby"
+import { GatsbyImageProps } from "gatsby-plugin-image"
 import * as React from "react"
-import YouTube from "react-youtube"
-import Breadcrumbs from "../components/breadcrumbs"
-import ConceptNav from "../components/conceptNav"
+import { Breadcrumb } from "../components/breadcrumbs"
+import ConceptNav, { AboutAuthorMedia } from "../components/conceptNav"
 import Layout from "../components/layout"
 import RichText from "../components/richText"
 import Seo from "../components/seo"
 import Video from "../components/video"
+import { FileNode } from "gatsby-plugin-image/dist/src/components/hooks"
 
 export const query = graphql`
   query DetailsPageQuery($id: String!, $parentId: String!) {
@@ -39,7 +44,26 @@ export const query = graphql`
   }
 `
 
-const DetailsPage = ({ data }) => {
+interface Parent extends AboutAuthorMedia {
+  slug: string
+  studentPresentations?: object
+  additionalBackground?: object
+}
+
+export interface DetailsPageProps {
+  data: {
+    contentfulDetailsPage: {
+      title: string
+      crumbs: Breadcrumb[]
+      video?: string
+      videoThumb?: FileNode
+      description: RenderRichTextData<ContentfulRichTextGatsbyReference>
+    }
+    parent: Parent
+  }
+}
+
+const DetailsPage = ({ data }: DetailsPageProps) => {
   const {
     contentfulDetailsPage: { title, crumbs, video, videoThumb, description },
     parent,

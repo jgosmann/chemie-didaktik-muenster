@@ -3,7 +3,7 @@ import { Link } from "gatsby"
 
 export interface BtnLinkProps {
   children: React.ReactNode
-  to?: string
+  to: string
 }
 
 const BtnLink = ({ to, children }: BtnLinkProps) => (

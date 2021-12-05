@@ -11,7 +11,7 @@ export interface VideoBtnProps {
 const VideoBtn = ({ children, videoUrl }: VideoBtnProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [hasConsent, setHasConsent] = useState(false)
-  const video = useRef(null)
+  const video = useRef<YT.Player>(null)
 
   return (
     <>

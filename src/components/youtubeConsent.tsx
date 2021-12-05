@@ -9,16 +9,16 @@ const YoutubeConsent = ({
   onConsentDenied,
   onConsentGiven,
 }: YoutubeConsentProps) => {
-  const storeConsent = useRef(null)
+  const storeConsent = useRef<HTMLInputElement>(null)
   const handleConsent = useCallback(() => {
     if (storeConsent.current?.checked) {
       window.sessionStorage.setItem("youtube-consent-given", "true")
     }
-    onConsentGiven()
+    onConsentGiven && onConsentGiven()
   }, [onConsentGiven])
   useEffect(() => {
     if (window.sessionStorage.getItem("youtube-consent-given") === "true") {
-      onConsentGiven()
+      onConsentGiven && onConsentGiven()
     }
   }, [onConsentGiven])
 

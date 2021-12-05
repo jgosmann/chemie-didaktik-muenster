@@ -4,14 +4,33 @@ import { graphql, useStaticQuery } from "gatsby"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import Card from "../components/card"
-import SloganCarousel from "../components/sloganCarousel"
-import RichText from "../components/richText"
+import SloganCarousel, { SloganFragment } from "../components/sloganCarousel"
+import RichText, { RichTextFragment } from "../components/richText"
 import ConceptTitle from "../components/conceptTitle"
+import { IGatsbyImageData, ImageDataLike } from "gatsby-plugin-image"
+
+interface IndexPageQuery {
+  allContentfulStartseite: {
+    nodes: Array<{
+      slogans: SloganFragment[]
+      content: RichTextFragment
+      conceptPages: Array<{
+        id: string
+        title: string
+        titleImage?: { gatsbyImageData: IGatsbyImageData }
+        slug: string
+        shortVideo: string
+        shortVideoThumb?: ImageDataLike
+        shortDescription: RichTextFragment
+      }>
+    }>
+  }
+}
 
 const IndexPage = () => {
   const {
     allContentfulStartseite: { nodes },
-  } = useStaticQuery(graphql`
+  } = useStaticQuery<IndexPageQuery>(graphql`
     query ConceptPagesQuery {
       allContentfulStartseite(limit: 1) {
         nodes {
@@ -64,10 +83,12 @@ const IndexPage = () => {
               }
               link={"/" + conceptPage.slug}
               video={
-                conceptPage.shortVideo && {
-                  url: conceptPage.shortVideo,
-                  thumb: conceptPage.shortVideoThumb,
-                }
+                conceptPage.shortVideo && conceptPage.shortVideoThumb
+                  ? {
+                      url: conceptPage.shortVideo,
+                      thumb: conceptPage.shortVideoThumb,
+                    }
+                  : undefined
               }
             >
               {conceptPage.shortDescription && (

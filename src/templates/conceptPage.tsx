@@ -1,8 +1,19 @@
+import {
+  ContentfulRichTextGatsbyReference,
+  RenderRichTextData,
+} from "gatsby-source-contentful/rich-text"
 import { graphql } from "gatsby"
+import {
+  FileNode,
+  ImageDataLike,
+} from "gatsby-plugin-image/dist/src/components/hooks"
 import * as React from "react"
-import Breadcrumbs from "../components/breadcrumbs"
+import { Breadcrumb } from "../components/breadcrumbs"
 import Card from "../components/card"
-import ConceptNav from "../components/conceptNav"
+import ConceptNav, {
+  AboutAuthorMedia,
+  ConceptNavProps,
+} from "../components/conceptNav"
 import Layout from "../components/layout"
 import RichText from "../components/richText"
 import Seo from "../components/seo"
@@ -58,7 +69,33 @@ export const query = graphql`
   }
 `
 
-const ConceptPage = ({ data }) => {
+export interface ConceptPageType extends AboutAuthorMedia {
+  title: string
+  slug: string
+  crumbs: Breadcrumb[]
+  video?: string
+  videoThumb?: FileNode
+  description: RenderRichTextData<ContentfulRichTextGatsbyReference>
+  linkedContent: Array<{
+    id: string
+    title: string
+    crumbs: Breadcrumb[]
+    shortVideo?: string
+    shortVideoThumb?: ImageDataLike
+    shortDescription: RenderRichTextData<ContentfulRichTextGatsbyReference>
+    downloadLink?: FileNode & { file: { url: string } }
+  }>
+  studentPresentations?: object
+  additionalBackground?: object
+}
+
+export interface ConceptPageProps {
+  data: {
+    contentfulConceptPage: ConceptPageType
+  }
+}
+
+const ConceptPage = ({ data }: ConceptPageProps) => {
   const {
     title,
     slug,
@@ -95,10 +132,12 @@ const ConceptPage = ({ data }) => {
             link={subpage.crumbs.map(c => c.slug).join("/")}
             download={subpage.downloadLink?.file.url}
             video={
-              subpage.shortVideo && {
-                url: subpage.shortVideo,
-                thumb: subpage.shortVideoThumb,
-              }
+              subpage.shortVideo && subpage.shortVideoThumb
+                ? {
+                    url: subpage.shortVideo,
+                    thumb: subpage.shortVideoThumb,
+                  }
+                : undefined
             }
           >
             {subpage.shortDescription && (

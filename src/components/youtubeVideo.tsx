@@ -10,7 +10,7 @@ export interface YoutubeVideoProps {
   autoplay?: boolean
 }
 
-const YoutubeVideo = React.forwardRef<any, YoutubeVideoProps>(
+const YoutubeVideo = React.forwardRef<YT.Player, YoutubeVideoProps>(
   (
     { url, width, height, className, autoplay = false }: YoutubeVideoProps,
     ref
@@ -27,8 +27,8 @@ const YoutubeVideo = React.forwardRef<any, YoutubeVideoProps>(
         }}
         className={`max-w-full max-h-screen ${className}`}
         onReady={ev => {
-          if (ref) {
-            ;(ref as any).current = ev.target
+          if (ref && typeof ref === "object") {
+            ref.current = ev.target
           }
         }}
       />

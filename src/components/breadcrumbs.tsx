@@ -10,8 +10,13 @@ export interface BreadcrumbsProps {
   crumbs: Breadcrumb[]
 }
 
+interface AbsolutePathCrumb {
+  title: string
+  absPath: string
+}
+
 const Breadcrumbs = ({ crumbs }: BreadcrumbsProps) => {
-  const absolutePathCrumbs = crumbs.reduce(
+  const absolutePathCrumbs = crumbs.reduce<AbsolutePathCrumb[]>(
     (prev, current) => [
       ...prev,
       {

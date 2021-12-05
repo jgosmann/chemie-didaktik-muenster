@@ -1,10 +1,20 @@
 import * as React from "react"
-import Breadcrumbs from "../components/breadcrumbs"
+import { Breadcrumb } from "../components/breadcrumbs"
 import Layout from "../components/layout"
-import RichText from "../components/richText"
+import RichText, { RichTextFragment } from "../components/richText"
 import Seo from "../components/seo"
 
-const PureRichTextPage = ({ pageContext: { content, crumbs, title } }) => (
+export interface PureRichTextPageProps {
+  pageContext: {
+    content: RichTextFragment
+    crumbs: Breadcrumb[]
+    title: string
+  }
+}
+
+const PureRichTextPage = ({
+  pageContext: { content, crumbs, title },
+}: PureRichTextPageProps) => (
   <Layout crumbs={crumbs}>
     <Seo title={title} />
     <div className="prose mx-auto">

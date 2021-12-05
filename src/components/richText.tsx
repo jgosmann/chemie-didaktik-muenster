@@ -1,4 +1,4 @@
-import { BLOCKS, INLINES } from "@contentful/rich-text-types"
+import { BLOCKS, INLINES, Block, Inline } from "@contentful/rich-text-types"
 import { graphql, Link } from "gatsby"
 import {
   ContentfulRichTextGatsbyReference,
@@ -6,8 +6,11 @@ import {
   RenderRichTextData,
 } from "gatsby-source-contentful/rich-text"
 import * as React from "react"
+import { Breadcrumb } from "./breadcrumbs"
 import { DefaultCryptedPhone } from "./crypted"
 import { DefaultCryptedEmail } from "./crypted"
+
+export type RichTextFragment = RenderRichTextData<ContentfulRichTextGatsbyReference>
 
 export const query = graphql`
   fragment RichTextFragment on Content {
@@ -41,44 +44,65 @@ const replacePlaceholder = (
     const parts = text.split(placeholder)
     return parts.flatMap((part, index) => {
       if (index > 0) {
-        return [component, part]
+        return (
+          <>
+            {component}
+            {part}
+          </>
+        )
       }
-      return [part]
+      return part
     })
   }
-  return [text]
+  return text
 }
 
 const richTextRenderOptions = {
   renderNode: {
-    [BLOCKS.PARAGRAPH]: (_, children) => {
-      const withLineBreaks = children.flatMap(child => {
+    [BLOCKS.PARAGRAPH]: (_: Block | Inline, children: React.ReactNode) => {
+      if (!children) {
+        return <p></p>
+      }
+      const withLineBreaks = React.Children.map(children, child => {
         if (typeof child === "string") {
           return child.split("\n").flatMap((line, index) => {
             if (index > 0) {
-              return [<br />, line]
+              return (
+                <>
+                  <br />
+                  {line}
+                </>
+              )
             }
-            return [line]
+            return line
           })
         }
-        return [child]
+        return child
       })
-      const withCustomComponents = withLineBreaks
-        .flatMap(child =>
-          replacePlaceholder(child, "<!--telefon-->", <DefaultCryptedPhone />)
+      const withCustomComponents = React.Children.map(withLineBreaks, child =>
+        React.Children.map(
+          replacePlaceholder(child, "<!--telefon-->", <DefaultCryptedPhone />),
+          child =>
+            replacePlaceholder(child, "<!--email-->", <DefaultCryptedEmail />)
         )
-        .flatMap(child =>
-          replacePlaceholder(child, "<!--email-->", <DefaultCryptedEmail />)
-        )
+      )
       return <p>{withCustomComponents}</p>
     },
-    [INLINES.ASSET_HYPERLINK]: ({ data }, children) => {
+    [INLINES.ASSET_HYPERLINK]: (
+      { data }: Block | Inline,
+      children: React.ReactNode
+    ) => {
       return <a href={data.target.file.url}>{children}</a>
     },
-    [INLINES.ENTRY_HYPERLINK]: ({ data }, children) => {
+    [INLINES.ENTRY_HYPERLINK]: (
+      { data }: Block | Inline,
+      children: React.ReactNode
+    ) => {
       if (data.target.crumbs) {
         return (
-          <Link to={data.target.crumbs.map(c => c.slug).join("/")}>
+          <Link
+            to={data.target.crumbs.map((c: Breadcrumb) => c.slug).join("/")}
+          >
             {children}
           </Link>
         )
@@ -89,7 +113,7 @@ const richTextRenderOptions = {
         </span>
       )
     },
-    [BLOCKS.EMBEDDED_ASSET]: ({ data }) => {
+    [BLOCKS.EMBEDDED_ASSET]: ({ data }: Block | Inline) => {
       if (
         data.target.file.url.match(
           /\.(a?png|gif|jfif|jpe?g|pj(pe)?g|svg|webp)$/
@@ -118,7 +142,7 @@ const richTextRenderOptions = {
 }
 
 export interface RichTextProps {
-  content: RenderRichTextData<ContentfulRichTextGatsbyReference>
+  content: RichTextFragment
 }
 
 const RichText = ({ content }: RichTextProps) => (

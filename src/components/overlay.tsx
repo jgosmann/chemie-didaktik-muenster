@@ -1,4 +1,4 @@
-import React, { CSSProperties, useCallback, useEffect } from "react"
+import React, { CSSProperties, useEffect } from "react"
 
 export interface OverlayProps {
   children?: React.ReactNode
@@ -18,9 +18,9 @@ const inactiveStyle: CSSProperties = {
 
 const Overlay = ({ children, isActive, onClose }: OverlayProps) => {
   useEffect(() => {
-    const keypressHandler = ev => {
+    const keypressHandler = (ev: KeyboardEvent) => {
       if (ev.key === "Escape") {
-        onClose()
+        onClose && onClose()
       }
     }
     if (isActive) {

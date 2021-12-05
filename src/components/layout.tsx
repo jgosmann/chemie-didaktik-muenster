@@ -8,14 +8,19 @@
 import React, { useState } from "react"
 import PropTypes from "prop-types"
 
-import Breadcrumbs from "../components/breadcrumbs"
+import Breadcrumbs, { Breadcrumb } from "../components/breadcrumbs"
 import Header from "./header"
 import Footer from "./footer"
 import SideNav from "./sideNav"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faBars } from "@fortawesome/free-solid-svg-icons"
 
-const Layout = ({ children, crumbs }) => {
+export interface LayoutProps {
+  children: React.ReactNode
+  crumbs: Breadcrumb[]
+}
+
+const Layout = ({ children, crumbs }: LayoutProps) => {
   const [isSideNavOpen, setIsSideNavOpen] = useState(false)
 
   return (

@@ -1,7 +1,19 @@
-import React, { useEffect, useState } from "react"
+import React, { MouseEventHandler, useEffect, useState } from "react"
 import PropTypes from "prop-types"
 
-const AnimatedButton = ({ children, onClick, title, className }) => {
+export interface AnimatedButtonProps {
+  children: React.ReactNode
+  onClick?: (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+  title?: string
+  className?: string
+}
+
+const AnimatedButton = ({
+  children,
+  onClick,
+  title,
+  className,
+}: AnimatedButtonProps) => {
   const [isAnimating, setIsAnimating] = useState(false)
   useEffect(() => {
     if (isAnimating) {
@@ -9,9 +21,11 @@ const AnimatedButton = ({ children, onClick, title, className }) => {
     }
   }, [isAnimating])
 
-  const onClickInternal = e => {
+  const onClickInternal = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     setIsAnimating(true)
-    onClick(e)
+    onClick && onClick(e)
   }
 
   return (
@@ -26,12 +40,6 @@ const AnimatedButton = ({ children, onClick, title, className }) => {
       ) : null}
     </button>
   )
-}
-
-AnimatedButton.propTypes = {
-  children: PropTypes.node,
-  onClick: PropTypes.func,
-  title: PropTypes.string,
 }
 
 export default AnimatedButton

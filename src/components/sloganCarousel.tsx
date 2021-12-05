@@ -4,7 +4,17 @@ import Slider from "react-slick"
 import "../styles/slick.min.css"
 import "../styles/slick-theme.css"
 import { graphql } from "gatsby"
-import { GatsbyImage } from "gatsby-plugin-image"
+import { GatsbyImage, IGatsbyImageData } from "gatsby-plugin-image"
+
+export interface SloganFragment {
+  id: string
+  slogan: {
+    childMarkdownRemark: {
+      html: string
+    }
+  }
+  image: { gatsbyImageData: IGatsbyImageData }
+}
 
 export const query = graphql`
   fragment SloganFragment on ContentfulSlogan {
@@ -20,32 +30,37 @@ export const query = graphql`
   }
 `
 
-const Carousel = ({ slogans }) => {
+interface CarousalProps {
+  slogans: SloganFragment[]
+}
+
+const Carousel = ({ slogans }: CarousalProps) => {
   return (
-    <Slider
-      autoplay
-      autoplaySpeed={5000}
-      dots
-      className="rounded shadow overflow-hidden my-8"
-      style={{ fontSize: 0 }}
-    >
-      {slogans.map(sloganData => (
-        <div key={sloganData.id} className="h-64 relative overflow-hidden">
-          <GatsbyImage
-            image={sloganData.image.gatsbyImageData}
-            alt={""}
-            className="absolute inset-0 w-full h-full"
-          />
-          <div
-            dangerouslySetInnerHTML={{
-              __html: sloganData.slogan.childMarkdownRemark.html,
-            }}
-            className="flex justify-center place-items-center text-xl xl:text-2xl px-32 py-8 text-center text-white absolute inset-0"
-            style={{ textShadow: "1px 1px 4px rgba(0, 0, 0, 0.6)" }}
-          />
-        </div>
-      ))}
-    </Slider>
+    <div style={{ fontSize: 0 }}>
+      <Slider
+        autoplay
+        autoplaySpeed={5000}
+        dots
+        className="rounded shadow overflow-hidden my-8"
+      >
+        {slogans.map(sloganData => (
+          <div key={sloganData.id} className="h-64 relative overflow-hidden">
+            <GatsbyImage
+              image={sloganData.image.gatsbyImageData}
+              alt={""}
+              className="absolute inset-0 w-full h-full"
+            />
+            <div
+              dangerouslySetInnerHTML={{
+                __html: sloganData.slogan.childMarkdownRemark.html,
+              }}
+              className="flex justify-center place-items-center text-xl xl:text-2xl px-32 py-8 text-center text-white absolute inset-0"
+              style={{ textShadow: "1px 1px 4px rgba(0, 0, 0, 0.6)" }}
+            />
+          </div>
+        ))}
+      </Slider>
+    </div>
   )
 }
 

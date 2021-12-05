@@ -1,11 +1,12 @@
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { graphql, useStaticQuery } from "gatsby"
-import { GatsbyImage } from "gatsby-plugin-image"
+import { IGatsbyImageData } from "gatsby-plugin-image"
 import * as React from "react"
 import Collapsible from "./collapsible"
 import ConceptTitle from "./conceptTitle"
 import CrumbLink from "./crumbLink"
+import { RichTextFragment } from "./richText"
 
 interface TopLinkProps {
   crumbs: {
@@ -33,10 +34,32 @@ export interface SideNavProps {
   onClose: () => void
 }
 
+interface SideNavQuery {
+  allContentfulStartseite: {
+    nodes: Array<{
+      title: string
+      crumbs: Array<{ slug: string }>
+      conceptPages: Array<{
+        id: string
+        title: string
+        titleImage: { gatsbyImageData: IGatsbyImageData }
+        crumbs: Array<{ slug: string }>
+        linkedContent: Array<{
+          id: string
+          title: string
+          crumbs: Array<{ slug: string }>
+        }>
+        studentPresentations: RichTextFragment
+        additionalBackground: RichTextFragment
+      }>
+    }>
+  }
+}
+
 const SideNav = ({ isOpen, onClose }: SideNavProps): JSX.Element => {
   const {
     allContentfulStartseite: { nodes },
-  } = useStaticQuery(graphql`
+  } = useStaticQuery<SideNavQuery>(graphql`
     {
       allContentfulStartseite(limit: 1) {
         nodes {

@@ -9,7 +9,7 @@ export interface CollapsibleProps {
 
 const Collapsible = ({ label, children }: CollapsibleProps): JSX.Element => {
   const [isExpanded, setIsExpanded] = React.useState(false)
-  const ref = React.useRef(null)
+  const ref = React.useRef<HTMLDivElement>(null)
 
   return (
     <>
