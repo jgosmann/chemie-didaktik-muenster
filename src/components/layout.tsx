@@ -8,7 +8,7 @@
 import React, { useState } from "react"
 import PropTypes from "prop-types"
 
-import Breadcrumbs, { Breadcrumb } from "../components/breadcrumbs"
+import Breadcrumbs, { Breadcrumb } from "./navigation/Breadcrumbs"
 import Header from "./header"
 import Footer from "./footer"
 import SideNav from "./sideNav"

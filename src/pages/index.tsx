@@ -3,7 +3,7 @@ import { graphql, useStaticQuery } from "gatsby"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
-import Card from "../components/card"
+import Card from "../components/Card"
 import SloganCarousel, { SloganFragment } from "../components/sloganCarousel"
 import RichText, { RichTextFragment } from "../components/richText"
 import ConceptTitle from "../components/conceptTitle"

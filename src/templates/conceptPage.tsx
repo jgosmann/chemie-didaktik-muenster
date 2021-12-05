@@ -8,8 +8,8 @@ import {
   ImageDataLike,
 } from "gatsby-plugin-image/dist/src/components/hooks"
 import * as React from "react"
-import { Breadcrumb } from "../components/breadcrumbs"
-import Card from "../components/card"
+import { Breadcrumb } from "../components/navigation/Breadcrumbs"
+import Card from "../components/Card"
 import ConceptNav, { AboutAuthorMedia } from "../components/conceptNav"
 import Layout from "../components/layout"
 import RichText from "../components/richText"

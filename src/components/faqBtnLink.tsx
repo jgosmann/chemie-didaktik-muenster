@@ -1,5 +1,5 @@
 import * as React from "react"
-import BtnLink from "./btnLink"
+import BtnLink from "./controls/BtnLink"
 
 const FaqBtnLink = () => <BtnLink to="/faq">FAQ</BtnLink>
 

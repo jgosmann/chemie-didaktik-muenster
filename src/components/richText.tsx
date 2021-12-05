@@ -6,7 +6,7 @@ import {
   RenderRichTextData,
 } from "gatsby-source-contentful/rich-text"
 import * as React from "react"
-import { Breadcrumb } from "./breadcrumbs"
+import { Breadcrumb } from "./navigation/Breadcrumbs"
 import { DefaultCryptedPhone } from "./crypted"
 import { DefaultCryptedEmail } from "./crypted"
 

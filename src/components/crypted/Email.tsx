@@ -38,10 +38,11 @@ const CryptedEmail = ({ name, domain, tld }: CryptedEmailProps) => {
         data-domain={domain}
         data-tld={tld}
         className="crypted-email"
+        title="E-Mail schreiben"
       >
         E-Mail schreiben
       </button>
-      <CopyButton getCopyText={getEmail} />
+      <CopyButton getCopyText={getEmail} title="E-Mail kopieren" />
     </>
   )
 }

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Breadcrumb } from "../components/breadcrumbs"
+import { Breadcrumb } from "../components/navigation/Breadcrumbs"
 import Layout from "../components/layout"
 import RichText, { RichTextFragment } from "../components/richText"
 import Seo from "../components/seo"

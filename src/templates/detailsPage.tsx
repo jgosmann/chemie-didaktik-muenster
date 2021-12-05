@@ -4,7 +4,7 @@ import {
 } from "gatsby-source-contentful/rich-text"
 import { graphql } from "gatsby"
 import * as React from "react"
-import { Breadcrumb } from "../components/breadcrumbs"
+import { Breadcrumb } from "../components/navigation/Breadcrumbs"
 import ConceptNav, { AboutAuthorMedia } from "../components/conceptNav"
 import Layout from "../components/layout"
 import RichText from "../components/richText"

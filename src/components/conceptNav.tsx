@@ -1,7 +1,7 @@
 import { graphql } from "gatsby"
 import { GatsbyImage, IGatsbyImageData } from "gatsby-plugin-image"
 import * as React from "react"
-import BtnLink from "./btnLink"
+import BtnLink from "./controls/BtnLink"
 import FaqBtnLink from "./faqBtnLink"
 import VideoBtn from "./VideoBtn"
 

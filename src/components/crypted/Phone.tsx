@@ -16,11 +16,10 @@ const CryptedPhone = ({ country, area, block0, block1 }: CryptedPhoneProps) => {
   const getPhone = () => {
     if (elem?.current) {
       return (
-        elem.current.getAttribute("data-country") ??
-        "" + elem.current.getAttribute("data-area") ??
-        "" +
-          elem.current.getAttribute("data-block0") +
-          elem.current.getAttribute("data-block1")
+        (elem.current.getAttribute("data-country") ?? "") +
+        (elem.current.getAttribute("data-area") ?? "") +
+        elem.current.getAttribute("data-block0") +
+        elem.current.getAttribute("data-block1")
       )
     }
     return ""
@@ -36,7 +35,7 @@ const CryptedPhone = ({ country, area, block0, block1 }: CryptedPhoneProps) => {
         data-block1={block1}
         className="crypted-phone"
       ></span>
-      <CopyButton getCopyText={getPhone} />
+      <CopyButton getCopyText={getPhone} title="Telefonnummer kopieren" />
     </>
   )
 }

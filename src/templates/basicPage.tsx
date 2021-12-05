@@ -1,6 +1,6 @@
 import { graphql } from "gatsby"
 import * as React from "react"
-import { Breadcrumb } from "../components/breadcrumbs"
+import { Breadcrumb } from "../components/navigation/Breadcrumbs"
 import { RichTextFragment } from "../components/richText"
 import PureRichTextPage, { PureRichTextPageProps } from "./pureRichTextPage"
 

@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCopy } from "@fortawesome/free-solid-svg-icons"
 import React from "react"
 
-import AnimatedButton from "../AnimatedButton"
+import AnimatedButton from "../controls/AnimatedButton"
 
 export interface CopyButtonProps {
   getCopyText: () => string
