@@ -1,5 +1,4 @@
-import React, { MouseEventHandler, useEffect, useState } from "react"
-import PropTypes from "prop-types"
+import React, { useEffect, useState } from "react"
 
 export interface AnimatedButtonProps {
   children: React.ReactNode

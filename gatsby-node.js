@@ -184,6 +184,7 @@ exports.createPages = async ({ actions, graphql }) => {
   `)
 
   if (result.errors) {
+    // eslint-disable-next-line no-undef
     reporter.panicOnBuild(`Error while running GraphQL query.`)
     return
   }

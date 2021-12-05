@@ -36,7 +36,7 @@ export const query = graphql`
 `
 
 const replacePlaceholder = (
-  text: any,
+  text: React.ReactNode,
   placeholder: string,
   component: React.ReactNode
 ) => {

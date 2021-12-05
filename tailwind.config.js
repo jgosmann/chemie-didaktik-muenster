@@ -1,4 +1,3 @@
-const { table } = require("console")
 const colors = require("tailwindcss/colors")
 
 module.exports = {

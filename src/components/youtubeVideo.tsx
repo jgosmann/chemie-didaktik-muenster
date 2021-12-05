@@ -11,10 +11,11 @@ export interface YoutubeVideoProps {
 }
 
 const YoutubeVideo = React.forwardRef<YT.Player, YoutubeVideoProps>(
-  (
+  function YoutubeVideo(
+    // eslint-disable-next-line react/prop-types
     { url, width, height, className, autoplay = false }: YoutubeVideoProps,
     ref
-  ): JSX.Element => {
+  ): JSX.Element {
     const videoId = extractVideoId(url)
     return (
       <YouTube

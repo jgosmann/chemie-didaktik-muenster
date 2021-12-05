@@ -3,7 +3,6 @@ import {
   RenderRichTextData,
 } from "gatsby-source-contentful/rich-text"
 import { graphql } from "gatsby"
-import { GatsbyImageProps } from "gatsby-plugin-image"
 import * as React from "react"
 import { Breadcrumb } from "../components/breadcrumbs"
 import ConceptNav, { AboutAuthorMedia } from "../components/conceptNav"

@@ -10,10 +10,7 @@ import {
 import * as React from "react"
 import { Breadcrumb } from "../components/breadcrumbs"
 import Card from "../components/card"
-import ConceptNav, {
-  AboutAuthorMedia,
-  ConceptNavProps,
-} from "../components/conceptNav"
+import ConceptNav, { AboutAuthorMedia } from "../components/conceptNav"
 import Layout from "../components/layout"
 import RichText from "../components/richText"
 import Seo from "../components/seo"

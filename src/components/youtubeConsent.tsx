@@ -27,7 +27,11 @@ const YoutubeConsent = ({
       <p>
         Dieser Inhalt wird von einem Drittanbieter (www.youtube.com) gehosted.
         Mit der Anzeige dieses Inhaltes stimmen Sie den{" "}
-        <a href="https://www.youtube.com/t/terms" target="_blank">
+        <a
+          href="https://www.youtube.com/t/terms"
+          target="_blank"
+          rel="noreferrer"
+        >
           Nutzungsbedingungen
         </a>{" "}
         von www.youtube.com zu.
