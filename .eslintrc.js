@@ -3,7 +3,7 @@ module.exports = {
     es2021: true,
     node: true,
   },
-  extends: ["eslint:recommended"],
+  extends: ["eslint:recommended", "plugin:storybook/recommended"],
   overrides: [
     {
       files: ["gatsby-browser.js"],
@@ -14,7 +14,12 @@ module.exports = {
     {
       files: ["gatsby-node.js"],
       rules: {
-        "no-unused-vars": ["error", { args: "none" }],
+        "no-unused-vars": [
+          "error",
+          {
+            args: "none",
+          },
+        ],
       },
     },
   ],

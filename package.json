@@ -28,14 +28,23 @@
     "react-youtube": "^7.13.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@storybook/addon-actions": "^6.4.7",
+    "@storybook/addon-essentials": "^6.4.7",
+    "@storybook/addon-links": "^6.4.7",
+    "@storybook/builder-webpack5": "^6.4.7",
+    "@storybook/manager-webpack5": "^6.4.7",
+    "@storybook/react": "^6.4.7",
     "@types/react-helmet": "^6.1.4",
     "@types/react-slick": "^0.23.7",
     "@types/youtube": "0.0.46",
     "@typescript-eslint/eslint-plugin": "^5.5.0",
     "@typescript-eslint/parser": "^5.5.0",
     "autoprefixer": "^10.3.7",
+    "babel-loader": "^8.2.3",
     "eslint": "^8.4.0",
     "eslint-plugin-react": "^7.27.1",
+    "eslint-plugin-storybook": "^0.5.3",
     "gatsby-plugin-postcss": "^5.0.0",
     "postcss": "^8.3.11",
     "prettier": "^2.4.1",
@@ -54,7 +63,9 @@
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "repository": {
     "type": "git",
