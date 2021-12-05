@@ -6,6 +6,9 @@ import CryptedEmail from "./Email"
 export default {
   title: "Crypted/Email",
   component: CryptedEmail,
+  parameters: {
+    chromatic: { disableSnapshot: false },
+  },
 }
 
 const Template: ComponentStory<typeof CryptedEmail> = (args: {
