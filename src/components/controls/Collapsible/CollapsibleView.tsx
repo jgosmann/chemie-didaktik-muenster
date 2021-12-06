@@ -1,14 +1,20 @@
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import * as React from "react"
+import React from "react"
 
-export interface CollapsibleProps {
+export interface CollapsibleViewProps {
   label: React.ReactNode
   children: React.ReactNode
+  isExpanded: boolean
+  onToggle: () => void
 }
 
-const Collapsible = ({ label, children }: CollapsibleProps): JSX.Element => {
-  const [isExpanded, setIsExpanded] = React.useState(false)
+const CollapsibleView = ({
+  label,
+  children,
+  isExpanded,
+  onToggle,
+}: CollapsibleViewProps): JSX.Element => {
   const ref = React.useRef<HTMLDivElement>(null)
 
   return (
@@ -16,13 +22,11 @@ const Collapsible = ({ label, children }: CollapsibleProps): JSX.Element => {
       <div className="flex justify-between gap-2">
         <div>{label}</div>
         <button
-          onClick={() => setIsExpanded(isExpanded => !isExpanded)}
+          onClick={onToggle}
           className="bg-gray-600 text-gray-200 rounded w-7 h-7 flex-shrink-0"
+          title={isExpanded ? "Einklappen" : "Ausklappen"}
         >
-          <FontAwesomeIcon
-            icon={isExpanded ? faChevronUp : faChevronDown}
-            title={isExpanded ? "Einklappen" : "Ausklappen"}
-          />
+          <FontAwesomeIcon icon={isExpanded ? faChevronUp : faChevronDown} />
         </button>
       </div>
       <div
@@ -39,4 +43,4 @@ const Collapsible = ({ label, children }: CollapsibleProps): JSX.Element => {
   )
 }
 
-export default Collapsible
+export default CollapsibleView

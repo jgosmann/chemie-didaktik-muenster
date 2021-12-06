@@ -3,7 +3,11 @@ module.exports = {
     es2021: true,
     node: true,
   },
-  extends: ["eslint:recommended", "plugin:storybook/recommended"],
+  extends: [
+    "eslint:recommended",
+    "plugin:storybook/recommended",
+    "plugin:jest-dom/recommended",
+  ],
   overrides: [
     {
       files: ["gatsby-browser.js", ".storybook/*.js"],
