@@ -1,3 +1,5 @@
+import { faTimes } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import React, { CSSProperties, useEffect } from "react"
 
 export interface OverlayProps {
@@ -54,7 +56,7 @@ const Overlay = ({ children, isActive, onClose }: OverlayProps) => {
           className="hover:ring active:ring focus:ring bg-gray-100 rounded-full h-7 w-7 absolute top-1 right-1 transform translate-x-1/2 -translate-y-1/2 shadow-md border-2 border-gray-800"
           title="Schließen"
         >
-          X
+          <FontAwesomeIcon icon={faTimes} fixedWidth />
         </button>
       </div>
     </div>
