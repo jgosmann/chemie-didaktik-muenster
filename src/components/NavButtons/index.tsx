@@ -1,8 +1,8 @@
 import { graphql } from "gatsby"
 import { GatsbyImage, IGatsbyImageData } from "gatsby-plugin-image"
 import * as React from "react"
-import BtnLink from "./controls/BtnLink"
-import FaqBtnLink from "./faqBtnLink"
+import BtnLink from "../controls/BtnLink"
+import FaqBtnLink from "./FaqBtnLink"
 import VideoBtn from "./VideoBtn"
 
 export interface AboutAuthorMedia {
@@ -10,7 +10,7 @@ export interface AboutAuthorMedia {
   aboutAuthorPreview?: { title: string; gatsbyImageData: IGatsbyImageData }
 }
 
-export interface ConceptNavProps {
+export interface NavButtonsProps {
   baseSlug: string
   hasStudentPresentations: boolean
   hasAdditionalBackground: boolean
@@ -27,12 +27,12 @@ export const query = graphql`
   }
 `
 
-const ConceptNav = ({
+const NavButtons = ({
   baseSlug,
   hasStudentPresentations,
   hasAdditionalBackground,
   aboutAuthorMedia,
-}: ConceptNavProps) => {
+}: NavButtonsProps) => {
   const aboutAuthorPreview = aboutAuthorMedia?.aboutAuthorPreview
   return (
     <nav className="flex flex-wrap gap-8 justify-center place-items-center items-stretch">
@@ -64,4 +64,4 @@ const ConceptNav = ({
   )
 }
 
-export default ConceptNav
+export default NavButtons

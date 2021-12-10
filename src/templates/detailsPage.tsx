@@ -5,7 +5,7 @@ import {
 import { graphql } from "gatsby"
 import * as React from "react"
 import { Breadcrumb } from "../components/navigation/Breadcrumbs"
-import ConceptNav, { AboutAuthorMedia } from "../components/conceptNav"
+import NavButtons, { AboutAuthorMedia } from "../components/NavButtons"
 import Layout from "../components/layout"
 import RichText from "../components/richText"
 import Seo from "../components/seo"
@@ -84,7 +84,7 @@ const DetailsPage = ({ data }: DetailsPageProps) => {
           {description && <RichText content={description} />}
         </div>
       </div>
-      <ConceptNav
+      <NavButtons
         baseSlug={parent.slug}
         hasStudentPresentations={!!parent.studentPresentations}
         hasAdditionalBackground={!!parent.additionalBackground}

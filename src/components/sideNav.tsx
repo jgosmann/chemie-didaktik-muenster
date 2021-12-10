@@ -4,8 +4,8 @@ import { graphql, useStaticQuery } from "gatsby"
 import { IGatsbyImageData } from "gatsby-plugin-image"
 import * as React from "react"
 import Collapsible from "./controls/Collapsible"
-import ConceptTitle from "./conceptTitle"
-import CrumbLink from "./crumbLink"
+import ConceptTitle from "./ConceptTitle"
+import CrumbLink from "./navigation/CrumbLink"
 import { RichTextFragment } from "./richText"
 
 interface TopLinkProps {

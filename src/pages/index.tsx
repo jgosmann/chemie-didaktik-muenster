@@ -6,7 +6,7 @@ import Seo from "../components/seo"
 import Card from "../components/Card"
 import SloganCarousel, { SloganFragment } from "../components/sloganCarousel"
 import RichText, { RichTextFragment } from "../components/richText"
-import ConceptTitle from "../components/conceptTitle"
+import ConceptTitle from "../components/ConceptTitle"
 import { IGatsbyImageData, ImageDataLike } from "gatsby-plugin-image"
 
 interface IndexPageQuery {

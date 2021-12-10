@@ -10,7 +10,7 @@ import {
 import * as React from "react"
 import { Breadcrumb } from "../components/navigation/Breadcrumbs"
 import Card from "../components/Card"
-import ConceptNav, { AboutAuthorMedia } from "../components/conceptNav"
+import NavButtons, { AboutAuthorMedia } from "../components/NavButtons"
 import Layout from "../components/layout"
 import RichText from "../components/richText"
 import Seo from "../components/seo"
@@ -143,7 +143,7 @@ const ConceptPage = ({ data }: ConceptPageProps) => {
           </Card>
         ))}
       </div>
-      <ConceptNav
+      <NavButtons
         baseSlug={slug}
         hasStudentPresentations={!!studentPresentations}
         hasAdditionalBackground={!!additionalBackground}

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react"
-import Overlay from "./overlay"
-import YoutubeConsent from "./youtubeConsent"
-import YoutubeVideo from "./youtubeVideo"
+import Overlay from "../overlay"
+import YoutubeConsent from "../youtubeConsent"
+import YoutubeVideo from "../youtubeVideo"
 
 export interface VideoBtnProps {
   children?: React.ReactNode
