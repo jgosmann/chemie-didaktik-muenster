@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Breadcrumb } from "../components/navigation/Breadcrumbs"
 import Layout from "../components/layout"
-import RichText, { RichTextFragment } from "../components/richText"
+import RichText, { RichTextFragment } from "../components/RichText"
 import Seo from "../components/seo"
 
 export interface PureRichTextPageProps {

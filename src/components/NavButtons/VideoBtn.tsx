@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react"
-import Overlay from "../overlay"
+import Overlay from "../Overlay"
 import YoutubeConsent from "../youtubeConsent"
 import YoutubeVideo from "../youtubeVideo"
 

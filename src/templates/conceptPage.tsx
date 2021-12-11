@@ -12,7 +12,7 @@ import { Breadcrumb } from "../components/navigation/Breadcrumbs"
 import Card from "../components/Card"
 import NavButtons, { AboutAuthorMedia } from "../components/NavButtons"
 import Layout from "../components/layout"
-import RichText from "../components/richText"
+import RichText from "../components/RichText"
 import Seo from "../components/seo"
 import Video from "../components/video"
 

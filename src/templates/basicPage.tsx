@@ -1,7 +1,7 @@
 import { graphql } from "gatsby"
 import * as React from "react"
 import { Breadcrumb } from "../components/navigation/Breadcrumbs"
-import { RichTextFragment } from "../components/richText"
+import { RichTextFragment } from "../components/RichText"
 import PureRichTextPage, { PureRichTextPageProps } from "./pureRichTextPage"
 
 interface BasicPageQuery {

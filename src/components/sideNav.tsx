@@ -6,7 +6,7 @@ import * as React from "react"
 import Collapsible from "./controls/Collapsible"
 import ConceptTitle from "./ConceptTitle"
 import CrumbLink from "./navigation/CrumbLink"
-import { RichTextFragment } from "./richText"
+import { RichTextFragment } from "./RichText"
 
 interface TopLinkProps {
   crumbs: {

@@ -10,7 +10,16 @@ import { Breadcrumb } from "./navigation/Breadcrumbs"
 import { DefaultCryptedPhone } from "./crypted"
 import { DefaultCryptedEmail } from "./crypted"
 
-export type RichTextFragment = RenderRichTextData<ContentfulRichTextGatsbyReference>
+interface ContentfulAsset extends ContentfulRichTextGatsbyReference {
+  title: string
+  file: {
+    url: string
+  }
+}
+
+export type RichTextFragment = RenderRichTextData<
+  ContentfulRichTextGatsbyReference | ContentfulAsset
+>
 
 export const query = graphql`
   fragment RichTextFragment on Content {

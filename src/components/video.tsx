@@ -2,7 +2,7 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { GatsbyImage, getImage, ImageDataLike } from "gatsby-plugin-image"
 import React, { useCallback, useState } from "react"
-import Overlay from "./overlay"
+import Overlay from "./Overlay"
 import YoutubeConsent from "./youtubeConsent"
 import YoutubeVideo from "./youtubeVideo"
 

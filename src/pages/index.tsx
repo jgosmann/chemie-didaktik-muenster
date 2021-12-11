@@ -5,7 +5,7 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 import Card from "../components/Card"
 import SloganCarousel, { SloganFragment } from "../components/sloganCarousel"
-import RichText, { RichTextFragment } from "../components/richText"
+import RichText, { RichTextFragment } from "../components/RichText"
 import ConceptTitle from "../components/ConceptTitle"
 import { IGatsbyImageData, ImageDataLike } from "gatsby-plugin-image"
 
