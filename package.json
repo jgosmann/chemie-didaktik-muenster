@@ -73,9 +73,9 @@
     "clean": "gatsby clean",
     "test": "jest",
     "type-check": "tsc --noEmit",
-    "storybook": "start-storybook -p 6006",
+    "storybook": "NODE_OPTIONS=--openssl-legacy-provider start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "chromatic": "npx chromatic",
+    "chromatic": "NODE_OPTIONS=--openssl-legacy-provider chromatic",
     "lint": "eslint src *.js .storybook"
   },
   "repository": {
