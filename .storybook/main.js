@@ -30,6 +30,15 @@ module.exports = {
       ],
     })
 
+    config.resolve.alias["gatsby-original"] = require.resolve("gatsby")
+    config.resolve.alias["gatsby"] = require.resolve("./__mocks__/gatsby.js")
+    config.resolve.alias["gatsby-plugin-image-original"] = require.resolve(
+      "gatsby-plugin-image"
+    )
+    config.resolve.alias["gatsby-plugin-image"] = require.resolve(
+      "./__mocks__/gatsby-plugin-image.tsx"
+    )
+
     return config
   },
 }

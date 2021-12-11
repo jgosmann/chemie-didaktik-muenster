@@ -1,7 +1,7 @@
 import { Link } from "gatsby"
 import * as React from "react"
 
-import { DefaultCryptedEmail, DefaultCryptedPhone } from "./crypted"
+import { DefaultCryptedEmail, DefaultCryptedPhone } from "../crypted"
 
 const Footer = () => (
   <footer className="bg-gray-400 text-gray-100 text-xs flex flex-wrap justify-between place-items-top z-10">
