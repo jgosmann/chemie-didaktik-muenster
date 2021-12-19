@@ -2,6 +2,8 @@ import React from "react"
 import { ComponentStory } from "@storybook/react"
 
 import Card, { CardProps } from "./Card"
+import { testVideoUrl } from "../test-fixtures/video"
+import { youtubeThumbnail } from "../test-fixtures/images"
 
 export default {
   title: "Card",
@@ -27,17 +29,8 @@ export const WithPreview = Template.bind({})
 WithPreview.args = {
   ...Minimal.args,
   video: {
-    url: "https://www.youtube.com/watch?v=IdkCEioCp24",
-    thumb: {
-      layout: "fixed",
-      width: 256,
-      height: 160,
-      images: {
-        fallback: {
-          src: "https://img.youtube.com/vi/IdkCEioCp24/default.jpg",
-        },
-      },
-    },
+    url: testVideoUrl,
+    thumb: youtubeThumbnail(),
   },
 }
 

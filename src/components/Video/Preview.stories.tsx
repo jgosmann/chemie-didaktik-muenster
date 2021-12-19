@@ -1,4 +1,5 @@
 import React from "react"
+import { largeFill } from "../../test-fixtures/images"
 import PreviewComponent from "./Preview"
 
 export default {
@@ -17,16 +18,7 @@ export default {
 export const Thumbnail = () => (
   <PreviewComponent
     className="w-64 h-64"
-    thumbImage={{
-      layout: "fixed",
-      width: 1920,
-      height: 1080,
-      images: {
-        fallback: {
-          src: "/fill-r.png",
-        },
-      },
-    }}
+    thumbImage={largeFill("r").gatsbyImageData}
   />
 )
 export const NoThumbnail = () => <PreviewComponent className="w-64 h-64" />

@@ -1,6 +1,7 @@
 import React from "react"
 import { ComponentStory } from "@storybook/react"
 import ConceptTitle, { ConceptTitleProps } from "./ConceptTitle"
+import { fixedImage } from "../test-fixtures/images"
 
 export default {
   title: "Concept Title",
@@ -19,16 +20,5 @@ Text.args = {
 export const Image = Template.bind({})
 Image.args = {
   ...Text.args,
-  titleImage: {
-    gatsbyImageData: {
-      layout: "fixed",
-      width: 289,
-      height: 41,
-      images: {
-        fallback: {
-          src: "/chemlevel.png",
-        },
-      },
-    },
-  },
+  titleImage: fixedImage({ url: "/chemlevel.png", width: 289, height: 41 }),
 }

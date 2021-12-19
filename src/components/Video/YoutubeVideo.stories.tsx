@@ -1,4 +1,5 @@
 import React from "react"
+import { testVideoUrl } from "../../test-fixtures/video"
 import YoutubeVideoComponent from "./YoutubeVideo"
 
 export default {
@@ -9,6 +10,4 @@ export default {
   },
 }
 
-export const YoutubeVideo = () => (
-  <YoutubeVideoComponent url="https://www.youtube.com/watch?v=IdkCEioCp24" />
-)
+export const YoutubeVideo = () => <YoutubeVideoComponent url={testVideoUrl} />

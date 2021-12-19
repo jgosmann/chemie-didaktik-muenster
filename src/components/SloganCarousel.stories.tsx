@@ -1,4 +1,5 @@
 import React from "react"
+import { slogan } from "../test-fixtures/content"
 import SloganCarouselComponent from "./SloganCarousel"
 
 export default {
@@ -12,46 +13,16 @@ export default {
 export const SloganCarousel = () => (
   <SloganCarouselComponent
     slogans={[
-      {
-        id: "id0",
-        slogan: {
-          childMarkdownRemark: {
-            html: "<strong>Slogan</strong>: id 0",
-          },
-        },
-        image: {
-          gatsbyImageData: {
-            layout: "fixed",
-            width: 1920,
-            height: 1080,
-            images: {
-              fallback: {
-                src: "/fill-r.png",
-              },
-            },
-          },
-        },
-      },
-      {
-        id: "id1",
-        slogan: {
-          childMarkdownRemark: {
-            html: "<strong>Slogan</strong>: id 1",
-          },
-        },
-        image: {
-          gatsbyImageData: {
-            layout: "fixed",
-            width: 1920,
-            height: 1080,
-            images: {
-              fallback: {
-                src: "/fill-b.png",
-              },
-            },
-          },
-        },
-      },
+      slogan({
+        id: "slogan-0",
+        html: "<strong>Slogan</strong>: id 0",
+        fill: "r",
+      }),
+      slogan({
+        id: "slogan1",
+        html: "<strong>Slogan</strong>: id 1",
+        fill: "b",
+      }),
     ]}
   />
 )

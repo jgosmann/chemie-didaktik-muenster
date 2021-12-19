@@ -1,4 +1,5 @@
 import React from "react"
+import { allContentfulStartseite } from "../../test-fixtures/content"
 import { SideNavView } from "./SideNav"
 
 export default {
@@ -7,34 +8,7 @@ export default {
 }
 
 const queryData = {
-  allContentfulStartseite: {
-    nodes: [
-      {
-        title: "Test title",
-        crumbs: [{ slug: "testTitle" }],
-        conceptPages: [
-          {
-            id: "id",
-            title: "Concept title",
-            crumbs: [{ slug: "testTitle" }, { slug: "conceptTitle" }],
-            linkedContent: [
-              {
-                id: "sub-id",
-                title: "Linked content",
-                crumbs: [
-                  { slug: "testTitle" },
-                  { slug: "conceptTitle" },
-                  { slug: "linkendTitle" },
-                ],
-              },
-            ],
-            studentPresentations: { raw: "", references: [] },
-            additionalBackground: { raw: "", references: [] },
-          },
-        ],
-      },
-    ],
-  },
+  allContentfulStartseite: allContentfulStartseite(),
 }
 
 export const SideNavigation = () => (

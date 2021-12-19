@@ -2,6 +2,7 @@ import { ComponentStory } from "@storybook/react"
 import React from "react"
 import { LayoutView, LayoutViewProps } from "."
 import { decorator } from "../../../.storybook/mocks/gatsby"
+import { allContentfulStartseite } from "../../test-fixtures/content"
 
 export default {
   title: "Layout",
@@ -10,22 +11,7 @@ export default {
   parameters: {
     chromatic: { disableSnapshot: false, viewports: [414, 1200] },
     staticQuery: {
-      allContentfulStartseite: {
-        nodes: [
-          {
-            title: "Test title",
-            crumbs: [{ slug: "testTitle" }],
-            conceptPages: [
-              {
-                id: "id",
-                title: "Concept title",
-                crumbs: [{ slug: "testTitle" }, { slug: "conceptTitle" }],
-                linkedContent: [],
-              },
-            ],
-          },
-        ],
-      },
+      allContentfulStartseite: allContentfulStartseite(),
     },
   },
 }
