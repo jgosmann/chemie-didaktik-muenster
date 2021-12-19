@@ -1,6 +1,6 @@
 import React from "react"
-import { extractVideoId } from "../../youtube-url-parser"
-import { YoutubeVideoProps } from "../youtubeVideo"
+import { extractVideoId } from "../../../youtube-url-parser"
+import { YoutubeVideoProps } from "../YoutubeVideo"
 
 const YoutubeVideo = React.forwardRef<YT.Player, YoutubeVideoProps>(
   function YoutubeVideo(

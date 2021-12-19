@@ -1,6 +1,7 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import React, { CSSProperties, useEffect } from "react"
+import { useCallback } from "react"
 
 export interface OverlayProps {
   children?: React.ReactNode
@@ -37,10 +38,17 @@ const Overlay = ({ children, isActive, onClose }: OverlayProps) => {
       document.removeEventListener("keydown", keypressHandler)
     }
   }, [isActive, onClose])
+  const onCloseClick = useCallback(
+    ev => {
+      onClose()
+      ev.stopPropagation()
+    },
+    [onClose]
+  )
 
   return (
     <div
-      onClick={onClose}
+      onClick={onCloseClick}
       className="fixed max-h-screen p-8 flex items-center justify-center inset-0 w-screen h-screen bg-black bg-opacity-75 transition-opacity overflow-scroll"
       style={isActive ? activeStyle : inactiveStyle}
     >
@@ -52,7 +60,7 @@ const Overlay = ({ children, isActive, onClose }: OverlayProps) => {
           {children}
         </div>
         <button
-          onClick={onClose}
+          onClick={onCloseClick}
           className="hover:ring active:ring focus:ring bg-gray-100 rounded-full h-7 w-7 absolute top-1 right-1 transform translate-x-1/2 -translate-y-1/2 shadow-md border-2 border-gray-800"
           title="Schließen"
         >

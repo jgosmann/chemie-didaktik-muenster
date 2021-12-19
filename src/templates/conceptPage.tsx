@@ -14,7 +14,7 @@ import NavButtons, { AboutAuthorMedia } from "../components/NavButtons"
 import Layout from "../components/layout"
 import RichText from "../components/RichText"
 import Seo from "../components/seo"
-import Video from "../components/video"
+import Video from "../components/Video"
 
 export const query = graphql`
   query ConceptPageQuery($id: String!) {

@@ -3,10 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { graphql, useStaticQuery } from "gatsby"
 import { IGatsbyImageData } from "gatsby-plugin-image"
 import * as React from "react"
-import Collapsible from "./controls/Collapsible"
-import ConceptTitle from "./ConceptTitle"
-import CrumbLink from "./navigation/CrumbLink"
-import { RichTextFragment } from "./RichText"
+import Collapsible from "../controls/Collapsible"
+import ConceptTitle from "../ConceptTitle"
+import CrumbLink from "../navigation/CrumbLink"
+import { RichTextFragment } from "../RichText"
 
 interface TopLinkProps {
   crumbs: {
@@ -34,7 +34,7 @@ export interface SideNavProps {
   onClose: () => void
 }
 
-interface SideNavQuery {
+export interface SideNavQuery {
   allContentfulStartseite: {
     nodes: Array<{
       title: string
@@ -42,60 +42,32 @@ interface SideNavQuery {
       conceptPages: Array<{
         id: string
         title: string
-        titleImage: { gatsbyImageData: IGatsbyImageData }
+        titleImage?: { gatsbyImageData: IGatsbyImageData }
         crumbs: Array<{ slug: string }>
         linkedContent: Array<{
           id: string
           title: string
           crumbs: Array<{ slug: string }>
         }>
-        studentPresentations: RichTextFragment
-        additionalBackground: RichTextFragment
+        studentPresentations?: RichTextFragment
+        additionalBackground?: RichTextFragment
       }>
     }>
   }
 }
 
-const SideNav = ({ isOpen, onClose }: SideNavProps): JSX.Element => {
-  const {
-    allContentfulStartseite: { nodes },
-  } = useStaticQuery<SideNavQuery>(graphql`
-    {
-      allContentfulStartseite(limit: 1) {
-        nodes {
-          title
-          crumbs {
-            slug
-          }
-          conceptPages {
-            id
-            title
-            titleImage {
-              gatsbyImageData(layout: CONSTRAINED, height: 24)
-            }
-            crumbs {
-              slug
-            }
-            linkedContent {
-              id
-              title
-              crumbs {
-                slug
-              }
-            }
-            studentPresentations {
-              ...RichTextFragment
-            }
-            additionalBackground {
-              ...RichTextFragment
-            }
-          }
-        }
-      }
-    }
-  `)
-  const startPage = nodes[0]
+export interface SideNavViewProps extends SideNavProps {
+  query: SideNavQuery
+}
 
+export const SideNavView = ({
+  isOpen,
+  onClose,
+  query: {
+    allContentfulStartseite: { nodes },
+  },
+}: SideNavViewProps): JSX.Element => {
+  const startPage = nodes[0]
   return (
     <nav
       className={`fixed lg:static top-0 bg-gray-100 text-lg lg:text-base h-screen lg:h-full w-11/12 lg:w-max z-50 lg:z-auto lg:shadow-lg p-8 overflow-scroll transform transition-transform ${
@@ -168,6 +140,46 @@ const SideNav = ({ isOpen, onClose }: SideNavProps): JSX.Element => {
       </button>
     </nav>
   )
+}
+
+const SideNav = ({ isOpen, onClose }: SideNavProps): JSX.Element => {
+  const query = useStaticQuery<SideNavQuery>(graphql`
+    {
+      allContentfulStartseite(limit: 1) {
+        nodes {
+          title
+          crumbs {
+            slug
+          }
+          conceptPages {
+            id
+            title
+            titleImage {
+              gatsbyImageData(layout: CONSTRAINED, height: 24)
+            }
+            crumbs {
+              slug
+            }
+            linkedContent {
+              id
+              title
+              crumbs {
+                slug
+              }
+            }
+            studentPresentations {
+              ...RichTextFragment
+            }
+            additionalBackground {
+              ...RichTextFragment
+            }
+          }
+        }
+      }
+    }
+  `)
+
+  return <SideNavView isOpen={isOpen} onClose={onClose} query={query} />
 }
 
 export default SideNav

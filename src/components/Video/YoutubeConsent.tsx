@@ -1,26 +1,21 @@
 import React, { useCallback, useEffect, useRef } from "react"
 
-export interface YoutubeConsentProps {
+export type HandleConsentCallback = ({ persist: boolean }) => void
+
+export interface YoutubeConsentPopupProps {
   onConsentDenied?: () => void
-  onConsentGiven?: () => void
+  onConsentGiven?: HandleConsentCallback
 }
 
-const YoutubeConsent = ({
+export const YoutubeConsentPopup = ({
   onConsentDenied,
   onConsentGiven,
-}: YoutubeConsentProps) => {
+}: YoutubeConsentPopupProps) => {
   const storeConsent = useRef<HTMLInputElement>(null)
-  const handleConsent = useCallback(() => {
-    if (storeConsent.current?.checked) {
-      window.sessionStorage.setItem("youtube-consent-given", "true")
-    }
-    onConsentGiven && onConsentGiven()
-  }, [onConsentGiven])
-  useEffect(() => {
-    if (window.sessionStorage.getItem("youtube-consent-given") === "true") {
-      onConsentGiven && onConsentGiven()
-    }
-  }, [onConsentGiven])
+  const handleConsent = useCallback(
+    () => onConsentGiven({ persist: storeConsent.current?.checked }),
+    []
+  )
 
   return (
     <div className="p-4 max-w-prose max-h-80vh overflow-scroll">
@@ -57,6 +52,38 @@ const YoutubeConsent = ({
         </label>
       </div>
     </div>
+  )
+}
+
+export interface YoutubeConsentProps {
+  onConsentDenied?: () => void
+  onConsentGiven?: () => void
+}
+
+const YoutubeConsent = ({
+  onConsentDenied,
+  onConsentGiven,
+}: YoutubeConsentProps) => {
+  const handleConsent = useCallback<HandleConsentCallback>(
+    ({ persist }) => {
+      if (persist) {
+        sessionStorage.setItem("youtube-consent-given", "true")
+      }
+      onConsentGiven && onConsentGiven()
+    },
+    [onConsentGiven]
+  )
+  useEffect(() => {
+    if (window.sessionStorage.getItem("youtube-consent-given") === "true") {
+      onConsentGiven && onConsentGiven()
+    }
+  }, [onConsentGiven])
+
+  return (
+    <YoutubeConsentPopup
+      onConsentDenied={onConsentDenied}
+      onConsentGiven={handleConsent}
+    />
   )
 }
 

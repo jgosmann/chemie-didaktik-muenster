@@ -11,7 +11,7 @@ import PropTypes from "prop-types"
 import Breadcrumbs, { Breadcrumb } from "../navigation/Breadcrumbs"
 import Header from "./Header"
 import Footer from "./Footer"
-import SideNav from "../sideNav"
+import SideNav from "./SideNav"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faBars } from "@fortawesome/free-solid-svg-icons"
 

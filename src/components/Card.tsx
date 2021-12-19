@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { graphql, Link } from "gatsby"
 import { ImageDataLike } from "gatsby-plugin-image"
 import * as React from "react"
-import Video from "./video"
+import Video from "./Video"
 
 export const query = graphql`
   fragment CardVideoThumbFragment on ImageSharp {

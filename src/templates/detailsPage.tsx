@@ -9,7 +9,7 @@ import NavButtons, { AboutAuthorMedia } from "../components/NavButtons"
 import Layout from "../components/layout"
 import RichText from "../components/RichText"
 import Seo from "../components/seo"
-import Video from "../components/video"
+import Video from "../components/Video"
 import { FileNode } from "gatsby-plugin-image/dist/src/components/hooks"
 
 export const query = graphql`

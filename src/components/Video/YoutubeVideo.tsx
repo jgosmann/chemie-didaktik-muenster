@@ -1,6 +1,6 @@
 import React from "react"
 import YouTube from "react-youtube"
-import { extractVideoId } from "../youtube-url-parser"
+import { extractVideoId } from "../../youtube-url-parser"
 
 export interface YoutubeVideoProps {
   url: string

@@ -32,13 +32,14 @@ export const query = graphql`
 
 interface CarousalProps {
   slogans: SloganFragment[]
+  autoplay?: boolean
 }
 
-const Carousel = ({ slogans }: CarousalProps) => {
+const Carousel = ({ slogans, autoplay }: CarousalProps) => {
   return (
     <div style={{ fontSize: 0 }}>
       <Slider
-        autoplay
+        autoplay={autoplay}
         autoplaySpeed={5000}
         dots
         className="rounded shadow overflow-hidden my-8"

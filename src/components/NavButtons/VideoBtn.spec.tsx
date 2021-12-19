@@ -3,9 +3,15 @@ import { render, screen } from "@testing-library/react"
 
 import VideoBtn from "./VideoBtn"
 
-jest.mock("../youtubeVideo")
+jest.mock("../Video/YoutubeVideo")
 
 describe("VideoBtn", () => {
+  const consentPopup = () =>
+    screen.queryByText(text =>
+      text.startsWith("Dieser Inhalt wird von einem Drittanbieter")
+    )
+  const videoPlayer = () => screen.queryByTitle("YouTube video player")
+
   beforeEach(() => {
     render(
       <VideoBtn videoUrl="https://www.youtube.com/watch?v=IdkCEioCp24">
@@ -16,15 +22,11 @@ describe("VideoBtn", () => {
 
   describe("initially", () => {
     it("does not show the consent popup", () => {
-      expect(
-        screen.getByText(text =>
-          text.startsWith("Dieser Inhalt wird von einem Drittanbieter")
-        )
-      ).not.toBeVisible
+      expect(consentPopup()).not.toBeVisible()
     })
 
     it("does not render the video", () => {
-      expect(screen.queryByTitle("YouTube video player")).not.toBeInTheDocument
+      expect(videoPlayer()).not.toBeInTheDocument()
     })
   })
 
@@ -34,15 +36,11 @@ describe("VideoBtn", () => {
     })
 
     it("shows the consent popup", () => {
-      expect(
-        screen.getByText(text =>
-          text.startsWith("Dieser Inhalt wird von einem Drittanbieter")
-        )
-      ).toBeVisible
+      expect(consentPopup()).toBeVisible()
     })
 
     it("does not render the video", () => {
-      expect(screen.queryByTitle("YouTube video player")).not.toBeInTheDocument
+      expect(videoPlayer()).not.toBeInTheDocument()
     })
 
     describe("if consent is given", () => {
@@ -51,30 +49,21 @@ describe("VideoBtn", () => {
       })
 
       it("does not show the consent popup", () => {
-        expect(
-          screen.queryByText(text =>
-            text.startsWith("Dieser Inhalt wird von einem Drittanbieter")
-          )
-        ).not.toBeVisible
+        expect(consentPopup()).not.toBeInTheDocument()
       })
 
       it("shows the video", async () => {
-        expect(screen.getByTitle("YouTube video player")).toBeVisible
+        expect(videoPlayer()).toBeVisible
       })
     })
 
     describe("if consent is denied", () => {
       it("shows the consent popup", () => {
-        expect(
-          screen.getByText(text =>
-            text.startsWith("Dieser Inhalt wird von einem Drittanbieter")
-          )
-        ).toBeVisible
+        expect(consentPopup()).toBeVisible()
       })
 
       it("does not render the video", () => {
-        expect(screen.queryByTitle("YouTube video player")).not
-          .toBeInTheDocument
+        expect(videoPlayer()).not.toBeInTheDocument()
       })
     })
   })
@@ -88,15 +77,11 @@ describe("VideoBtn", () => {
     })
 
     it("does not show the consent popup", () => {
-      expect(
-        screen.queryByText(text =>
-          text.startsWith("Dieser Inhalt wird von einem Drittanbieter")
-        )
-      ).not.toBeVisible
+      expect(consentPopup()).not.toBeInTheDocument()
     })
 
     it("shows the video", async () => {
-      expect(screen.getByTitle("YouTube video player")).toBeVisible
+      expect(videoPlayer()).toBeVisible()
     })
   })
 })

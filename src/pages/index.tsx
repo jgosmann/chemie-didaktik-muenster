@@ -4,7 +4,7 @@ import { graphql, useStaticQuery } from "gatsby"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import Card from "../components/Card"
-import SloganCarousel, { SloganFragment } from "../components/sloganCarousel"
+import SloganCarousel, { SloganFragment } from "../components/SloganCarousel"
 import RichText, { RichTextFragment } from "../components/RichText"
 import ConceptTitle from "../components/ConceptTitle"
 import { IGatsbyImageData, ImageDataLike } from "gatsby-plugin-image"
@@ -66,7 +66,7 @@ const IndexPage = () => {
   return (
     <Layout crumbs={[{ title: "Startseite", slug: "" }]}>
       <Seo title="Startseite" />
-      <SloganCarousel slogans={page.slogans} />
+      <SloganCarousel autoplay slogans={page.slogans} />
       <div className="prose my-8 mx-auto">
         {page.content && <RichText content={page.content} />}
       </div>

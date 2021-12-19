@@ -1,7 +1,7 @@
 import { ComponentStory } from "@storybook/react"
 import React from "react"
 import { LayoutView, LayoutViewProps } from "."
-import { decorator } from "../../../.storybook/__mocks__/gatsby"
+import { decorator } from "../../../.storybook/mocks/gatsby"
 
 export default {
   title: "Layout",
