@@ -1,4 +1,4 @@
-import { largeFill, youtubeThumbnail } from "./images"
+import { fileNode, largeFill, youtubeThumbnail } from "./images"
 import { loremIpsum, richText } from "./richText"
 import { testVideoUrl } from "./video"
 
@@ -28,10 +28,61 @@ export const conceptPage = ({ id, title }: { id: string; title: string }) => ({
     { title: "Startseite", slug: "" },
     { title, slug: id },
   ],
+  description: loremIpsum(),
   shortVideo: testVideoUrl,
   shortVideoThumb: youtubeThumbnail(),
   shortDescription: richText(`Some short description of ${title}.`),
   linkedContent: [],
+})
+
+export const conceptPageWithAllOptionalContent = ({
+  id,
+  title,
+}: {
+  id: string
+  title: string
+}) => ({
+  ...conceptPage({ id, title }),
+  video: testVideoUrl,
+  videoThumb: fileNode(youtubeThumbnail({ width: 640, height: 400 })),
+  linkedContent: [
+    {
+      id: "linked-content-0",
+      title: "Linked content 0",
+      crumbs: [
+        { title: "Startseite", slug: "" },
+        {
+          title,
+          slug: id,
+        },
+        { title: "Linked content 0", slug: "linkend-content-0" },
+      ],
+      shortDescription: richText(
+        "Some short descritpion for the linked content 0."
+      ),
+      shortVideo: testVideoUrl,
+      shortVideoThumb: fileNode(youtubeThumbnail()),
+    },
+    {
+      id: "linked-content-1",
+      title: "Linked content 1",
+      crumbs: [
+        { title: "Startseite", slug: "" },
+        {
+          title,
+          slug: id,
+        },
+        { title: "Linked content 1", slug: "linkend-content-1" },
+      ],
+      shortDescription: richText(
+        "Some short descritpion for the linked content 1."
+      ),
+    },
+  ],
+  aboutAuthorVideo: testVideoUrl,
+  aboutAuthorPreview: fileNode(youtubeThumbnail({ width: 42, height: 42 })),
+  studentPresentations: richText("Student presentations content."),
+  additionalBackground: richText("Additional background content"),
 })
 
 export const allContentfulStartseite = () => ({
@@ -52,29 +103,10 @@ export const allContentfulStartseite = () => ({
           id: "concept-page-min",
           title: "Concept page (min content)",
         }),
-        {
-          ...conceptPage({
-            id: "concept-page-max",
-            title: "Concept page (max content)",
-          }),
-          linkedContent: [
-            {
-              id: "linked-content-0",
-              title: "Linked content",
-              crumbs: [
-                { title: "Startseite", slug: "" },
-                {
-                  title: "Concept page (max content)",
-                  slug: "concept-page-max",
-                },
-                { title: "Linked content", slug: "linkend-content-0" },
-              ],
-            },
-          ],
-
-          studentPresentations: richText("Student presentations content."),
-          additionalBackground: richText("Additional background content"),
-        },
+        conceptPageWithAllOptionalContent({
+          id: "concept-page-max",
+          title: "Concept page (max content)",
+        }),
       ],
     },
   ],

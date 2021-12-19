@@ -52,7 +52,7 @@ export interface DetailsPageProps {
   >
 }
 
-const DetailsPage = ({ data, pageContext }: DetailsPageProps) => {
+const BasicPage = ({ data, pageContext }: DetailsPageProps) => {
   const { content, crumbs, title } = data.contentfulBasicPage
   return (
     <PureRichTextPage
@@ -61,4 +61,4 @@ const DetailsPage = ({ data, pageContext }: DetailsPageProps) => {
   )
 }
 
-export default DetailsPage
+export default BasicPage

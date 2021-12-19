@@ -1,4 +1,5 @@
 import { IGatsbyImageData } from "gatsby-plugin-image"
+import { FileNode } from "gatsby-plugin-image/dist/src/components/hooks"
 
 export const fixedImage = ({
   url,
@@ -32,3 +33,14 @@ export const youtubeThumbnail = (
 
 export const largeFill = (suffix: string) =>
   fixedImage({ url: `/fill-${suffix}.png`, width: 1920, height: 1080 })
+
+export const fileNode = (image: {
+  gatsbyImageData: IGatsbyImageData
+}): FileNode & { gatsbyImageData: IGatsbyImageData; title: string } => ({
+  parent: "parent",
+  id: "image-id",
+  title: "Image title",
+  children: [],
+  internal: { type: "File", owner: "test-fixtures", contentDigest: "hash" },
+  ...image,
+})
