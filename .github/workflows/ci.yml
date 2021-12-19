@@ -35,6 +35,7 @@ jobs:
         env:
           CI: true
           CONTENTFUL_ACCESS_TOKEN: ${{ secrets.CONTENTFUL_ACCESS_TOKEN }}
+          NODE_OPTIONS: --openssl-legacy-provider
 
   Chromatic:
     runs-on: ubuntu-latest
