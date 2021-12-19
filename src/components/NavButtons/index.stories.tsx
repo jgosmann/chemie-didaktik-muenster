@@ -25,11 +25,19 @@ Minimal.args = {
   hasAdditionalBackground: false,
 }
 
-export const Full = Template.bind({})
-Full.args = {
+export const WithoutAuthorPreview = Template.bind({})
+WithoutAuthorPreview.args = {
   ...Minimal.args,
   hasStudentPresentations: true,
   hasAdditionalBackground: true,
+  aboutAuthorMedia: {
+    aboutAuthorVideo: testVideoUrl,
+  },
+}
+
+export const Full = Template.bind({})
+Full.args = {
+  ...WithoutAuthorPreview.args,
   aboutAuthorMedia: {
     aboutAuthorVideo: testVideoUrl,
     aboutAuthorPreview: youtubeThumbnail({ width: 42, height: 42 }),
