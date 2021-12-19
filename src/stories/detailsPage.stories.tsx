@@ -15,7 +15,7 @@ export default {
   component: DetailsPageTemplate,
   decorators: [decorator],
   parameters: {
-    chromatic: { disableSnapshot: false, viewports: [414, 1200] },
+    chromatic: { disableSnapshot: false, viewports: [414, 1200, 1800] },
     staticQuery: {
       allContentfulStartseite: allContentfulStartseite(),
       site: site(),
