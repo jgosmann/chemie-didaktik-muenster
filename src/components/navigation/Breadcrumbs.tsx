@@ -36,12 +36,16 @@ const Breadcrumbs = ({ crumbs }: BreadcrumbsProps) => {
         {absolutePathCrumbs.map((crumb, i) => {
           if (i < absolutePathCrumbs.length - 1) {
             return (
-              <li className={liClasses}>
+              <li className={liClasses} key={i}>
                 <Link to={crumb.absPath}>{crumb.title}</Link>
               </li>
             )
           } else {
-            return <li className={liClasses}>{crumb.title}</li>
+            return (
+              <li className={liClasses} key={i}>
+                {crumb.title}
+              </li>
+            )
           }
         })}
       </ol>
