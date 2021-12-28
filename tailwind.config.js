@@ -22,13 +22,13 @@ module.exports = {
               color: theme("colors.secondary.600"),
               textDecoration: "none",
               "&:hover": {
-                textDecoration: "underline",
+                textDecoration: "underline !important",
               },
               "&:active": {
-                textDecoration: "underline",
+                textDecoration: "underline !importent",
               },
               "&:visited": {
-                color: theme("colors.secondary.800"),
+                color: `${theme("colors.secondary.800")} !important`,
               },
             },
           },
