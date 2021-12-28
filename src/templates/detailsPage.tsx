@@ -20,10 +20,12 @@ export const query = graphql`
         title
         slug
       }
-      video
-      videoThumb {
-        childImageSharp {
-          gatsbyImageData(layout: FIXED, width: 640, height: 400)
+      video0 {
+        videoIds
+        videoThumbs {
+          childImageSharp {
+            gatsbyImageData(layout: FIXED, width: 640, height: 400)
+          }
         }
       }
       description {
@@ -54,8 +56,7 @@ export interface DetailsPageProps {
     contentfulDetailsPage: {
       title: string
       crumbs: Breadcrumb[]
-      video?: string
-      videoThumb?: FileNode
+      video0?: { videoIds: string[]; videoThumbs: FileNode[] }
       description: RenderRichTextData<ContentfulRichTextGatsbyReference>
     }
     parent: Parent
@@ -64,22 +65,24 @@ export interface DetailsPageProps {
 
 const DetailsPage = ({ data }: DetailsPageProps) => {
   const {
-    contentfulDetailsPage: { title, crumbs, video, videoThumb, description },
+    contentfulDetailsPage: { title, crumbs, video0, description },
     parent,
   } = data
   return (
     <Layout crumbs={crumbs}>
       <Seo title={title} />
       <div className="flex justify-center gap-8 flex-row-reverse flex-wrap my-8 items-start">
-        {video && (
-          <Video
-            url={video}
-            thumb={videoThumb}
-            className="my-8 mx-auto rounded shadow"
-            width="640"
-            height="400"
-          />
-        )}
+        {video0 &&
+          video0.videoIds.map((videoId, i) => (
+            <Video
+              key={videoId}
+              url={videoId}
+              thumb={video0.videoThumbs[i]}
+              className="my-8 mx-auto rounded shadow"
+              width="640"
+              height="400"
+            />
+          ))}
         <div className="prose">
           {description && <RichText content={description} />}
         </div>

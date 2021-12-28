@@ -45,6 +45,22 @@ exports.createSchemaCustomization = ({ actions }) => {
   })
 
   createFieldExtension({
+    name: "videoIds",
+    args: { source: "String" },
+    extend({ source: sourceField }, prevFieldConfig) {
+      return {
+        resolve: async (source, args, context, info) => {
+          return source[sourceField]
+            .split(/\s+/)
+            .map(url => url.trim())
+            .filter(url => url !== "")
+            .map(extractVideoId)
+        },
+      }
+    },
+  })
+
+  createFieldExtension({
     name: "typesafeReferences",
     extend(options, prevFieldConfig) {
       return {
@@ -97,7 +113,11 @@ exports.createSchemaCustomization = ({ actions }) => {
       shortDescription: Content
       description: Content
       shortVideoThumb: File @link(from: "fields.shortVideoThumb")
-      videoThumb: File @link(from: "fields.videoThumb")
+    }
+    
+    type contentfulDetailsPageVideo0TextNode implements Node {
+      videoIds: [String!]! @videoIds(source: "video0")
+      videoThumbs: [File!]! @link(from: "fields.video0Thumbs")
     }
     
     type ContentfulStartseite implements Linkable {
@@ -131,6 +151,33 @@ exports.onCreateNode = async ({
     }
   }
 
+  const createMultipleYoutubeThumbNode = async fieldName => {
+    const videoIds = node[fieldName]
+      .split(/\s+/)
+      .map(url => url.trim())
+      .filter(url => url !== "")
+      .map(extractVideoId)
+    const fileNodes = await Promise.all(
+      videoIds.map(videoId => {
+        console.log(`create node for ${videoId}`)
+        return createRemoteFileNode({
+          url: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+          parentNodeId: node.id,
+          createNode,
+          createNodeId,
+          cache,
+          store,
+        })
+      })
+    )
+
+    createNodeField({
+      node,
+      name: `${fieldName}Thumbs`,
+      value: fileNodes.map(node => node.id),
+    })
+  }
+
   if (node.internal.type === "ContentfulConceptPage") {
     await Promise.all([
       createYoutubeThumbNode("shortVideo"),
@@ -138,10 +185,9 @@ exports.onCreateNode = async ({
       createYoutubeThumbNode("aboutAuthorVideo"),
     ])
   } else if (node.internal.type === "ContentfulDetailsPage") {
-    await Promise.all([
-      createYoutubeThumbNode("shortVideo"),
-      createYoutubeThumbNode("video"),
-    ])
+    await createYoutubeThumbNode("shortVideo")
+  } else if (node.internal.type === "contentfulDetailsPageVideo0TextNode") {
+    await createMultipleYoutubeThumbNode("video0")
   }
 }
 
