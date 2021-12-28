@@ -72,7 +72,7 @@ export const SideNavView = ({
     <nav
       className={`fixed lg:static top-0 bg-gray-100 text-lg lg:text-base h-screen lg:h-full w-11/12 lg:w-max z-50 lg:z-auto lg:shadow-lg p-8 overflow-scroll transform transition-transform ${
         isOpen ? "translate-x-0 shadow-lg" : "-translate-x-full"
-      } lg:translate-x-0 flex-shrink-0`}
+      } lg:translate-x-0 shrink-0`}
     >
       <ul className="divide-y divide-gray-400">
         <TopItem>

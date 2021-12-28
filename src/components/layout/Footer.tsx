@@ -5,7 +5,7 @@ import { DefaultCryptedEmail, DefaultCryptedPhone } from "../crypted"
 
 const Footer = () => (
   <footer className="bg-gray-400 text-gray-100 text-xs flex flex-wrap justify-between place-items-top z-10">
-    <div className="w-1/3 min-w-max box-border p-3 flex-shrink">
+    <div className="w-1/3 min-w-max box-border p-3 shrink">
       <span className="uppercase font-semibold">Kontakt</span>
       <br />
       Westfälische Wilhelms-Universität Münster

@@ -23,7 +23,7 @@ const CollapsibleView = ({
         <div>{label}</div>
         <button
           onClick={onToggle}
-          className="bg-gray-600 text-gray-200 rounded w-7 h-7 flex-shrink-0"
+          className="bg-gray-600 text-gray-200 rounded w-7 h-7 shrink-0"
           title={isExpanded ? "Einklappen" : "Ausklappen"}
         >
           <FontAwesomeIcon icon={isExpanded ? faChevronUp : faChevronDown} />

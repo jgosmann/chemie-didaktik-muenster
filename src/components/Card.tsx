@@ -31,7 +31,7 @@ const Card = ({ title, video, children, download, link }: CardProps) => (
     {video && (
       <Video url={video.url} thumb={video.thumb} width="256" height="160" />
     )}
-    <div className="prose leading-snug text-sm m-2 flex-grow">{children}</div>
+    <div className="prose leading-snug text-sm m-2 grow">{children}</div>
     <div className="flex flex-row flex-wrap justify-between m-2 mt-2">
       <div>
         {download && (

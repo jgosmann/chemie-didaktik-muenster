@@ -1,8 +1,7 @@
 const colors = require("tailwindcss/colors")
 
 module.exports = {
-  purge: ["./src/**/*.{js,jsx,ts,tsx}"],
-  darkMode: false, // or 'media' or 'class'
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     colors: {
       primary: {
@@ -35,13 +34,6 @@ module.exports = {
           },
         },
       }),
-    },
-  },
-  variants: {
-    extend: {
-      ringWidth: ["hover", "active"],
-      textColor: ["visited", "active"],
-      textDecoration: ["active"],
     },
   },
   plugins: [require("@tailwindcss/typography")],
