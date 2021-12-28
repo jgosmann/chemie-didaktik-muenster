@@ -47,6 +47,7 @@
     "babel-loader": "^8.2.3",
     "babel-preset-gatsby": "^2.3.0",
     "chromatic": "^6.1.0",
+    "contentful-cli": "^1.9.44",
     "eslint": "^8.4.0",
     "eslint-plugin-jest-dom": "^4.0.0",
     "eslint-plugin-react": "^7.27.1",
