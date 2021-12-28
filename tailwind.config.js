@@ -19,7 +19,7 @@ module.exports = {
         DEFAULT: {
           css: {
             a: {
-              color: theme("colors.secondary.600"),
+              color: theme("colors.primary.light"),
               textDecoration: "none",
               "&:hover": {
                 textDecoration: "underline !important",
@@ -28,7 +28,7 @@ module.exports = {
                 textDecoration: "underline !importent",
               },
               "&:visited": {
-                color: `${theme("colors.secondary.800")} !important`,
+                color: `${theme("colors.primary.DEFAULT")} !important`,
               },
             },
           },

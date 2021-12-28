@@ -4,7 +4,7 @@
 
 @layer base {
   a {
-    @apply text-secondary-600;
+    @apply text-primary;
     @apply no-underline;
   }
 
@@ -14,7 +14,7 @@
   }
 
   a:visited {
-    @apply text-secondary-800;
+    @apply text-primary-light;
   }
 
   .prose > ul > li > p:only-child {
