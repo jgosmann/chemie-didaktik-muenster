@@ -5,7 +5,7 @@ const Header = () => (
   <header className="bg-primary flex flex-nowrap items-center justify-between shadow">
     <a href="https://www.uni-muenster.de/Chemie.dc/">
       <StaticImage
-        src="../images/cdm-logo-white.png"
+        src="../../images/cdm-logo-white.png"
         alt="Chemie Didaktik Münster"
         height={48}
         className="m-3"
