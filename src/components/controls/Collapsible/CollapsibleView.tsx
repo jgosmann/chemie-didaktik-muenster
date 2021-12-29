@@ -1,6 +1,6 @@
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import React from "react"
+import React, { useEffect } from "react"
 
 export interface CollapsibleViewProps {
   label: React.ReactNode
@@ -16,6 +16,21 @@ const CollapsibleView = ({
   onToggle,
 }: CollapsibleViewProps): JSX.Element => {
   const ref = React.useRef<HTMLDivElement>(null)
+  const [height, setHeight] = React.useState(0)
+  useEffect(() => {
+    const rerender = () => {
+      setHeight(ref.current?.scrollHeight)
+    }
+
+    const resizeObserver = new ResizeObserver(rerender)
+    resizeObserver.observe(ref.current)
+    const children = ref.current?.children
+    for (let i = 0; i < children.length; ++i) {
+      resizeObserver.observe(children[i])
+    }
+
+    return () => resizeObserver.disconnect()
+  }, [ref.current])
 
   return (
     <>
@@ -33,8 +48,8 @@ const CollapsibleView = ({
         ref={ref}
         className="overflow-hidden"
         style={{
-          height: isExpanded ? ref.current?.scrollHeight : 0,
-          transition: "height 0.2s ease-out",
+          maxHeight: isExpanded ? height : 0,
+          transition: "max-height 0.2s ease-out",
         }}
       >
         {children}
