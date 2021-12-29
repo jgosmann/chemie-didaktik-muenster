@@ -2,12 +2,11 @@ import React from "react"
 import { decorator } from "../../.storybook/mocks/gatsby"
 import DetailsPageTemplate from "../templates/detailsPage"
 import {
-  allContentfulStartseite,
   conceptPageWithAllOptionalContent,
+  generalPageStaticQuery,
 } from "../test-fixtures/content"
 import { fileNode, youtubeThumbnail } from "../test-fixtures/images"
 import { loremIpsum } from "../test-fixtures/richText"
-import site from "../test-fixtures/site"
 import { testVideoId } from "../test-fixtures/video"
 
 export default {
@@ -16,10 +15,7 @@ export default {
   decorators: [decorator],
   parameters: {
     chromatic: { disableSnapshot: false, viewports: [414, 1200, 1800] },
-    staticQuery: {
-      allContentfulStartseite: allContentfulStartseite(),
-      site: site(),
-    },
+    staticQuery: generalPageStaticQuery(),
   },
 }
 

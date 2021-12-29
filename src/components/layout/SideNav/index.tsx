@@ -3,10 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { graphql, useStaticQuery } from "gatsby"
 import { IGatsbyImageData } from "gatsby-plugin-image"
 import * as React from "react"
-import Collapsible from "../controls/Collapsible"
-import ConceptTitle from "../ConceptTitle"
-import CrumbLink from "../navigation/CrumbLink"
-import { RichTextFragment } from "../RichText"
+import Collapsible from "../../controls/Collapsible"
+import ConceptTitle from "../../ConceptTitle"
+import CrumbLink from "../../navigation/CrumbLink"
+import Faq, { FaqProps } from "./Faq"
+import { RichTextFragment } from "../../RichText/RichText"
 
 interface TopLinkProps {
   crumbs: {
@@ -34,7 +35,7 @@ export interface SideNavProps {
   onClose: () => void
 }
 
-export interface SideNavQuery {
+export interface SideNavQuery extends FaqProps {
   allContentfulStartseite: {
     nodes: Array<{
       title: string
@@ -65,12 +66,13 @@ export const SideNavView = ({
   onClose,
   query: {
     allContentfulStartseite: { nodes },
+    faq,
   },
 }: SideNavViewProps): JSX.Element => {
   const startPage = nodes[0]
   return (
     <nav
-      className={`fixed lg:static top-0 bg-gray-100 text-lg lg:text-base h-screen lg:h-full w-11/12 lg:w-max z-50 lg:z-auto lg:shadow-lg p-8 overflow-scroll transform transition-transform ${
+      className={`fixed lg:static top-0 bg-gray-100 text-lg lg:text-base h-screen lg:h-full w-11/12 lg:w-max lg:max-w-sm z-50 lg:z-auto lg:shadow-lg p-8 overflow-scroll transform transition-transform ${
         isOpen ? "translate-x-0 shadow-lg" : "-translate-x-full"
       } lg:translate-x-0 shrink-0`}
     >
@@ -91,7 +93,7 @@ export const SideNavView = ({
               }
             >
               {conceptPage.linkedContent && (
-                <ul className="px-4 divide-y divide-gray-400">
+                <ul className="pl-4 divide-y divide-gray-400">
                   {conceptPage.linkedContent.map(linkedContent => (
                     <li key={linkedContent.id} className="py-1">
                       <CrumbLink crumbs={linkedContent.crumbs}>
@@ -129,7 +131,13 @@ export const SideNavView = ({
           </TopItem>
         ))}
         <TopItem>
-          <TopLink crumbs={[{ slug: "" }, { slug: "faq" }]}>FAQ</TopLink>
+          <Collapsible
+            label={
+              <TopLink crumbs={[{ slug: "" }, { slug: "faq" }]}>FAQ</TopLink>
+            }
+          >
+            <Faq faq={faq} />
+          </Collapsible>
         </TopItem>
       </ul>
       <button
@@ -176,6 +184,7 @@ const SideNav = ({ isOpen, onClose }: SideNavProps): JSX.Element => {
           }
         }
       }
+      ...FaqFragment
     }
   `)
 

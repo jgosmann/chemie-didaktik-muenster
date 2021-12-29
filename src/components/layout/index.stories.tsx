@@ -3,6 +3,7 @@ import React from "react"
 import { LayoutView, LayoutViewProps } from "."
 import { decorator } from "../../../.storybook/mocks/gatsby"
 import { allContentfulStartseite } from "../../test-fixtures/content"
+import { richTextContainingAllElements } from "../../test-fixtures/richText"
 
 export default {
   title: "Layout",
@@ -12,6 +13,9 @@ export default {
     chromatic: { disableSnapshot: false, viewports: [414, 1200] },
     staticQuery: {
       allContentfulStartseite: allContentfulStartseite(),
+      faq: {
+        content: richTextContainingAllElements,
+      },
     },
   },
 }

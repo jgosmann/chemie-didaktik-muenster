@@ -1,9 +1,8 @@
 import React from "react"
 import { decorator } from "../../.storybook/mocks/gatsby"
 import PureRichTextPageTemplate from "../templates/pureRichTextPage"
-import { allContentfulStartseite } from "../test-fixtures/content"
+import { generalPageStaticQuery } from "../test-fixtures/content"
 import { loremIpsum } from "../test-fixtures/richText"
-import site from "../test-fixtures/site"
 
 export default {
   title: "Pages/Pure Rich Text Page",
@@ -11,10 +10,7 @@ export default {
   decorators: [decorator],
   parameters: {
     chromatic: { disableSnapshot: false },
-    staticQuery: {
-      allContentfulStartseite: allContentfulStartseite(),
-      site: site(),
-    },
+    staticQuery: generalPageStaticQuery(),
   },
 }
 

@@ -1,8 +1,7 @@
 import React from "react"
 import NotFoundPage from "../pages/404"
 import { decorator } from "../../.storybook/mocks/gatsby"
-import { allContentfulStartseite } from "../test-fixtures/content"
-import site from "../test-fixtures/site"
+import { generalPageStaticQuery } from "../test-fixtures/content"
 
 export default {
   title: "Pages/Not Found",
@@ -10,10 +9,7 @@ export default {
   decorators: [decorator],
   parameters: {
     chromatic: { disableSnapshot: false },
-    staticQuery: {
-      allContentfulStartseite: allContentfulStartseite(),
-      site: site(),
-    },
+    staticQuery: generalPageStaticQuery(),
   },
 }
 

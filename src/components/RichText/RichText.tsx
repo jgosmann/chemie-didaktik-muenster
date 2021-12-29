@@ -1,14 +1,14 @@
 import { BLOCKS, INLINES, Block, Inline } from "@contentful/rich-text-types"
-import { graphql, Link } from "gatsby"
+import { Link } from "gatsby"
 import {
   ContentfulRichTextGatsbyReference,
   renderRichText,
   RenderRichTextData,
 } from "gatsby-source-contentful/rich-text"
 import * as React from "react"
-import { Breadcrumb } from "./navigation/Breadcrumbs"
-import { DefaultCryptedPhone } from "./crypted"
-import { DefaultCryptedEmail } from "./crypted"
+import { Breadcrumb } from "../navigation/Breadcrumbs"
+import { DefaultCryptedEmail, DefaultCryptedPhone } from "../crypted"
+import { IdHierarchy } from "./toc"
 
 interface ContentfulAsset extends ContentfulRichTextGatsbyReference {
   title: string
@@ -20,29 +20,6 @@ interface ContentfulAsset extends ContentfulRichTextGatsbyReference {
 export type RichTextFragment = RenderRichTextData<
   ContentfulRichTextGatsbyReference | ContentfulAsset
 >
-
-export const query = graphql`
-  fragment RichTextFragment on Content {
-    raw
-    references: typesafeReferences {
-      __typename
-      ... on ContentfulReference {
-        contentful_id
-      }
-      ... on ContentfulAsset {
-        title
-        file {
-          url
-        }
-      }
-      ... on Linkable {
-        crumbs {
-          slug
-        }
-      }
-    }
-  }
-`
 
 const replacePlaceholder = (
   text: React.ReactNode,
@@ -66,9 +43,33 @@ const replacePlaceholder = (
   return text
 }
 
-const richTextRenderOptions = {
+const richTextRenderOptions = (idHierarchy: IdHierarchy) => ({
   renderNode: {
-    [BLOCKS.PARAGRAPH]: (_: Block | Inline, children: React.ReactNode) => {
+    [BLOCKS.HEADING_1]: (node: Block | Inline, children: React.ReactNode) => {
+      idHierarchy.setLevel(1, node)
+      return <h1 id={idHierarchy.currentId()}>{children}</h1>
+    },
+    [BLOCKS.HEADING_2]: (node: Block | Inline, children: React.ReactNode) => {
+      idHierarchy.setLevel(2, node)
+      return <h2 id={idHierarchy.currentId()}>{children}</h2>
+    },
+    [BLOCKS.HEADING_3]: (node: Block | Inline, children: React.ReactNode) => {
+      idHierarchy.setLevel(3, node)
+      return <h3 id={idHierarchy.currentId()}>{children}</h3>
+    },
+    [BLOCKS.HEADING_4]: (node: Block | Inline, children: React.ReactNode) => {
+      idHierarchy.setLevel(4, node)
+      return <h4 id={idHierarchy.currentId()}>{children}</h4>
+    },
+    [BLOCKS.HEADING_5]: (node: Block | Inline, children: React.ReactNode) => {
+      idHierarchy.setLevel(5, node)
+      return <h5 id={idHierarchy.currentId()}>{children}</h5>
+    },
+    [BLOCKS.HEADING_6]: (node: Block | Inline, children: React.ReactNode) => {
+      idHierarchy.setLevel(6, node)
+      return <h6 id={idHierarchy.currentId()}>{children}</h6>
+    },
+    [BLOCKS.PARAGRAPH]: (node: Block | Inline, children: React.ReactNode) => {
       if (!children) {
         return <p></p>
       }
@@ -148,14 +149,14 @@ const richTextRenderOptions = {
       }
     },
   },
-}
+})
 
 export interface RichTextProps {
   content: RichTextFragment
 }
 
 const RichText = ({ content }: RichTextProps) => (
-  <>{renderRichText(content, richTextRenderOptions)}</>
+  <>{renderRichText(content, richTextRenderOptions(new IdHierarchy()))}</>
 )
 
 export default RichText

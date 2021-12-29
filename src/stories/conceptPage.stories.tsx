@@ -2,10 +2,9 @@ import React from "react"
 import { decorator } from "../../.storybook/mocks/gatsby"
 import ConceptPageTemplate from "../templates/conceptPage"
 import {
-  allContentfulStartseite,
   conceptPageWithAllOptionalContent,
+  generalPageStaticQuery,
 } from "../test-fixtures/content"
-import site from "../test-fixtures/site"
 
 export default {
   title: "Pages/Concept Page",
@@ -13,10 +12,7 @@ export default {
   decorators: [decorator],
   parameters: {
     chromatic: { disableSnapshot: false, viewports: [414, 1200] },
-    staticQuery: {
-      allContentfulStartseite: allContentfulStartseite(),
-      site: site(),
-    },
+    staticQuery: generalPageStaticQuery(),
   },
 }
 

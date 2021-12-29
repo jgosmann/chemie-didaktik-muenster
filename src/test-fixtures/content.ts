@@ -1,5 +1,6 @@
 import { fileNode, largeFill, youtubeThumbnail } from "./images"
-import { loremIpsum, richText } from "./richText"
+import { loremIpsum, richText, richTextMultipleHeadings } from "./richText"
+import site from "./site"
 import { testVideoUrl } from "./video"
 
 export const slogan = ({
@@ -110,4 +111,12 @@ export const allContentfulStartseite = () => ({
       ],
     },
   ],
+})
+
+export const generalPageStaticQuery = () => ({
+  allContentfulStartseite: allContentfulStartseite(),
+  site: site(),
+  faq: {
+    content: richTextMultipleHeadings,
+  },
 })
