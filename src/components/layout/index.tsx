@@ -34,7 +34,7 @@ export const LayoutView = ({
     <Header />
     <SideNav isOpen={isSideNavOpen} onClose={() => setIsSideNavOpen(false)} />
     <div className="flex flex-col h-screen">
-      <div className="flex grow lg:ml-96">
+      <div className="flex grow lg:ml-96 mt-16">
         <main className="px-8 pt-4 mb-24 grow overflow-hidden">
           <div className="flex justify-between">
             <Breadcrumbs crumbs={crumbs} />
