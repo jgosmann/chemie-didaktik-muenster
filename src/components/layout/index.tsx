@@ -35,7 +35,7 @@ export const LayoutView = ({
     <SideNav isOpen={isSideNavOpen} onClose={() => setIsSideNavOpen(false)} />
     <div className="flex flex-col h-screen">
       <div className="flex grow lg:ml-96 mt-16">
-        <main className="px-8 pt-4 mb-24 grow overflow-hidden">
+        <div className="px-8 pt-4 mb-24 grow overflow-hidden">
           <div className="flex justify-between">
             <Breadcrumbs crumbs={crumbs} />
             <button
@@ -45,8 +45,8 @@ export const LayoutView = ({
               <FontAwesomeIcon icon={faBars} />
             </button>
           </div>
-          {children}
-        </main>
+          <main>{children}</main>
+        </div>
       </div>
       <Footer />
     </div>
