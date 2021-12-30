@@ -12,11 +12,13 @@ const Header = () => (
       />
     </a>
     <div
-      className="text-white m-3"
+      className="text-white m-3 whitespace-nowrap overflow-hidden"
       style={{ textShadow: "1px 1px 2px rgba(0, 0, 0, 0.1)" }}
     >
-      <div>Chemie verstehen</div>
-      <div style={{ marginLeft: 48 }}>Unterricht erneuern</div>
+      <div className="truncate">Chemie verstehen</div>
+      <div style={{ marginLeft: 48 }} className="truncate">
+        Unterricht erneuern
+      </div>
     </div>
   </header>
 )
