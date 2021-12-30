@@ -13,6 +13,7 @@ export default {
   parameters: {
     chromatic: { disableSnapshot: false, viewports: [414, 1200] },
     staticQuery: generalPageStaticQuery(),
+    layout: "fullscreen",
   },
 }
 

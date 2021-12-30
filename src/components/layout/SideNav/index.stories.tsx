@@ -7,6 +7,9 @@ import { richTextMultipleHeadings } from "../../../test-fixtures/richText"
 export default {
   title: "Layout/Side Navigation",
   component: SideNavView,
+  parameters: {
+    layout: "fullscreen",
+  },
 }
 
 const queryData = {

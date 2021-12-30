@@ -10,6 +10,7 @@ export default {
   parameters: {
     chromatic: { disableSnapshot: false },
     staticQuery: generalPageStaticQuery(),
+    layout: "fullscreen",
   },
 }
 
