@@ -71,82 +71,86 @@ export const SideNavView = ({
 }: SideNavViewProps): JSX.Element => {
   const startPage = nodes[0]
   return (
-    <nav
-      className={`fixed lg:static top-0 bg-gray-100 text-lg lg:text-base h-screen lg:h-full w-11/12 lg:w-max lg:max-w-sm z-50 lg:z-auto lg:shadow-lg p-8 overflow-scroll transform transition-transform ${
+    <div
+      className={`fixed top-0 z-50 lg:z-30 h-screen w-11/12 lg:w-max lg:max-w-sm lg:pt-16 bg-gray-100 lg:shadow-lg transform transition-transform ${
         isOpen ? "translate-x-0 shadow-lg" : "-translate-x-full"
-      } lg:translate-x-0 shrink-0`}
+      } lg:translate-x-0`}
     >
-      <ul className="divide-y divide-gray-400">
-        <TopItem>
-          <TopLink crumbs={startPage.crumbs}>{startPage.title}</TopLink>
-        </TopItem>
-        {startPage.conceptPages.map(conceptPage => (
-          <TopItem key={conceptPage.id}>
+      <nav
+        className={`text-lg lg:text-base h-full lg:pb-40 p-8 overflow-scroll`}
+      >
+        <ul className="divide-y divide-gray-400">
+          <TopItem>
+            <TopLink crumbs={startPage.crumbs}>{startPage.title}</TopLink>
+          </TopItem>
+          {startPage.conceptPages.map(conceptPage => (
+            <TopItem key={conceptPage.id}>
+              <Collapsible
+                label={
+                  <TopLink crumbs={conceptPage.crumbs}>
+                    <ConceptTitle
+                      title={conceptPage.title}
+                      titleImage={conceptPage.titleImage}
+                    />
+                  </TopLink>
+                }
+              >
+                {conceptPage.linkedContent && (
+                  <ul className="pl-4 divide-y divide-gray-400">
+                    {conceptPage.linkedContent.map(linkedContent => (
+                      <li key={linkedContent.id} className="py-1">
+                        <CrumbLink crumbs={linkedContent.crumbs}>
+                          {linkedContent.title}
+                        </CrumbLink>
+                      </li>
+                    ))}
+                    {!!conceptPage.studentPresentations && (
+                      <li className="py-1">
+                        <CrumbLink
+                          crumbs={[
+                            ...conceptPage.crumbs,
+                            { slug: "weitere-schuelervorstellungen" },
+                          ]}
+                        >
+                          Weitere Schülervorstellungen
+                        </CrumbLink>
+                      </li>
+                    )}
+                    {!!conceptPage.additionalBackground && (
+                      <li className="py-1">
+                        <CrumbLink
+                          crumbs={[
+                            ...conceptPage.crumbs,
+                            { slug: "weitere-hintergruende" },
+                          ]}
+                        >
+                          Weitere Hintergründe
+                        </CrumbLink>
+                      </li>
+                    )}
+                  </ul>
+                )}
+              </Collapsible>
+            </TopItem>
+          ))}
+          <TopItem>
             <Collapsible
               label={
-                <TopLink crumbs={conceptPage.crumbs}>
-                  <ConceptTitle
-                    title={conceptPage.title}
-                    titleImage={conceptPage.titleImage}
-                  />
-                </TopLink>
+                <TopLink crumbs={[{ slug: "" }, { slug: "faq" }]}>FAQ</TopLink>
               }
             >
-              {conceptPage.linkedContent && (
-                <ul className="pl-4 divide-y divide-gray-400">
-                  {conceptPage.linkedContent.map(linkedContent => (
-                    <li key={linkedContent.id} className="py-1">
-                      <CrumbLink crumbs={linkedContent.crumbs}>
-                        {linkedContent.title}
-                      </CrumbLink>
-                    </li>
-                  ))}
-                  {!!conceptPage.studentPresentations && (
-                    <li className="py-1">
-                      <CrumbLink
-                        crumbs={[
-                          ...conceptPage.crumbs,
-                          { slug: "weitere-schuelervorstellungen" },
-                        ]}
-                      >
-                        Weitere Schülervorstellungen
-                      </CrumbLink>
-                    </li>
-                  )}
-                  {!!conceptPage.additionalBackground && (
-                    <li className="py-1">
-                      <CrumbLink
-                        crumbs={[
-                          ...conceptPage.crumbs,
-                          { slug: "weitere-hintergruende" },
-                        ]}
-                      >
-                        Weitere Hintergründe
-                      </CrumbLink>
-                    </li>
-                  )}
-                </ul>
-              )}
+              <Faq faq={faq} />
             </Collapsible>
           </TopItem>
-        ))}
-        <TopItem>
-          <Collapsible
-            label={
-              <TopLink crumbs={[{ slug: "" }, { slug: "faq" }]}>FAQ</TopLink>
-            }
-          >
-            <Faq faq={faq} />
-          </Collapsible>
-        </TopItem>
-      </ul>
-      <button
-        onClick={onClose}
-        className="absolute text-2xl text-gray-600 top-2 right-4 lg:hidden"
-      >
-        <FontAwesomeIcon icon={faTimesCircle} />
-      </button>
-    </nav>
+        </ul>
+        <button
+          onClick={onClose}
+          className="absolute text-2xl text-gray-600 top-2 right-4 lg:hidden"
+        >
+          <FontAwesomeIcon icon={faTimesCircle} />
+        </button>
+      </nav>
+    </div>
   )
 }
 

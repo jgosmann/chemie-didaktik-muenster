@@ -30,22 +30,27 @@ export const LayoutView = ({
   isSideNavOpen,
   setIsSideNavOpen,
 }: LayoutViewProps) => (
-  <div className="flex flex-col h-screen">
+  <>
     <Header />
-    <div className="flex grow">
-      <SideNav isOpen={isSideNavOpen} onClose={() => setIsSideNavOpen(false)} />
-      <main className="px-8 pt-4 mb-24 grow overflow-hidden">
-        <div className="flex justify-between">
-          <Breadcrumbs crumbs={crumbs} />
-          <button onClick={() => setIsSideNavOpen(true)} className="lg:hidden">
-            <FontAwesomeIcon icon={faBars} />
-          </button>
-        </div>
-        {children}
-      </main>
+    <SideNav isOpen={isSideNavOpen} onClose={() => setIsSideNavOpen(false)} />
+    <div className="flex flex-col h-screen">
+      <div className="flex grow lg:ml-96">
+        <main className="px-8 pt-4 mb-24 grow overflow-hidden">
+          <div className="flex justify-between">
+            <Breadcrumbs crumbs={crumbs} />
+            <button
+              onClick={() => setIsSideNavOpen(true)}
+              className="lg:hidden"
+            >
+              <FontAwesomeIcon icon={faBars} />
+            </button>
+          </div>
+          {children}
+        </main>
+      </div>
+      <Footer />
     </div>
-    <Footer />
-  </div>
+  </>
 )
 
 const Layout = (props: LayoutProps) => {

@@ -4,7 +4,7 @@ import * as React from "react"
 import { DefaultCryptedEmail, DefaultCryptedPhone } from "../crypted"
 
 const Footer = () => (
-  <footer className="bg-gray-400 text-gray-100 text-xs flex flex-wrap justify-between place-items-top z-10">
+  <footer className="bg-gray-400 text-gray-100 text-xs flex flex-wrap justify-between place-items-top z-40">
     <div className="w-1/3 min-w-max box-border p-3 shrink">
       <span className="uppercase font-semibold">Kontakt</span>
       <br />

@@ -2,7 +2,7 @@ import * as React from "react"
 import { StaticImage } from "gatsby-plugin-image"
 
 const Header = () => (
-  <header className="bg-primary flex flex-nowrap items-center justify-between shadow">
+  <header className="sticky top-0 h-16 z-50 bg-primary flex flex-nowrap items-center justify-between shadow">
     <a href="https://www.uni-muenster.de/Chemie.dc/">
       <StaticImage
         src="../../images/cdm-logo-white.png"
