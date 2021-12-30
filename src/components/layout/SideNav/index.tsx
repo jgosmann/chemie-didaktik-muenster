@@ -1,4 +1,4 @@
-import { faTimesCircle } from "@fortawesome/free-solid-svg-icons"
+import { faTimes } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { graphql, useStaticQuery } from "gatsby"
 import { IGatsbyImageData } from "gatsby-plugin-image"
@@ -145,9 +145,9 @@ export const SideNavView = ({
         </ul>
         <button
           onClick={onClose}
-          className="absolute text-2xl text-gray-600 top-2 right-4 lg:hidden"
+          className="fixed text-2xl bg-gray-600 text-gray-100 top-2 right-2 lg:hidden rounded-full border border-gray-100 border-4 shadow-lg"
         >
-          <FontAwesomeIcon icon={faTimesCircle} />
+          <FontAwesomeIcon icon={faTimes} fixedWidth />
         </button>
       </nav>
     </div>
