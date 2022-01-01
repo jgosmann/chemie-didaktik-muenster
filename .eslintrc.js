@@ -1,18 +1,47 @@
 module.exports = {
   env: {
     es2021: true,
-    node: true,
+    browser: true,
   },
   extends: [
     "eslint:recommended",
     "plugin:storybook/recommended",
     "plugin:jest-dom/recommended",
   ],
+  plugins: ["react", "@typescript-eslint"],
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+    ecmaVersion: 13,
+    sourceType: "module",
+  },
   overrides: [
     {
-      files: ["gatsby-browser.js", ".storybook/*.js"],
-      parserOptions: {
-        sourceType: "module",
+      files: ["*.ts", "*.tsx"],
+      extends: [
+        "eslint:recommended",
+        "plugin:storybook/recommended",
+        "plugin:jest-dom/recommended",
+        "plugin:@typescript-eslint/recommended",
+      ],
+    },
+    {
+      files: [
+        "gatsby-browser.js",
+        "gatsby-config.js",
+        "gatsby-node.js",
+        "jest.config.js",
+        "jest-preprocess.js",
+        "loadershim.js",
+        "postcss.config.js",
+        ".storybook/*.js",
+        ".storybook/mocks/*.js",
+        "tailwind.config.js",
+      ],
+      env: {
+        browser: false,
+        node: true,
       },
     },
     {
