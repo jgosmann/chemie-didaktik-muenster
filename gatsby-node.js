@@ -127,6 +127,20 @@ exports.createSchemaCustomization = ({ actions }) => {
   `)
 }
 
+const createYoutubeThumbFileNode = async (videoId, options) => {
+  try {
+    return await createRemoteFileNode({
+      ...options,
+      url: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+    })
+  } catch (err) {
+    return await createRemoteFileNode({
+      ...options,
+      url: `https://img.youtube.com/vi/${videoId}/default.jpg`,
+    })
+  }
+}
+
 exports.onCreateNode = async ({
   node,
   actions: { createNode, createNodeField },
@@ -137,8 +151,7 @@ exports.onCreateNode = async ({
   const createYoutubeThumbNode = async fieldName => {
     if (node[fieldName]) {
       const videoId = extractVideoId(node[fieldName])
-      const fileNode = await createRemoteFileNode({
-        url: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+      let fileNode = await createYoutubeThumbFileNode(videoId, {
         parentNodeId: node.id,
         createNode,
         createNodeId,
@@ -160,8 +173,7 @@ exports.onCreateNode = async ({
     const fileNodes = await Promise.all(
       videoIds.map(videoId => {
         console.log(`create node for ${videoId}`)
-        return createRemoteFileNode({
-          url: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+        return createYoutubeThumbFileNode(videoId, {
           parentNodeId: node.id,
           createNode,
           createNodeId,
