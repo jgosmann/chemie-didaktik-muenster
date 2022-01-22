@@ -16,7 +16,7 @@ const CollapsibleView = ({
   onToggle,
 }: CollapsibleViewProps): JSX.Element => {
   const ref = React.useRef<HTMLDivElement>(null)
-  const [height, setHeight] = React.useState(0)
+  const [height, setHeight] = React.useState(isExpanded ? undefined : 0)
   useEffect(() => {
     const rerender = () => {
       setHeight(ref.current?.scrollHeight)
