@@ -5,6 +5,7 @@ module.exports = {
   },
   extends: [
     "eslint:recommended",
+    "plugin:react/recommended",
     "plugin:storybook/recommended",
     "plugin:jest-dom/recommended",
   ],
@@ -16,6 +17,7 @@ module.exports = {
     ecmaVersion: 13,
     sourceType: "module",
   },
+  settings: { react: { version: "detect" } },
   overrides: [
     {
       files: ["*.ts", "*.tsx"],
@@ -28,7 +30,6 @@ module.exports = {
     },
     {
       files: [
-        "gatsby-browser.js",
         "gatsby-config.js",
         "gatsby-node.js",
         "jest.config.js",
