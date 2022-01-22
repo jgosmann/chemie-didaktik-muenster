@@ -1,4 +1,5 @@
 const colors = require("tailwindcss/colors")
+const defaultTheme = require("tailwindcss/defaultTheme")
 
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
@@ -15,6 +16,9 @@ module.exports = {
       black: colors.black,
     },
     extend: {
+      fontFamily: {
+        sans: ['"Open Sans"', ...defaultTheme.fontFamily.sans],
+      },
       typography: theme => ({
         DEFAULT: {
           css: {
