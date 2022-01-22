@@ -8,10 +8,11 @@ export type CollapsibleProps = Pick<
   CollapsibleViewProps,
   "label" | "children" | "renderLabel"
 > &
-  Pick<CollapsibleControllerProps, "initExpanded">
+  Pick<CollapsibleControllerProps, "initExpanded" | "expandOnHash">
 
 const Collapsible = ({
   initExpanded,
+  expandOnHash,
   label,
   children,
   renderLabel,
@@ -19,6 +20,7 @@ const Collapsible = ({
   return (
     <CollapsibleController
       initExpanded={initExpanded}
+      expandOnHash={expandOnHash}
       render={({ isExpanded, onToggle }) => (
         <CollapsibleView
           label={label}
