@@ -35,6 +35,10 @@
   }
 }
 
+.no-image-transition.gatsby-image-wrapper [data-main-image] {
+  transition: none;
+}
+
 .breadcrumbs li:not(:last-child)::after {
   content: " / ";
 }

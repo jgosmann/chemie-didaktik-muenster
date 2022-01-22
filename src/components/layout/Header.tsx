@@ -8,7 +8,8 @@ const Header = () => (
         src="../../images/cdm-logo-white.png"
         alt="Chemie Didaktik Münster"
         height={48}
-        className="m-3"
+        className="m-3 no-image-transition"
+        placeholder="none"
       />
     </a>
     <div
