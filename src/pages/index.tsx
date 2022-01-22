@@ -5,9 +5,10 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 import Card from "../components/Card"
 import SloganCarousel, { SloganFragment } from "../components/SloganCarousel"
-import RichText, { RichTextFragment } from "../components/RichText"
+import RichText from "../components/RichText"
 import ConceptTitle from "../components/ConceptTitle"
 import { IGatsbyImageData, ImageDataLike } from "gatsby-plugin-image"
+import { RichTextFragment } from "../components/RichText/RichText"
 
 interface IndexPageQuery {
   allContentfulStartseite: {

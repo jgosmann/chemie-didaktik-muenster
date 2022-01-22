@@ -4,7 +4,7 @@ let nextStaticQueryResult
 
 module.exports.useStaticQuery = () => nextStaticQueryResult
 
-module.exports.decorator = (story, { parameters }) => {
+module.exports.gatsbyDecorator = (story, { parameters }) => {
   if (parameters && parameters.staticQuery) {
     nextStaticQueryResult = parameters.staticQuery
   }

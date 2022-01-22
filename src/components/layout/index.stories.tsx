@@ -1,14 +1,14 @@
-import { ComponentStory } from "@storybook/react"
 import React from "react"
-import { LayoutView, LayoutViewProps } from "."
-import { decorator } from "../../../.storybook/mocks/gatsby"
+import { gatsbyDecorator } from "../../../.storybook/mocks/gatsby"
 import { allContentfulStartseite } from "../../test-fixtures/content"
 import { richTextContainingAllElements } from "../../test-fixtures/richText"
+import Layout, { LayoutProps } from "./Layout"
+import { StaticLayoutView, StaticLayoutViewProps } from "./StaticLayout"
 
 export default {
   title: "Layout",
-  component: LayoutView,
-  decorators: [decorator],
+  component: StaticLayoutView,
+  decorators: [gatsbyDecorator],
   parameters: {
     chromatic: { disableSnapshot: false, viewports: [414, 1200] },
     staticQuery: {
@@ -21,13 +21,19 @@ export default {
   },
 }
 
-const Template: ComponentStory<typeof LayoutView> = ({
+const Template = ({
   children,
+  crumbs,
   ...args
-}: LayoutViewProps) => <LayoutView {...args}>{children}</LayoutView>
+}: StaticLayoutViewProps & LayoutProps) => (
+  <StaticLayoutView {...args}>
+    <Layout crumbs={crumbs}>{children}</Layout>
+  </StaticLayoutView>
+)
 
 export const SideNavClosed = Template.bind({})
 SideNavClosed.args = {
+  activeCrumbs: [{ slug: "" }],
   children: "content",
   crumbs: [
     { title: "Startseite", slug: "" },

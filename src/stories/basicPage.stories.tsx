@@ -1,13 +1,14 @@
 import React from "react"
-import { decorator } from "../../.storybook/mocks/gatsby"
+import { gatsbyDecorator } from "../../.storybook/mocks/gatsby"
 import BasicPageTemplate from "../templates/basicPage"
 import { generalPageStaticQuery } from "../test-fixtures/content"
 import { loremIpsum } from "../test-fixtures/richText"
+import StaticLayoutDecorator from "./StaticLayoutDecorator"
 
 export default {
   title: "Pages/Basic Page",
   component: BasicPageTemplate,
-  decorators: [decorator],
+  decorators: [StaticLayoutDecorator, gatsbyDecorator],
   parameters: {
     chromatic: { disableSnapshot: false },
     staticQuery: generalPageStaticQuery(),
