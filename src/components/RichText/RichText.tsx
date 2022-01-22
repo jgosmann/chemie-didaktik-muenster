@@ -237,6 +237,7 @@ class CollapseHeadingsRenderer implements Renderer {
     const previousSectionRender = currentSectionHeading ? (
       <Collapsible
         label={currentSectionHeading.children}
+        expandOnHash={`#${currentSectionHeading.id}`}
         renderLabel={({ label, isExpanded, onToggle }) => {
           const HeadingTag = `h${currentSectionHeading.level}` as keyof JSX.IntrinsicElements
           return (

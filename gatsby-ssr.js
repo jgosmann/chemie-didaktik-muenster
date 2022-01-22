@@ -8,7 +8,12 @@
 
 import React from "react"
 import { StaticLayout } from "./src/components/layout"
+import LocationContext from "./src/components/LocationContext"
 
 export const wrapPageElement = ({ element, props }) => {
-  return <StaticLayout {...props}>{element}</StaticLayout>
+  return (
+    <LocationContext.Provider value={props.location}>
+      <StaticLayout {...props}>{element}</StaticLayout>
+    </LocationContext.Provider>
+  )
 }
