@@ -1,4 +1,4 @@
-import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons"
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import React, { useEffect } from "react"
 
@@ -31,7 +31,10 @@ export const ToggleButton = ({
     className={`bg-gray-600 text-gray-200 rounded w-7 h-7 leading-7 shrink-0 ${className}`}
     title={isExpanded ? "Einklappen" : "Ausklappen"}
   >
-    <FontAwesomeIcon icon={isExpanded ? faChevronUp : faChevronDown} />
+    <FontAwesomeIcon
+      icon={faChevronDown}
+      className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}
+    />
   </button>
 )
 
