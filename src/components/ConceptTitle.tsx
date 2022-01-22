@@ -13,7 +13,13 @@ const ConceptTitle = ({
   title,
 }: ConceptTitleProps): JSX.Element => {
   if (titleImage) {
-    return <GatsbyImage image={titleImage.gatsbyImageData} alt={title} />
+    return (
+      <GatsbyImage
+        image={titleImage.gatsbyImageData}
+        alt={title}
+        className="no-image-transition"
+      />
+    )
   }
   return <>{title}</>
 }
