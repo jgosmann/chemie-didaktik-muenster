@@ -1,5 +1,5 @@
 import React from "react"
-import { decorator } from "../../.storybook/mocks/gatsby"
+import { gatsbyDecorator } from "../../.storybook/mocks/gatsby"
 import DetailsPageTemplate from "../templates/detailsPage"
 import {
   conceptPageWithAllOptionalContent,
@@ -8,11 +8,12 @@ import {
 import { fileNode, youtubeThumbnail } from "../test-fixtures/images"
 import { loremIpsum } from "../test-fixtures/richText"
 import { testVideoId } from "../test-fixtures/video"
+import StaticLayoutDecorator from "./StaticLayoutDecorator"
 
 export default {
   title: "Pages/Details Page",
   component: DetailsPageTemplate,
-  decorators: [decorator],
+  decorators: [StaticLayoutDecorator, gatsbyDecorator],
   parameters: {
     chromatic: { disableSnapshot: false, viewports: [414, 1200, 1800] },
     staticQuery: generalPageStaticQuery(),

@@ -1,12 +1,13 @@
 import React from "react"
 import NotFoundPage from "../pages/404"
-import { decorator } from "../../.storybook/mocks/gatsby"
+import { gatsbyDecorator } from "../../.storybook/mocks/gatsby"
 import { generalPageStaticQuery } from "../test-fixtures/content"
+import StaticLayoutDecorator from "./StaticLayoutDecorator"
 
 export default {
   title: "Pages/Not Found",
   component: NotFoundPage,
-  decorators: [decorator],
+  decorators: [StaticLayoutDecorator, gatsbyDecorator],
   parameters: {
     chromatic: { disableSnapshot: false },
     staticQuery: generalPageStaticQuery(),
