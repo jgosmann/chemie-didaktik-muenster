@@ -61,6 +61,7 @@ export const richTextMultipleHeadings = {
     '{"nodeType":"text","value":"heading 1b","marks":[],"data":{}}]},' +
     '{"nodeType":"paragraph","data":{},"content":[' +
     '{"nodeType":"text","value":"normal text ","marks":[],"data":{}}]}]}',
+  references: [],
 }
 
 export const richTextContainingAllElements = {

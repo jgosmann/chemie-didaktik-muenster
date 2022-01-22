@@ -1,13 +1,14 @@
 import { graphql } from "gatsby"
 import * as React from "react"
 import { Breadcrumb } from "../components/navigation/Breadcrumbs"
-import { RichTextFragment } from "../components/RichText"
+import { RichTextFragment } from "../components/RichText/RichText"
 import PureRichTextPage, { PureRichTextPageProps } from "./pureRichTextPage"
 
 interface BasicPageQuery {
   contentfulBasicPage: {
     title: string
     crumbs: Breadcrumb[]
+    collapse: boolean
     content: RichTextFragment
   }
 }
@@ -20,6 +21,7 @@ export const query = graphql`
         title
         slug
       }
+      collapse
       content {
         raw
         references: typesafeReferences {
@@ -53,10 +55,16 @@ export interface DetailsPageProps {
 }
 
 const BasicPage = ({ data, pageContext }: DetailsPageProps) => {
-  const { content, crumbs, title } = data.contentfulBasicPage
+  const { content, collapse, crumbs, title } = data.contentfulBasicPage
   return (
     <PureRichTextPage
-      pageContext={{ ...pageContext, content, crumbs, title }}
+      pageContext={{
+        ...pageContext,
+        content,
+        collapseHeadings: collapse,
+        crumbs,
+        title,
+      }}
     />
   )
 }

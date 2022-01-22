@@ -40,6 +40,10 @@ export class IdHierarchy {
   currentId() {
     return `section-${this.hierarchy.filter(id => !!id).join("-")}`
   }
+
+  currentDepth() {
+    return this.hierarchy.filter(level => level !== "").length
+  }
 }
 
 export interface TocNode extends Node {

@@ -1,7 +1,11 @@
 import React from "react"
-import { richTextContainingAllElements } from "../../test-fixtures/richText"
+import {
+  richTextContainingAllElements,
+  richTextMultipleHeadings,
+} from "../../test-fixtures/richText"
 
 import RichTextComponent from "."
+import { userEvent, within } from "@storybook/testing-library"
 
 export default {
   title: "Rich Text",
@@ -18,6 +22,14 @@ export default {
   },
 }
 
-export const RichText = () => (
+export const Default = () => (
   <RichTextComponent content={richTextContainingAllElements} />
 )
+
+export const Collapsible = () => (
+  <RichTextComponent content={richTextMultipleHeadings} collapseHeadings />
+)
+Collapsible.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement)
+  await userEvent.click(canvas.getAllByRole("button")[0])
+}

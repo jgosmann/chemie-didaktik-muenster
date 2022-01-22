@@ -8,18 +8,21 @@ import { RichTextFragment } from "../components/RichText/RichText"
 export interface PureRichTextPageProps {
   pageContext: {
     content: RichTextFragment
+    collapseHeadings?: boolean
     crumbs: Breadcrumb[]
     title: string
   }
 }
 
 const PureRichTextPage = ({
-  pageContext: { content, crumbs, title },
+  pageContext: { content, collapseHeadings, crumbs, title },
 }: PureRichTextPageProps) => (
   <Layout crumbs={crumbs}>
     <Seo title={title} />
     <div className="prose mx-auto">
-      {content && <RichText content={content} />}
+      {content && (
+        <RichText content={content} collapseHeadings={collapseHeadings} />
+      )}
     </div>
   </Layout>
 )
