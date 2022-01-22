@@ -25,6 +25,7 @@ export const BasicPage = () => (
           { title: "Startseite", slug: "" },
           { title: "Basic page", slug: "basic-page" },
         ],
+        collapse: false,
         content: loremIpsum(),
       },
     }}

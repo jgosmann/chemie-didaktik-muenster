@@ -6,7 +6,7 @@ import CollapsibleView, { CollapsibleViewProps } from "./CollapsibleView"
 
 export type CollapsibleProps = Pick<
   CollapsibleViewProps,
-  "label" | "children"
+  "label" | "children" | "renderLabel"
 > &
   Pick<CollapsibleControllerProps, "initExpanded">
 
@@ -14,6 +14,7 @@ const Collapsible = ({
   initExpanded,
   label,
   children,
+  renderLabel,
 }: CollapsibleProps): JSX.Element => {
   return (
     <CollapsibleController
@@ -23,6 +24,7 @@ const Collapsible = ({
           label={label}
           isExpanded={isExpanded}
           onToggle={onToggle}
+          renderLabel={renderLabel}
         >
           {children}
         </CollapsibleView>
