@@ -144,7 +144,7 @@ module.exports = {
             {
               id: `${page.id}-hintergruende`,
               crumbs: [
-                page.crumbs,
+                ...page.crumbs,
                 {
                   title: "Weitere Hintergründe",
                   slug: "weitere-hintergruende",
@@ -156,7 +156,7 @@ module.exports = {
             {
               id: `${page.id}-schuelervorstellungen`,
               crumbs: [
-                page.crumbs,
+                ...page.crumbs,
                 {
                   title: "Weitere Schülervorstellungen",
                   slug: "weitere-schuelervorstellungen",
