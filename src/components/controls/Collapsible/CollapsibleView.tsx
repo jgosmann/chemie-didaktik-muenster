@@ -33,7 +33,9 @@ export const ToggleButton = ({
   >
     <FontAwesomeIcon
       icon={faChevronDown}
-      className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}
+      className={`motion-safe:transition-transform ${
+        isExpanded ? "rotate-180" : ""
+      }`}
     />
   </button>
 )
@@ -78,10 +80,9 @@ const CollapsibleView = ({
       {renderLabel({ label, isExpanded, onToggle })}
       <div
         ref={ref}
-        className="overflow-hidden"
+        className="overflow-hidden transition-height"
         style={{
           maxHeight: isExpanded ? height : 0,
-          transition: "max-height 0.2s ease-out",
         }}
       >
         {children}

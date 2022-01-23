@@ -36,11 +36,15 @@ interface CarousalProps {
 }
 
 const Carousel = ({ slogans, autoplay }: CarousalProps) => {
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)")?.matches
   return (
     <div style={{ fontSize: 0 }}>
       <Slider
-        autoplay={autoplay}
+        autoplay={autoplay && !prefersReducedMotion}
         autoplaySpeed={5000}
+        speed={prefersReducedMotion ? 0 : 300}
         dots
         className="rounded shadow overflow-hidden my-8"
       >
