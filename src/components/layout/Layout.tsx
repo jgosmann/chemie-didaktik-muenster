@@ -21,7 +21,7 @@ const Layout = ({ children, crumbs }: LayoutProps) => {
   const setIsSideNavOpen = useContext(SetIsSideNavOpenContext)
   return (
     <div className="px-8 pt-4 mb-24 grow overflow-hidden">
-      <div className="flex justify-between">
+      <div className="flex justify-between mb-4">
         <Breadcrumbs crumbs={crumbs} />
         <button onClick={() => setIsSideNavOpen(true)} className="lg:hidden">
           <FontAwesomeIcon icon={faBars} />

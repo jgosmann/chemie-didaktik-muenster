@@ -1,6 +1,6 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { graphql, useStaticQuery } from "gatsby"
+import { graphql, navigate, useStaticQuery, withPrefix } from "gatsby"
 import { IGatsbyImageData } from "gatsby-plugin-image"
 import * as React from "react"
 import Collapsible from "../../controls/Collapsible"
@@ -8,6 +8,7 @@ import ConceptTitle from "../../ConceptTitle"
 import CrumbLink from "../../navigation/CrumbLink"
 import Faq, { FaqProps } from "./Faq"
 import { RichTextFragment } from "../../RichText/RichText"
+import SearchInput from "../../search/SearchInput"
 
 interface TopLinkProps {
   crumbs: {
@@ -69,16 +70,35 @@ export const SideNavView = ({
     faq,
   },
 }: SideNavViewProps): JSX.Element => {
+  const [query, setQuery] = React.useState("")
   const startPage = nodes[0]
   return (
     <div
-      className={`fixed top-0 z-50 lg:z-30 h-screen w-11/12 lg:w-max lg:max-w-sm lg:pt-16 bg-gray-100 lg:shadow-lg transform transition-transform ${
+      className={`fixed top-0 z-50 lg:z-30 flex flex-col h-screen w-11/12 lg:w-max lg:max-w-sm lg:pt-16 bg-gray-100 lg:shadow-lg transform transition-transform ${
         isOpen ? "translate-x-0 shadow-lg" : "-translate-x-full"
       } lg:translate-x-0`}
     >
-      <nav
-        className={`text-lg lg:text-base h-full lg:pb-40 p-8 overflow-scroll`}
+      <form
+        action={withPrefix("/search")}
+        method="get"
+        onSubmit={ev => {
+          const searchParams = new URLSearchParams()
+          searchParams.set("q", query)
+          navigate("/search?" + searchParams.toString())
+          ev.preventDefault()
+        }}
+        className="p-8 pb-0"
       >
+        <label htmlFor="q" className="sr-only">
+          Suchbegriff:
+        </label>
+        <SearchInput
+          placeholder="Suche"
+          value={query}
+          onQueryChange={setQuery}
+        />
+      </form>
+      <nav className={`text-lg lg:text-base lg:pb-40 p-8 overflow-scroll`}>
         <ul className="divide-y divide-gray-400">
           <TopItem>
             <TopLink crumbs={startPage.crumbs}>{startPage.title}</TopLink>
