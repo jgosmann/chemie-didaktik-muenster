@@ -65,6 +65,12 @@
   max-height: 80vh;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .transition-height {
+    transition: max-height 0.2s ease-out;
+  }
+}
+
 .crypted-email {
   font-size: 0;
 }
