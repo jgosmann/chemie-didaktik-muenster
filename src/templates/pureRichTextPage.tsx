@@ -5,13 +5,14 @@ import RichText from "../components/RichText"
 import Seo from "../components/seo"
 import { RichTextFragment } from "../components/RichText/RichText"
 
+export interface PureRichTextPageContext {
+  content: RichTextFragment
+  collapseHeadings?: boolean
+  crumbs: Breadcrumb[]
+  title: string
+}
 export interface PureRichTextPageProps {
-  pageContext: {
-    content: RichTextFragment
-    collapseHeadings?: boolean
-    crumbs: Breadcrumb[]
-    title: string
-  }
+  pageContext: PureRichTextPageContext
 }
 
 const PureRichTextPage = ({

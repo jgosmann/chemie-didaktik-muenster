@@ -247,11 +247,14 @@ exports.createPages = async ({ actions, graphql }) => {
     return
   }
 
+  const additionalBackgroundPageTemplate = require.resolve(
+    "./src/templates/additionalBackgroundPage.tsx"
+  )
   const basicPageTemplate = require.resolve("./src/templates/basicPage.tsx")
   const conceptPageTemplate = require.resolve("./src/templates/conceptPage.tsx")
   const detailsPageTemplate = require.resolve("./src/templates/detailsPage.tsx")
-  const pureRichTextPageTemplate = require.resolve(
-    "./src/templates/pureRichTextPage.tsx"
+  const studentPresentationsPageTemplate = require.resolve(
+    "./src/templates/studentPresentationsPage.tsx"
   )
 
   result.data.allContentfulConceptPage.nodes.forEach(conceptPage => {
@@ -286,9 +289,9 @@ exports.createPages = async ({ actions, graphql }) => {
         path: `${crumbs
           .map(c => c.slug)
           .join("/")}/weitere-schuelervorstellungen`,
-        component: pureRichTextPageTemplate,
+        component: studentPresentationsPageTemplate,
         context: {
-          content: studentPresentations,
+          id,
           title: "Weitere Schülervorstellungen",
           crumbs: [
             ...crumbs,
@@ -304,9 +307,9 @@ exports.createPages = async ({ actions, graphql }) => {
     if (additionalBackground) {
       createPage({
         path: `${crumbs.map(c => c.slug).join("/")}/weitere-hintergruende`,
-        component: pureRichTextPageTemplate,
+        component: additionalBackgroundPageTemplate,
         context: {
-          content: additionalBackground,
+          id,
           title: "Weitere Hintergründe",
           crumbs: [
             ...crumbs,
