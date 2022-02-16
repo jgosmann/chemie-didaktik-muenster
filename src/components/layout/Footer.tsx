@@ -12,7 +12,7 @@ const Footer = () => (
       <br />
       Institut für Didaktik der Chemie
       <br />
-      Fliednerstraße 21
+      Corrensstr. 48
       <br />
       48149 Münster
       <br />
