@@ -74,7 +74,7 @@ def app():
         yield instance
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def clean_db():
     # pylint: disable=not-context-manager
     with psycopg.connect(
@@ -86,7 +86,7 @@ def clean_db():
             cursor.execute("TRUNCATE clicks")
 
 
-def test_tracked_domains(app, clean_db):
+def test_tracked_domains(app):
     url = app.url("/tracked/domains")
     assert requests.get(url).json() == {"tracked_domains": []}
 
@@ -95,7 +95,7 @@ def test_tracked_domains(app, clean_db):
     assert requests.get(url).json() == data
 
 
-def test_tracked_paths(app, clean_db):
+def test_tracked_paths(app):
     url = app.url("/tracked/paths")
     assert requests.get(url).json() == {"tracked_paths": []}
 
@@ -104,7 +104,7 @@ def test_tracked_paths(app, clean_db):
     assert requests.get(url).json() == data
 
 
-def test_tracks_referrers(app, clean_db):
+def test_tracks_referrers(app):
     assert requests.put(
         app.url("/tracked/domains"),
         json={"tracked_domains": ["source-domain.net", "source-domain.org"]},
@@ -164,13 +164,13 @@ def test_tracks_referrers(app, clean_db):
     }
 
 
-def test_increment_action_without_referer(app, clean_db):
+def test_increment_action_without_referer(app):
     status_code = requests.post(app.url("/actions/increment")).status_code
     assert 400 <= status_code < 500
 
 
 @pytest.mark.parametrize("referer", ["path-only", "//[::1/path"])
-def test_increment_action_without_invalid_referer(referer, app, clean_db):
+def test_increment_action_without_invalid_referer(referer, app):
     status_code = requests.post(
         app.url("/actions/increment"), headers={"Referer": referer}
     ).status_code
