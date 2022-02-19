@@ -20,7 +20,7 @@ class App:
             self._proc = subprocess.Popen(
                 [
                     "uvicorn",
-                    "cdm_analytics:app",
+                    "cdm_analytics.main:app",
                     "--host",
                     self.host,
                     "--port",
@@ -83,6 +83,7 @@ def clean_db():
         with conn.cursor() as cursor:
             cursor.execute("TRUNCATE tracked_domains")
             cursor.execute("TRUNCATE tracked_paths")
+            cursor.execute("TRUNCATE clicks")
 
 
 def test_tracked_domains(app, clean_db):
@@ -101,3 +102,76 @@ def test_tracked_paths(app, clean_db):
     data = {"tracked_paths": ["/a/b/c", "/xyz"]}
     assert requests.put(url, json=data).ok
     assert requests.get(url).json() == data
+
+
+def test_tracks_referrers(app, clean_db):
+    assert requests.put(
+        app.url("/tracked/domains"),
+        json={"tracked_domains": ["source-domain.net", "source-domain.org"]},
+    ).ok
+    assert requests.put(
+        app.url("/tracked/paths"),
+        json={"tracked_paths": ["/path-a", "/path-b", "/path-b/child"]},
+    ).ok
+
+    assert requests.post(
+        app.url("/actions/increment"),
+        headers={"Referer": "http://source-domain.net/path-a"},
+    ).ok
+    assert requests.post(
+        app.url("/actions/increment"),
+        headers={"Referer": "http://www.source-domain.net/path-a"},
+    ).ok
+    assert requests.post(
+        app.url("/actions/increment"),
+        headers={"Referer": "https://www.source-domain.net/path-a"},
+    ).ok
+    assert requests.post(
+        app.url("/actions/increment"),
+        headers={"Referer": "https://source-domain.org/path-b"},
+    ).ok
+    assert requests.post(
+        app.url("/actions/increment"),
+        headers={"Referer": "https://SOURCE-DOMAIN.org/path-b"},
+    ).ok
+    assert requests.post(
+        app.url("/actions/increment"),
+        headers={"Referer": "https://source-domain.org/path-b/child"},
+    ).ok
+    assert requests.post(
+        app.url("/actions/increment"),
+        headers={"Referer": "http://untracked-domain.com/path-a"},
+    )
+    assert requests.post(
+        app.url("/actions/increment"),
+        headers={"Referer": "http://source-domain.org/untracked-path"},
+    )
+
+    assert requests.get(app.url("/statistics/clicks")).json() == {
+        "clicks": [
+            {"domain_name": "source-domain.net", "path": "/path-a", "count": 3},
+            {
+                "domain_name": "source-domain.org",
+                "path": "/path-b",
+                "count": 2,
+            },
+            {
+                "domain_name": "source-domain.org",
+                "path": "/path-b/child",
+                "count": 1,
+            },
+        ]
+    }
+
+
+def test_increment_action_without_referer(app, clean_db):
+    status_code = requests.post(app.url("/actions/increment")).status_code
+    assert 400 <= status_code < 500
+
+
+@pytest.mark.parametrize("referer", ["path-only", "//[::1/path"])
+def test_increment_action_without_invalid_referer(referer, app, clean_db):
+    status_code = requests.post(
+        app.url("/actions/increment"), headers={"Referer": referer}
+    ).status_code
+    assert 400 <= status_code < 500

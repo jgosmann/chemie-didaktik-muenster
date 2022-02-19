@@ -1,8 +1,10 @@
 from typing import List
+from urllib.parse import urlparse
 
 import psycopg
 import yoyo
-from fastapi import FastAPI, responses, status
+from cdm_analytics.domains import all_parent_domains
+from fastapi import FastAPI, Header, HTTPException, responses, status
 from psycopg_pool import AsyncConnectionPool
 from pydantic import BaseModel, BaseSettings
 
@@ -53,7 +55,7 @@ class TrackedDomainsBody(BaseModel):
 
 
 @app.get("/tracked/domains")
-async def get_tracked_domains():
+async def get_tracked_domains() -> TrackedDomainsBody:
     async with db_conn_pool.connection() as conn:
         async with conn.cursor(
             row_factory=psycopg.rows.args_row(lambda domain_name: domain_name)
@@ -85,7 +87,7 @@ class TrackedPathsBody(BaseModel):
 
 
 @app.get("/tracked/paths")
-async def get_tracked_paths():
+async def get_tracked_paths() -> TrackedPathsBody:
     async with db_conn_pool.connection() as conn:
         async with conn.cursor(
             row_factory=psycopg.rows.args_row(lambda domain_name: domain_name)
@@ -110,3 +112,73 @@ async def put_tracked_paths(body: TrackedPathsBody):
                 for path in body.tracked_paths:
                     await copy.write_row((path,))
         await conn.commit()
+
+
+@app.post(
+    "/actions/increment",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=responses.Response,
+)
+async def post_increment_action(referer_header: str = Header(None, alias="Referer")):
+    if not referer_header:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="missing `Referer` header"
+        )
+
+    try:
+        referrer = urlparse(referer_header)
+        if not referrer.hostname:
+            raise ValueError("missing hostname")
+    except ValueError as err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="invalid `Referer` header",
+        ) from err
+
+    async with db_conn_pool.connection() as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute(
+                """
+                SELECT lower(domain_name) FROM tracked_domains
+                WHERE lower(domain_name) = ANY(%s)
+                  AND exists(SELECT 1 FROM tracked_paths WHERE absolute_path = %s)
+            """,
+                (
+                    [referrer.hostname] + list(all_parent_domains(referrer.hostname)),
+                    referrer.path,
+                ),
+            )
+            tracking_domain_row = await cursor.fetchone()
+            if tracking_domain_row:
+                await cursor.execute(
+                    """
+                    INSERT INTO clicks (domain_name, absolute_path, click_count)
+                    VALUES (%s, %s, %s)
+                    ON CONFLICT (domain_name, absolute_path)
+                    DO UPDATE SET click_count = clicks.click_count + 1
+                """,
+                    (tracking_domain_row[0], referrer.path, 1),
+                )
+        await conn.commit()
+
+
+class ClickCount(BaseModel):
+    domain_name: str
+    path: str
+    count: int
+
+
+class ClickStatistics(BaseModel):
+    clicks: List[ClickCount]
+
+
+@app.get("/statistics/clicks")
+async def get_statistics_clicks() -> ClickStatistics:
+    async with db_conn_pool.connection() as conn:
+        async with conn.cursor(
+            row_factory=psycopg.rows.class_row(ClickCount)
+        ) as cursor:
+            await cursor.execute(
+                "SELECT domain_name, absolute_path as path, click_count as count FROM clicks"
+            )
+            return ClickStatistics(clicks=await cursor.fetchall())
