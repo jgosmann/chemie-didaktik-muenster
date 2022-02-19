@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from urllib.parse import urlparse
 
 import psycopg
@@ -27,12 +27,30 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-db_conn_pool = AsyncConnectionPool(
-    settings.db_connection_string,
-    min_size=settings.db_pool_min,
-    max_size=settings.db_pool_max,
-)
 app = FastAPI()
+
+
+class DbConnectionPool:
+    _pool: Optional[AsyncConnectionPool]
+
+    def __init__(self):
+        self._pool = None
+
+    def start_pool(self):
+        self._pool = AsyncConnectionPool(
+            settings.db_connection_string,
+            min_size=settings.db_pool_min,
+            max_size=settings.db_pool_max,
+        )
+
+    def connection(self) -> psycopg.AsyncConnection:
+        if not self._pool:
+            raise RuntimeError("connection pool not started")
+        return self._pool.connection()
+
+
+db_conn_pool = DbConnectionPool()
+app.on_event("startup")(db_conn_pool.start_pool)
 
 
 async def db_connection() -> psycopg.AsyncConnection:
