@@ -52,7 +52,7 @@ class TrackedDomainsBody(BaseModel):
     tracked_domains: List[str]
 
 
-@app.get("/tracked-domains")
+@app.get("/tracked/domains")
 async def get_tracked_domains():
     async with db_conn_pool.connection() as conn:
         async with conn.cursor(
@@ -64,7 +64,7 @@ async def get_tracked_domains():
 
 
 @app.put(
-    "/tracked-domains",
+    "/tracked/domains",
     status_code=status.HTTP_204_NO_CONTENT,
     response_class=responses.Response,
 )
@@ -77,4 +77,36 @@ async def put_tracked_domains(body: TrackedDomainsBody):
             ) as copy:
                 for domain in body.tracked_domains:
                     await copy.write_row((domain,))
+        await conn.commit()
+
+
+class TrackedPathsBody(BaseModel):
+    tracked_paths: List[str]
+
+
+@app.get("/tracked/paths")
+async def get_tracked_paths():
+    async with db_conn_pool.connection() as conn:
+        async with conn.cursor(
+            row_factory=psycopg.rows.args_row(lambda domain_name: domain_name)
+        ) as cursor:
+            await cursor.execute("SELECT absolute_path FROM tracked_paths")
+            rows = await cursor.fetchall()
+    return TrackedPathsBody(tracked_paths=rows)
+
+
+@app.put(
+    "/tracked/paths",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=responses.Response,
+)
+async def put_tracked_paths(body: TrackedPathsBody):
+    async with db_conn_pool.connection() as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute("TRUNCATE tracked_paths")
+            async with cursor.copy(
+                "COPY tracked_paths (absolute_path) FROM STDIN"
+            ) as copy:
+                for path in body.tracked_paths:
+                    await copy.write_row((path,))
         await conn.commit()

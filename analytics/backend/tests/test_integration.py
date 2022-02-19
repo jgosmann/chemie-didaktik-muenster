@@ -82,12 +82,22 @@ def clean_db():
     ) as conn:
         with conn.cursor() as cursor:
             cursor.execute("TRUNCATE tracked_domains")
+            cursor.execute("TRUNCATE tracked_paths")
 
 
 def test_tracked_domains(app, clean_db):
-    url = app.url("/tracked-domains")
+    url = app.url("/tracked/domains")
     assert requests.get(url).json() == {"tracked_domains": []}
 
     data = {"tracked_domains": ["abc.de", "example.org"]}
+    assert requests.put(url, json=data).ok
+    assert requests.get(url).json() == data
+
+
+def test_tracked_paths(app, clean_db):
+    url = app.url("/tracked/paths")
+    assert requests.get(url).json() == {"tracked_paths": []}
+
+    data = {"tracked_paths": ["/a/b/c", "/xyz"]}
     assert requests.put(url, json=data).ok
     assert requests.get(url).json() == data
