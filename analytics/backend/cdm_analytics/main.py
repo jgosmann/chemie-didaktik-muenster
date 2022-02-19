@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 import psycopg
 import yoyo
 from cdm_analytics.domains import all_parent_domains
-from fastapi import FastAPI, Header, HTTPException, responses, status
+from fastapi import Depends, FastAPI, Header, HTTPException, responses, status
 from psycopg_pool import AsyncConnectionPool
 from pydantic import BaseModel, BaseSettings
 
@@ -35,6 +35,11 @@ db_conn_pool = AsyncConnectionPool(
 app = FastAPI()
 
 
+async def db_connection() -> psycopg.AsyncConnection:
+    async with db_conn_pool.connection() as conn:
+        yield conn
+
+
 @app.on_event("startup")
 def perform_db_migrations():
     database = yoyo.get_backend(settings.db_connection_string)
@@ -55,13 +60,14 @@ class TrackedDomainsBody(BaseModel):
 
 
 @app.get("/tracked/domains")
-async def get_tracked_domains() -> TrackedDomainsBody:
-    async with db_conn_pool.connection() as conn:
-        async with conn.cursor(
-            row_factory=psycopg.rows.args_row(lambda domain_name: domain_name)
-        ) as cursor:
-            await cursor.execute("SELECT domain_name FROM tracked_domains")
-            rows = await cursor.fetchall()
+async def get_tracked_domains(
+    conn: psycopg.AsyncConnection = Depends(db_connection),
+) -> TrackedDomainsBody:
+    async with conn.cursor(
+        row_factory=psycopg.rows.args_row(lambda domain_name: domain_name)
+    ) as cursor:
+        await cursor.execute("SELECT domain_name FROM tracked_domains")
+        rows = await cursor.fetchall()
     return TrackedDomainsBody(tracked_domains=rows)
 
 
@@ -70,16 +76,15 @@ async def get_tracked_domains() -> TrackedDomainsBody:
     status_code=status.HTTP_204_NO_CONTENT,
     response_class=responses.Response,
 )
-async def put_tracked_domains(body: TrackedDomainsBody):
-    async with db_conn_pool.connection() as conn:
-        async with conn.cursor() as cursor:
-            await cursor.execute("TRUNCATE tracked_domains")
-            async with cursor.copy(
-                "COPY tracked_domains (domain_name) FROM STDIN"
-            ) as copy:
-                for domain in body.tracked_domains:
-                    await copy.write_row((domain,))
-        await conn.commit()
+async def put_tracked_domains(
+    body: TrackedDomainsBody, conn: psycopg.AsyncConnection = Depends(db_connection)
+):
+    async with conn.cursor() as cursor:
+        await cursor.execute("TRUNCATE tracked_domains")
+        async with cursor.copy("COPY tracked_domains (domain_name) FROM STDIN") as copy:
+            for domain in body.tracked_domains:
+                await copy.write_row((domain,))
+    await conn.commit()
 
 
 class TrackedPathsBody(BaseModel):
@@ -87,13 +92,14 @@ class TrackedPathsBody(BaseModel):
 
 
 @app.get("/tracked/paths")
-async def get_tracked_paths() -> TrackedPathsBody:
-    async with db_conn_pool.connection() as conn:
-        async with conn.cursor(
-            row_factory=psycopg.rows.args_row(lambda domain_name: domain_name)
-        ) as cursor:
-            await cursor.execute("SELECT absolute_path FROM tracked_paths")
-            rows = await cursor.fetchall()
+async def get_tracked_paths(
+    conn: psycopg.AsyncConnection = Depends(db_connection),
+) -> TrackedPathsBody:
+    async with conn.cursor(
+        row_factory=psycopg.rows.args_row(lambda domain_name: domain_name)
+    ) as cursor:
+        await cursor.execute("SELECT absolute_path FROM tracked_paths")
+        rows = await cursor.fetchall()
     return TrackedPathsBody(tracked_paths=rows)
 
 
@@ -102,16 +108,15 @@ async def get_tracked_paths() -> TrackedPathsBody:
     status_code=status.HTTP_204_NO_CONTENT,
     response_class=responses.Response,
 )
-async def put_tracked_paths(body: TrackedPathsBody):
-    async with db_conn_pool.connection() as conn:
-        async with conn.cursor() as cursor:
-            await cursor.execute("TRUNCATE tracked_paths")
-            async with cursor.copy(
-                "COPY tracked_paths (absolute_path) FROM STDIN"
-            ) as copy:
-                for path in body.tracked_paths:
-                    await copy.write_row((path,))
-        await conn.commit()
+async def put_tracked_paths(
+    body: TrackedPathsBody, conn: psycopg.AsyncConnection = Depends(db_connection)
+):
+    async with conn.cursor() as cursor:
+        await cursor.execute("TRUNCATE tracked_paths")
+        async with cursor.copy("COPY tracked_paths (absolute_path) FROM STDIN") as copy:
+            for path in body.tracked_paths:
+                await copy.write_row((path,))
+    await conn.commit()
 
 
 @app.post(
@@ -173,12 +178,11 @@ class ClickStatistics(BaseModel):
 
 
 @app.get("/statistics/clicks")
-async def get_statistics_clicks() -> ClickStatistics:
-    async with db_conn_pool.connection() as conn:
-        async with conn.cursor(
-            row_factory=psycopg.rows.class_row(ClickCount)
-        ) as cursor:
-            await cursor.execute(
-                "SELECT domain_name, absolute_path as path, click_count as count FROM clicks"
-            )
-            return ClickStatistics(clicks=await cursor.fetchall())
+async def get_statistics_clicks(
+    conn: psycopg.AsyncConnection = Depends(db_connection),
+) -> ClickStatistics:
+    async with conn.cursor(row_factory=psycopg.rows.class_row(ClickCount)) as cursor:
+        await cursor.execute(
+            "SELECT domain_name, absolute_path as path, click_count as count FROM clicks"
+        )
+        return ClickStatistics(clicks=await cursor.fetchall())
