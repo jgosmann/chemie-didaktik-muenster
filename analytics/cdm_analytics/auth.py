@@ -100,20 +100,38 @@ class CdmAnalyticsRequestValidator(RequestValidator):
                     return False
                 password_hash = row[0]
 
-        is_authorized = False
-        if password_hash["algo"] == "scrypt":
-            is_authorized = bytes.fromhex(password_hash["hash"]) == hashlib.scrypt(
-                password.encode("utf-8"),
-                salt=bytes.fromhex(password_hash["salt"]),
-                **password_hash["params"]
-            )
-        else:
-            logger.error("unsupported password hash: %s", password_hash["algo"])
-            return False
-
+        is_authorized = verify_password(password, password_hash)
         if is_authorized:
             request.subject = username
         return is_authorized
+
+
+def hash_password(password: str) -> dict:
+    if len(password) > 1024:
+        raise ValueError("password too long")
+
+    salt = os.urandom(32)
+    hash_params = {"r": 8, "p": 1, "n": 2**14}
+    return {
+        "salt": salt.hex(),
+        "algo": "scrypt",
+        "params": hash_params,
+        "hash": hashlib.scrypt(
+            password.encode("utf-8"), salt=salt, **hash_params
+        ).hex(),
+    }
+
+
+def verify_password(password: str, password_hash: dict) -> bool:
+    if password_hash["algo"] == "scrypt":
+        return bytes.fromhex(password_hash["hash"]) == hashlib.scrypt(
+            password.encode("utf-8"),
+            salt=bytes.fromhex(password_hash["salt"]),
+            **password_hash["params"]
+        )
+    else:
+        logger.error("unsupported password hash: %s", password_hash["algo"])
+        return False
 
 
 def create_oauth2_server(settings: Settings):
@@ -128,20 +146,6 @@ def create_oauth2_server(settings: Settings):
 def generate_create_user_sql(
     username: str, *, password: str, realname: str = "", comment: str = ""
 ) -> Tuple[str, dict]:
-    if len(password) > 1024:
-        raise ValueError("password too long")
-
-    salt = os.urandom(32)
-    hash_params = {"r": 8, "p": 1, "n": 2**14}
-    password_hash = {
-        "salt": salt.hex(),
-        "algo": "scrypt",
-        "params": hash_params,
-        "hash": hashlib.scrypt(
-            password.encode("utf-8"), salt=salt, **hash_params
-        ).hex(),
-    }
-
     return (
         """
             INSERT INTO users (username, realname, comment, password_hash)
@@ -151,7 +155,7 @@ def generate_create_user_sql(
             "username": username,
             "realname": realname,
             "comment": comment,
-            "password_hash": Jsonb(password_hash),
+            "password_hash": Jsonb(hash_password(password)),
         },
     )
 

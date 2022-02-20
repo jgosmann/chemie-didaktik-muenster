@@ -267,6 +267,36 @@ def test_deleting_last_user_is_disallowed(app, user_session):
     assert new_session.delete(app.url(f"/users/{TEST_USER}")).status_code == 405
 
 
+def test_password_change(app, user_session):
+    new_password = "new secret"
+    assert user_session.post(
+        app.url("/profile/change-password"),
+        json={"old_password": TEST_USER_PASSWORD, "new_password": new_password},
+    ).ok
+
+    with pytest.raises(requests.exceptions.HTTPError) as err:
+        login(app, TEST_USER, TEST_USER_PASSWORD)
+    assert err.value.response.status_code == 400
+    assert err.value.response.json() == {
+        "error": "invalid_grant",
+        "error_description": "Invalid credentials given.",
+    }
+
+    login(app, TEST_USER, new_password)
+
+
+def test_password_change_is_denied_with_wrong_old_password(app, user_session):
+    assert (
+        user_session.post(
+            app.url("/profile/change-password"),
+            json={"old_password": "wrong password", "new_password": "new secret"},
+        ).status_code
+        == 401
+    )
+    # old password still valid
+    login(app, TEST_USER, TEST_USER_PASSWORD)
+
+
 def test_access_prohibited_without_token(app):
     restricted_endpoints = [
         ("get", "/tracked/domains"),
@@ -275,6 +305,7 @@ def test_access_prohibited_without_token(app):
         ("get", "/users"),
         ("put", "/users/new-user"),
         ("delete", f"/users/{TEST_USER}"),
+        ("post", "/profile/change-password"),
     ]
     for method, path in restricted_endpoints:
         assert requests.request(method, app.url(path)).status_code == 401

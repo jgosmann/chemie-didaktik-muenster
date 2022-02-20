@@ -6,6 +6,7 @@ import jwt
 import psycopg
 import yoyo
 from fastapi import (
+    Body,
     Depends,
     FastAPI,
     Header,
@@ -16,6 +17,7 @@ from fastapi import (
     status,
 )
 from fastapi.security import OAuth2PasswordBearer
+from psycopg.types.json import Jsonb
 from pydantic import BaseModel
 
 from cdm_analytics.auth import (
@@ -24,6 +26,8 @@ from cdm_analytics.auth import (
     create_oauth2_server,
     generate_create_initial_user_sql,
     generate_create_user_sql,
+    hash_password,
+    verify_password,
 )
 from cdm_analytics.db import db_conn_pool
 from cdm_analytics.domains import all_parent_domains
@@ -307,3 +311,36 @@ async def delete_user(
                 detail="you cannot delete the last remaining user",
             )
         await cursor.execute("DELETE FROM users WHERE username = %s", (username,))
+
+
+@app.post(
+    "/profile/change-password",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=responses.Response,
+)
+async def change_password(
+    old_password: str = Body(...),
+    new_password: str = Body(...),
+    conn: psycopg.AsyncConnection = Depends(db_connection),
+    authenticated_user: dict = Depends(authenticated_user),
+):
+    async with conn.cursor() as cursor:
+        await cursor.execute(
+            "SELECT password_hash FROM users WHERE username = %s",
+            (authenticated_user["sub"],),
+        )
+        result = await cursor.fetchone()
+        if not result:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT, detail="you have been deleted"
+            )
+        old_password_hash = result[0]
+
+        if not verify_password(old_password, old_password_hash):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="wrong password"
+            )
+
+        await cursor.execute(
+            "UPDATE users SET password_hash = %s", (Jsonb(hash_password(new_password)),)
+        )
