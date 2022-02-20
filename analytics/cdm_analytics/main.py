@@ -23,6 +23,7 @@ from cdm_analytics.auth import (
     RESOURCE_OWNER_ID,
     create_oauth2_server,
     generate_create_initial_user_sql,
+    generate_create_user_sql,
 )
 from cdm_analytics.db import db_conn_pool
 from cdm_analytics.domains import all_parent_domains
@@ -233,3 +234,76 @@ async def post_token(request: Request) -> Response:
         str(request.url), request.method, await request.body(), request.headers
     )
     return Response(status_code=status, headers=headers, content=body)
+
+
+class UserData(BaseModel):
+    username: str
+    realname: str
+    comment: str
+
+
+class UsersResponseBody(BaseModel):
+    users: List[UserData]
+
+
+@app.get("/users", response_model=UsersResponseBody)
+async def get_users(
+    conn: psycopg.AsyncConnection = Depends(db_connection),
+    authenticated_user: dict = Depends(authenticated_user),
+) -> UsersResponseBody:
+    async with conn.cursor(row_factory=psycopg.rows.class_row(UserData)) as cursor:
+        await cursor.execute("SELECT username, realname, comment FROM users")
+        return UsersResponseBody(users=await cursor.fetchall())
+
+
+class CreateUserRequest(BaseModel):
+    password: str
+    realname: str = ""
+    comment: str = ""
+
+
+@app.put(
+    "/users/{username}",
+    status_code=status.HTTP_201_CREATED,
+    response_class=responses.Response,
+)
+async def put_user(
+    username: str,
+    request: CreateUserRequest,
+    conn: psycopg.AsyncConnection = Depends(db_connection),
+    authenticated_user: dict = Depends(authenticated_user),
+):
+    async with conn.cursor() as cursor:
+        await cursor.execute(
+            *generate_create_user_sql(
+                username,
+                password=request.password,
+                realname=request.realname,
+                comment=request.comment,
+            )
+        )
+
+
+@app.delete(
+    "/users/{username}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=responses.Response,
+)
+async def delete_user(
+    username: str,
+    conn: psycopg.AsyncConnection = Depends(db_connection),
+    authenticated_user: dict = Depends(authenticated_user),
+):
+    if authenticated_user["sub"] == username:
+        raise HTTPException(
+            status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+            detail="you must not delete yourself",
+        )
+    async with conn.cursor() as cursor:
+        await cursor.execute("SELECT count(*) FROM USERS")
+        if (await cursor.fetchone())[0] == 1:
+            raise HTTPException(
+                status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+                detail="you cannot delete the last remaining user",
+            )
+        await cursor.execute("DELETE FROM users WHERE username = %s", (username,))

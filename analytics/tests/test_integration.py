@@ -103,21 +103,27 @@ def clean_db():
         conn.commit()
 
 
-@pytest.fixture
-def user_session(app):
-    token = requests.post(
+def login(app: App, username: str, password: str) -> requests.Session:
+    response = requests.post(
         app.url("/auth/token"),
         data={
             "client_id": FRONTEND_CLIENT_ID,
             "grant_type": "password",
-            "username": TEST_USER,
-            "password": TEST_USER_PASSWORD,
+            "username": username,
+            "password": password,
         },
-    ).json()["access_token"]
+    )
+    response.raise_for_status()
+    token = response.json()["access_token"]
 
     session = requests.Session()
     session.headers["Authorization"] = f"Bearer {token}"
     return session
+
+
+@pytest.fixture
+def user_session(app):
+    return login(app, TEST_USER, TEST_USER_PASSWORD)
 
 
 def test_tracked_domains(app, user_session):
@@ -211,11 +217,64 @@ def test_increment_action_without_invalid_referer(referer, app, user_session):
     assert 400 <= status_code < 500
 
 
+def test_get_users(app, user_session):
+    username = "new-user"
+    data = {"password": "secret", "realname": "John Johnson", "comment": "foo"}
+    assert user_session.put(app.url(f"/users/{username}"), json=data).ok
+    assert user_session.get(app.url("/users")).json() == {
+        "users": [
+            {"username": TEST_USER, "realname": "", "comment": ""},
+            {
+                "username": username,
+                "realname": data["realname"],
+                "comment": data["comment"],
+            },
+        ]
+    }
+
+
+def test_created_user_can_login_until_deleted(app, user_session):
+    username = "new-user"
+    password = "secret"
+    assert user_session.put(
+        app.url(f"/users/{username}"), json={"password": password}
+    ).ok
+    login(app, username, password)
+
+    assert user_session.delete(app.url(f"/users/{username}")).ok
+    with pytest.raises(requests.exceptions.HTTPError) as err:
+        login(app, username, password)
+    assert err.value.response.status_code == 400
+    assert err.value.response.json() == {
+        "error": "invalid_grant",
+        "error_description": "Invalid credentials given.",
+    }
+
+
+def test_deleting_own_user_is_disallowed(app, user_session):
+    assert user_session.delete(app.url(f"/users/{TEST_USER}")).status_code == 405
+
+
+def test_deleting_last_user_is_disallowed(app, user_session):
+    username = "new-user"
+    password = "secret"
+    assert user_session.put(
+        app.url(f"/users/{username}"), json={"password": password}
+    ).ok
+
+    new_session = login(app, username, password)
+    assert user_session.delete(app.url(f"/users/{username}")).ok
+    assert new_session.delete(app.url(f"/users/{TEST_USER}")).status_code == 405
+
+
 def test_access_prohibited_without_token(app):
     restricted_endpoints = [
         ("get", "/tracked/domains"),
         ("put", "/tracked/domains"),
         ("get", "/statistics/clicks"),
+        ("get", "/users"),
+        ("put", "/users/new-user"),
+        ("delete", f"/users/{TEST_USER}"),
     ]
     for method, path in restricted_endpoints:
         assert requests.request(method, app.url(path)).status_code == 401
