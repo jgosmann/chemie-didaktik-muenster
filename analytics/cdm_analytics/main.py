@@ -77,7 +77,7 @@ class TrackedDomainsBody(BaseModel):
     tracked_domains: List[str]
 
 
-@app.get("/tracked/domains")
+@app.get("/tracked/domains", response_model=TrackedDomainsBody)
 async def get_tracked_domains(
     conn: psycopg.AsyncConnection = Depends(db_connection),
 ) -> TrackedDomainsBody:
@@ -109,7 +109,7 @@ class TrackedPathsBody(BaseModel):
     tracked_paths: List[str]
 
 
-@app.get("/tracked/paths")
+@app.get("/tracked/paths", response_model=TrackedPathsBody)
 async def get_tracked_paths(
     conn: psycopg.AsyncConnection = Depends(db_connection),
 ) -> TrackedPathsBody:
@@ -195,7 +195,7 @@ class ClickStatistics(BaseModel):
     clicks: List[ClickCount]
 
 
-@app.get("/statistics/clicks")
+@app.get("/statistics/clicks", response_model=ClickStatistics)
 async def get_statistics_clicks(
     conn: psycopg.AsyncConnection = Depends(db_connection),
 ) -> ClickStatistics:
