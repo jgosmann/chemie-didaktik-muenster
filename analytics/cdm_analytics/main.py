@@ -1,56 +1,41 @@
-from typing import List, Optional
+import logging
+from typing import List
 from urllib.parse import urlparse
 
+import jwt
 import psycopg
 import yoyo
+from fastapi import (
+    Depends,
+    FastAPI,
+    Header,
+    HTTPException,
+    Request,
+    Response,
+    responses,
+    status,
+)
+from fastapi.security import OAuth2PasswordBearer
+from pydantic import BaseModel
+
+from cdm_analytics.auth import (
+    DEFAULT_SCOPE,
+    RESOURCE_OWNER_ID,
+    create_oauth2_server,
+    generate_create_initial_user_sql,
+)
+from cdm_analytics.db import db_conn_pool
 from cdm_analytics.domains import all_parent_domains
-from fastapi import Depends, FastAPI, Header, HTTPException, responses, status
-from psycopg_pool import AsyncConnectionPool
-from pydantic import BaseModel, BaseSettings
+from cdm_analytics.settings import Settings
 
-
-class Settings(BaseSettings):
-    db_host: str = "127.0.0.1"
-    db_port: int = 5432
-    db_user: str = "postgres"
-    db_password: str = "postgres-dev-password"
-    db_name: str = "postgres"
-    db_pool_min: int = 2
-    db_pool_max: int = 15
-
-    @property
-    def db_connection_string(self) -> str:
-        return (
-            f"postgres://{settings.db_user}:{settings.db_password}"
-            f"@{settings.db_host}:{settings.db_port}/{settings.db_name}"
-        )
-
+logger = logging.getLogger(__name__)
 
 settings = Settings()
+oauth2_server = create_oauth2_server(settings)
 app = FastAPI()
+app.on_event("startup")(lambda: db_conn_pool.start_pool(settings))
 
-
-class DbConnectionPool:
-    _pool: Optional[AsyncConnectionPool]
-
-    def __init__(self):
-        self._pool = None
-
-    def start_pool(self):
-        self._pool = AsyncConnectionPool(
-            settings.db_connection_string,
-            min_size=settings.db_pool_min,
-            max_size=settings.db_pool_max,
-        )
-
-    def connection(self) -> psycopg.AsyncConnection:
-        if not self._pool:
-            raise RuntimeError("connection pool not started")
-        return self._pool.connection()
-
-
-db_conn_pool = DbConnectionPool()
-app.on_event("startup")(db_conn_pool.start_pool)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 
 async def db_connection() -> psycopg.AsyncConnection:
@@ -64,6 +49,38 @@ def perform_db_migrations():
     migrations = yoyo.read_migrations("cdm_analytics/db_migrations")
     with database.lock():
         database.apply_migrations(database.to_apply(migrations))
+
+    # pylint: disable=not-context-manager
+    with psycopg.connect(settings.db_connection_string) as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT COUNT(*) FROM users")
+            result = cur.fetchone()
+            if result[0] == 0:
+                cur.execute(*generate_create_initial_user_sql())
+
+
+async def authenticated_user(token: str = Depends(oauth2_scheme)) -> dict:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    try:
+        claims = jwt.decode(
+            token,
+            settings.jwt_key,
+            algorithms=["HS256"],
+            issuer=RESOURCE_OWNER_ID,
+            audience=RESOURCE_OWNER_ID,
+        )
+    except jwt.exceptions.InvalidTokenError as err:
+        logger.info("unauthorized: %s", err)
+        raise credentials_exception from err
+    if RESOURCE_OWNER_ID not in claims["aud"] or DEFAULT_SCOPE not in claims["scope"]:
+        raise credentials_exception
+
+    return claims
 
 
 @app.get(
@@ -80,6 +97,7 @@ class TrackedDomainsBody(BaseModel):
 @app.get("/tracked/domains", response_model=TrackedDomainsBody)
 async def get_tracked_domains(
     conn: psycopg.AsyncConnection = Depends(db_connection),
+    authenticated_user: dict = Depends(authenticated_user),
 ) -> TrackedDomainsBody:
     async with conn.cursor(
         row_factory=psycopg.rows.args_row(lambda domain_name: domain_name)
@@ -95,7 +113,9 @@ async def get_tracked_domains(
     response_class=responses.Response,
 )
 async def put_tracked_domains(
-    body: TrackedDomainsBody, conn: psycopg.AsyncConnection = Depends(db_connection)
+    body: TrackedDomainsBody,
+    conn: psycopg.AsyncConnection = Depends(db_connection),
+    authenticated_user: dict = Depends(authenticated_user),
 ):
     async with conn.cursor() as cursor:
         await cursor.execute("TRUNCATE tracked_domains")
@@ -198,9 +218,18 @@ class ClickStatistics(BaseModel):
 @app.get("/statistics/clicks", response_model=ClickStatistics)
 async def get_statistics_clicks(
     conn: psycopg.AsyncConnection = Depends(db_connection),
+    authenticated_user: dict = Depends(authenticated_user),
 ) -> ClickStatistics:
     async with conn.cursor(row_factory=psycopg.rows.class_row(ClickCount)) as cursor:
         await cursor.execute(
             "SELECT domain_name, absolute_path as path, click_count as count FROM clicks"
         )
         return ClickStatistics(clicks=await cursor.fetchall())
+
+
+@app.post("/auth/token")
+async def post_token(request: Request) -> Response:
+    headers, body, status = oauth2_server.create_token_response(
+        str(request.url), request.method, await request.body(), request.headers
+    )
+    return Response(status_code=status, headers=headers, content=body)

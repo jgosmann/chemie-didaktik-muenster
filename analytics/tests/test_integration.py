@@ -1,3 +1,4 @@
+import os
 import subprocess
 import time
 import urllib.parse
@@ -5,6 +6,8 @@ import urllib.parse
 import psycopg
 import pytest
 import requests
+
+from cdm_analytics.auth import FRONTEND_CLIENT_ID, generate_create_user_sql
 
 
 class App:
@@ -16,6 +19,8 @@ class App:
 
     def start(self):
         if self._proc is None:
+            env = dict(**os.environ)
+            env["JWT_KEY"] = "test jwt key"
             # pylint: disable=consider-using-with
             self._proc = subprocess.Popen(
                 [
@@ -25,7 +30,8 @@ class App:
                     self.host,
                     "--port",
                     self.port,
-                ]
+                ],
+                env=env,
             )
 
     def stop(self):
@@ -74,6 +80,10 @@ def app():
         yield instance
 
 
+TEST_USER = "testuser"
+TEST_USER_PASSWORD = "testuser"
+
+
 @pytest.fixture(autouse=True)
 def clean_db():
     # pylint: disable=not-context-manager
@@ -84,15 +94,39 @@ def clean_db():
             cursor.execute("TRUNCATE tracked_domains")
             cursor.execute("TRUNCATE tracked_paths")
             cursor.execute("TRUNCATE clicks")
+            cursor.execute("TRUNCATE users")
+        conn.commit()
+        with conn.cursor() as cursor:
+            cursor.execute(
+                *generate_create_user_sql(TEST_USER, password=TEST_USER_PASSWORD)
+            )
+        conn.commit()
 
 
-def test_tracked_domains(app):
+@pytest.fixture
+def user_session(app):
+    token = requests.post(
+        app.url("/auth/token"),
+        data={
+            "client_id": FRONTEND_CLIENT_ID,
+            "grant_type": "password",
+            "username": TEST_USER,
+            "password": TEST_USER_PASSWORD,
+        },
+    ).json()["access_token"]
+
+    session = requests.Session()
+    session.headers["Authorization"] = f"Bearer {token}"
+    return session
+
+
+def test_tracked_domains(app, user_session):
     url = app.url("/tracked/domains")
-    assert requests.get(url).json() == {"tracked_domains": []}
+    assert user_session.get(url).json() == {"tracked_domains": []}
 
     data = {"tracked_domains": ["abc.de", "example.org"]}
-    assert requests.put(url, json=data).ok
-    assert requests.get(url).json() == data
+    assert user_session.put(url, json=data).ok
+    assert user_session.get(url).json() == data
 
 
 def test_tracked_paths(app):
@@ -104,8 +138,8 @@ def test_tracked_paths(app):
     assert requests.get(url).json() == data
 
 
-def test_tracks_referrers(app):
-    assert requests.put(
+def test_tracks_referrers(app, user_session):
+    assert user_session.put(
         app.url("/tracked/domains"),
         json={"tracked_domains": ["source-domain.net", "source-domain.org"]},
     ).ok
@@ -147,7 +181,7 @@ def test_tracks_referrers(app):
         headers={"Referer": "http://source-domain.org/untracked-path"},
     )
 
-    assert requests.get(app.url("/statistics/clicks")).json() == {
+    assert user_session.get(app.url("/statistics/clicks")).json() == {
         "clicks": [
             {"domain_name": "source-domain.net", "path": "/path-a", "count": 3},
             {
@@ -164,14 +198,24 @@ def test_tracks_referrers(app):
     }
 
 
-def test_increment_action_without_referer(app):
-    status_code = requests.post(app.url("/actions/increment")).status_code
+def test_increment_action_without_referer(app, user_session):
+    status_code = user_session.post(app.url("/actions/increment")).status_code
     assert 400 <= status_code < 500
 
 
 @pytest.mark.parametrize("referer", ["path-only", "//[::1/path"])
-def test_increment_action_without_invalid_referer(referer, app):
-    status_code = requests.post(
+def test_increment_action_without_invalid_referer(referer, app, user_session):
+    status_code = user_session.post(
         app.url("/actions/increment"), headers={"Referer": referer}
     ).status_code
     assert 400 <= status_code < 500
+
+
+def test_access_prohibited_without_token(app):
+    restricted_endpoints = [
+        ("get", "/tracked/domains"),
+        ("put", "/tracked/domains"),
+        ("get", "/statistics/clicks"),
+    ]
+    for method, path in restricted_endpoints:
+        assert requests.request(method, app.url(path)).status_code == 401
