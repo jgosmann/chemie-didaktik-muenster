@@ -6,15 +6,17 @@ from typing import List, NamedTuple, Tuple
 
 import jwt
 import psycopg
-from oauthlib.oauth2 import LegacyApplicationServer, RequestValidator
+from oauthlib.oauth2 import RequestValidator, Server
 from psycopg.types.json import Jsonb
 
 from cdm_analytics.settings import Settings
 
 logger = logging.getLogger(__name__)
 
+BUILDER_CLIENT_ID = "e25bc9ce-73d8-4e8c-8c0c-b0d8fcffe24f"
 FRONTEND_CLIENT_ID = "646ad66f-6815-4fdc-ae75-430fc8e4e556"
 DEFAULT_SCOPE = "cdm-analytics"
+TRACKED_PATHS_SCOPE = "tracked-paths"
 RESOURCE_OWNER_ID = "cdm-analytics"
 
 
@@ -47,14 +49,19 @@ class CdmAnalyticsRequestValidator(RequestValidator):
         self.settings = settings
 
     def authenticate_client(self, request, *args, **kwargs) -> bool:
-        if request.client_id == FRONTEND_CLIENT_ID:
-            request.client.client_id = request.client_id
-            return True
-        else:
-            return False
+        is_authenticated = request.client_id == FRONTEND_CLIENT_ID or (
+            request.client_id == BUILDER_CLIENT_ID
+            and request.headers.get("Authorization")
+            == f"Bearer {self.settings.builder_access_token}"
+        )
+        if is_authenticated:
+            request.client = Client(request.client_id)
+            if request.client_id == BUILDER_CLIENT_ID:
+                request.subject = BUILDER_CLIENT_ID
+        return is_authenticated
 
     def authenticate_client_id(self, client_id, request, *args, **kwargs) -> bool:
-        if client_id == FRONTEND_CLIENT_ID:
+        if client_id in (FRONTEND_CLIENT_ID, BUILDER_CLIENT_ID):
             request.client = Client(client_id)
             return True
         else:
@@ -75,12 +82,17 @@ class CdmAnalyticsRequestValidator(RequestValidator):
     def validate_grant_type(
         self, client_id, grant_type, client, request, *args, **kwargs
     ) -> bool:
-        return client_id == FRONTEND_CLIENT_ID and grant_type == "password"
+        return (client_id == FRONTEND_CLIENT_ID and grant_type == "password") or (
+            client_id == BUILDER_CLIENT_ID and grant_type == "client_credentials"
+        )
 
     def validate_scopes(
         self, client_id, scopes, client, request, *args, **kwargs
     ) -> bool:
-        if client_id == FRONTEND_CLIENT_ID and scopes == ["cdm-analytics"]:
+        if client_id == FRONTEND_CLIENT_ID and scopes == [DEFAULT_SCOPE]:
+            request.scope = scopes
+            return True
+        elif client_id == BUILDER_CLIENT_ID and scopes == [TRACKED_PATHS_SCOPE]:
             request.scope = scopes
             return True
         else:
@@ -127,7 +139,7 @@ def verify_password(password: str, password_hash: dict) -> bool:
         return bytes.fromhex(password_hash["hash"]) == hashlib.scrypt(
             password.encode("utf-8"),
             salt=bytes.fromhex(password_hash["salt"]),
-            **password_hash["params"]
+            **password_hash["params"],
         )
     else:
         logger.error("unsupported password hash: %s", password_hash["algo"])
@@ -136,7 +148,7 @@ def verify_password(password: str, password_hash: dict) -> bool:
 
 def create_oauth2_server(settings: Settings):
     validator = CdmAnalyticsRequestValidator(settings)
-    oauth2_server = LegacyApplicationServer(
+    oauth2_server = Server(
         validator, token_generator=jwt_hs256_token_generator(settings.jwt_key)
     )
     oauth2_server.password_grant.refresh_token = False

@@ -7,7 +7,14 @@ import psycopg
 import pytest
 import requests
 
-from cdm_analytics.auth import FRONTEND_CLIENT_ID, generate_create_user_sql
+from cdm_analytics.auth import (
+    BUILDER_CLIENT_ID,
+    FRONTEND_CLIENT_ID,
+    TRACKED_PATHS_SCOPE,
+    generate_create_user_sql,
+)
+
+TEST_BUILDER_ACCESS_TOKEN = "builder access token"
 
 
 class App:
@@ -21,6 +28,7 @@ class App:
         if self._proc is None:
             env = dict(**os.environ)
             env["JWT_KEY"] = "test jwt key"
+            env["BUILDER_ACCESS_TOKEN"] = TEST_BUILDER_ACCESS_TOKEN
             # pylint: disable=consider-using-with
             self._proc = subprocess.Popen(
                 [
@@ -126,6 +134,29 @@ def user_session(app):
     return login(app, TEST_USER, TEST_USER_PASSWORD)
 
 
+def authorize_builder(app: App) -> requests.Session:
+    response = requests.post(
+        app.url("/auth/token"),
+        data={
+            "client_id": BUILDER_CLIENT_ID,
+            "grant_type": "client_credentials",
+            "scope": TRACKED_PATHS_SCOPE,
+        },
+        headers={"Authorization": f"Bearer {TEST_BUILDER_ACCESS_TOKEN}"},
+    )
+    response.raise_for_status()
+    token = response.json()["access_token"]
+
+    session = requests.Session()
+    session.headers["Authorization"] = f"Bearer {token}"
+    return session
+
+
+@pytest.fixture
+def builder_session(app):
+    return authorize_builder(app)
+
+
 def test_tracked_domains(app, user_session):
     url = app.url("/tracked/domains")
     assert user_session.get(url).json() == {"tracked_domains": []}
@@ -135,21 +166,21 @@ def test_tracked_domains(app, user_session):
     assert user_session.get(url).json() == data
 
 
-def test_tracked_paths(app):
+def test_tracked_paths(app, builder_session):
     url = app.url("/tracked/paths")
-    assert requests.get(url).json() == {"tracked_paths": []}
+    assert builder_session.get(url).json() == {"tracked_paths": []}
 
     data = {"tracked_paths": ["/a/b/c", "/xyz"]}
-    assert requests.put(url, json=data).ok
-    assert requests.get(url).json() == data
+    assert builder_session.put(url, json=data).ok
+    assert builder_session.get(url).json() == data
 
 
-def test_tracks_referrers(app, user_session):
+def test_tracks_referrers(app, user_session, builder_session):
     assert user_session.put(
         app.url("/tracked/domains"),
         json={"tracked_domains": ["source-domain.net", "source-domain.org"]},
     ).ok
-    assert requests.put(
+    assert builder_session.put(
         app.url("/tracked/paths"),
         json={"tracked_paths": ["/path-a", "/path-b", "/path-b/child"]},
     ).ok
@@ -301,6 +332,8 @@ def test_access_prohibited_without_token(app):
     restricted_endpoints = [
         ("get", "/tracked/domains"),
         ("put", "/tracked/domains"),
+        ("get", "/tracked/paths"),
+        ("put", "/tracked/paths"),
         ("get", "/statistics/clicks"),
         ("get", "/users"),
         ("put", "/users/new-user"),

@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     db_pool_max: int = 15
 
     jwt_key: str
+    builder_access_token: str
 
     @property
     def db_connection_string(self) -> str:

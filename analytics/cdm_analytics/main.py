@@ -23,6 +23,7 @@ from pydantic import BaseModel
 from cdm_analytics.auth import (
     DEFAULT_SCOPE,
     RESOURCE_OWNER_ID,
+    TRACKED_PATHS_SCOPE,
     create_oauth2_server,
     generate_create_initial_user_sql,
     generate_create_user_sql,
@@ -64,12 +65,14 @@ def perform_db_migrations():
                 cur.execute(*generate_create_initial_user_sql())
 
 
-async def authenticated_user(token: str = Depends(oauth2_scheme)) -> dict:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+credentials_exception = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="could not validate credentials",
+    headers={"WWW-Authenticate": "Bearer"},
+)
+
+
+async def authenticated(token: str = Depends(oauth2_scheme)) -> dict:
 
     try:
         claims = jwt.decode(
@@ -82,9 +85,21 @@ async def authenticated_user(token: str = Depends(oauth2_scheme)) -> dict:
     except jwt.exceptions.InvalidTokenError as err:
         logger.info("unauthorized: %s", err)
         raise credentials_exception from err
-    if RESOURCE_OWNER_ID not in claims["aud"] or DEFAULT_SCOPE not in claims["scope"]:
+    if RESOURCE_OWNER_ID not in claims["aud"]:
         raise credentials_exception
 
+    return claims
+
+
+async def authenticated_user(claims: dict = Depends(authenticated)) -> dict:
+    if DEFAULT_SCOPE not in claims["scope"]:
+        raise credentials_exception
+    return claims
+
+
+async def authenticated_builder(claims: dict = Depends(authenticated)) -> dict:
+    if TRACKED_PATHS_SCOPE not in claims["scope"]:
+        raise credentials_exception
     return claims
 
 
@@ -137,6 +152,7 @@ class TrackedPathsBody(BaseModel):
 @app.get("/tracked/paths", response_model=TrackedPathsBody)
 async def get_tracked_paths(
     conn: psycopg.AsyncConnection = Depends(db_connection),
+    authenticated_builder: dict = Depends(authenticated_builder),
 ) -> TrackedPathsBody:
     async with conn.cursor(
         row_factory=psycopg.rows.args_row(lambda domain_name: domain_name)
@@ -152,7 +168,9 @@ async def get_tracked_paths(
     response_class=responses.Response,
 )
 async def put_tracked_paths(
-    body: TrackedPathsBody, conn: psycopg.AsyncConnection = Depends(db_connection)
+    body: TrackedPathsBody,
+    conn: psycopg.AsyncConnection = Depends(db_connection),
+    authenticated_builder: dict = Depends(authenticated_builder),
 ):
     async with conn.cursor() as cursor:
         await cursor.execute("TRUNCATE tracked_paths")
