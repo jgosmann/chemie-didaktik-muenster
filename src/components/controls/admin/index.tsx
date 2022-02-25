@@ -1,5 +1,6 @@
 import React from "react"
 import LogoutButton from "./LogoutButton"
+import TrackedDomains from "./TrackedDomains"
 
 export interface AdminAreaProps {
   logout?: () => void
@@ -8,9 +9,10 @@ export interface AdminAreaProps {
 const AdminArea = ({ logout }: AdminAreaProps): JSX.Element => (
   <>
     <div className="flex justify-between">
-      <h1 className="text-2xl mb-4">Administration</h1>
+      <h1 className="text-2xl">Administration</h1>
       <LogoutButton logout={logout} />
     </div>
+    <TrackedDomains />
   </>
 )
 
