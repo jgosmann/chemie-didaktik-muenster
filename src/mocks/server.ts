@@ -1,12 +1,12 @@
 import { matchRequestUrl, MockedRequest } from "msw"
 import { setupServer } from "msw/node"
-import { handlers } from "./handlers"
+import { baseUrl, handlers } from "./handlers"
 
 const server = setupServer(...handlers)
 
 export default server
 
-export function waitForRequest(method: string, url: string, baseUrl?: string) {
+export function waitForRequest(method: string, url: string) {
   let requestId = ""
 
   return new Promise<MockedRequest>((resolve, reject) => {

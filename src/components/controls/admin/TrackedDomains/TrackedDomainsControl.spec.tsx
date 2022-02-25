@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event"
 import server, { waitForRequest } from "../../../../mocks/server"
 import TrackedDomainsControl from "./TrackedDomainsControl"
 import { rest } from "msw"
+import { withBaseUrl } from "../../../../mocks/handlers"
 
 describe("TrackedDomainsControl", () => {
   beforeEach(() => {
@@ -37,8 +38,7 @@ describe("TrackedDomainsControl", () => {
       it("makes an API request with the entered data", async () => {
         const requestPromise = waitForRequest(
           "PUT",
-          "http://localhost:8001/tracked/domains",
-          "http://localhost:8001/"
+          withBaseUrl("/tracked/domains")
         )
         await act(async () => screen.getByRole("button").click())
 
@@ -52,7 +52,7 @@ describe("TrackedDomainsControl", () => {
         let resolveRequest
         server.use(
           rest.put(
-            "http://localhost:8001/tracked/domains",
+            withBaseUrl("/tracked/domains"),
             (req, res, ctx) =>
               new Promise(resolve => {
                 resolveRequest = () => act(() => resolve(res(ctx.status(204))))
@@ -77,7 +77,7 @@ describe("TrackedDomainsControl", () => {
       beforeEach(async () => {
         jest.spyOn(console, "error").mockImplementation(() => undefined)
         server.use(
-          rest.put("http://localhost:8001/tracked/domains", (req, res, ctx) =>
+          rest.put(withBaseUrl("/tracked/domains"), (req, res, ctx) =>
             res(ctx.status(500))
           )
         )
