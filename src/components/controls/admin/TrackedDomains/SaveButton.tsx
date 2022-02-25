@@ -1,10 +1,7 @@
-import {
-  faCheckCircle,
-  faCog,
-  faTimesCircle,
-} from "@fortawesome/free-solid-svg-icons"
+import { faCheckCircle, faCog } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import React from "react"
+import Message, { Type } from "../../../Message"
 
 export enum State {
   Unchanged = "unchanged",
@@ -20,32 +17,32 @@ export interface SaveButtonProps {
 }
 
 const SaveButton = ({ state, onClick }: SaveButtonProps): JSX.Element => (
-  <button
-    disabled={state !== State.Changed && state !== State.Failure}
-    className={`btn primary mt-2 ${
-      state === State.SavedSuccesfully ? "!text-green-800" : ""
-    }`}
-    onClick={onClick}
-  >
-    {state === State.Saving ? (
-      <>
-        <FontAwesomeIcon icon={faCog} className="mr-2 text-xl animate-spin" />
-        Speichern ...
-      </>
-    ) : state === State.SavedSuccesfully ? (
-      <>
-        <FontAwesomeIcon icon={faCheckCircle} className="mr-2 text-xl" />
-        Gespeichert
-      </>
-    ) : state === State.Failure ? (
-      <>
-        <FontAwesomeIcon icon={faTimesCircle} className="mr-2 text-xl" />
-        Fehler: erneut versuchen?
-      </>
-    ) : (
-      "Änderungen speichern"
+  <>
+    {state === State.Failure && (
+      <Message type={Type.Error}>Es ist ein Fehler aufgetreten.</Message>
     )}
-  </button>
+    <button
+      disabled={state !== State.Changed && state !== State.Failure}
+      className={`btn primary mt-2 ${
+        state === State.SavedSuccesfully ? "!text-green-800" : ""
+      }`}
+      onClick={onClick}
+    >
+      {state === State.Saving ? (
+        <>
+          <FontAwesomeIcon icon={faCog} className="mr-2 text-xl animate-spin" />
+          Speichern ...
+        </>
+      ) : state === State.SavedSuccesfully ? (
+        <>
+          <FontAwesomeIcon icon={faCheckCircle} className="mr-2 text-xl" />
+          Gespeichert
+        </>
+      ) : (
+        "Änderungen speichern"
+      )}
+    </button>
+  </>
 )
 
 export default SaveButton
