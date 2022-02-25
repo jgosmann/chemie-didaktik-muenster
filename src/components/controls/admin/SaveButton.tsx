@@ -1,7 +1,7 @@
 import { faCheckCircle, faCog } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import React from "react"
-import Message, { Type } from "../../../Message"
+import Message, { Type } from "../../Message"
 
 export enum State {
   Unchanged = "unchanged",
@@ -12,17 +12,24 @@ export enum State {
 }
 
 export interface SaveButtonProps {
+  disabled?: boolean
   state: State
   onClick: (ev: React.FormEvent) => void
 }
 
-const SaveButton = ({ state, onClick }: SaveButtonProps): JSX.Element => (
+const SaveButton = ({
+  disabled,
+  state,
+  onClick,
+}: SaveButtonProps): JSX.Element => (
   <>
     {state === State.Failure && (
       <Message type={Type.Error}>Es ist ein Fehler aufgetreten.</Message>
     )}
     <button
-      disabled={state !== State.Changed && state !== State.Failure}
+      disabled={
+        disabled || (state !== State.Changed && state !== State.Failure)
+      }
       className={`btn primary mt-2 ${
         state === State.SavedSuccesfully ? "!text-green-800" : ""
       }`}

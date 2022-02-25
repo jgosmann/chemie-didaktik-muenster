@@ -1,55 +1,27 @@
 import React from "react"
 import { ComponentStory } from "@storybook/react"
-import {
-  TrackedDomainsView,
-  TrackedDomainsViewProps,
+import TrackedDomainsControl, {
+  TrackedDomainsControlProps,
 } from "./TrackedDomainsControl"
-import { State } from "./SaveButton"
 
 export default {
   title: "Controls/Admin/Tracked Domains",
-  component: TrackedDomainsView,
+  component: TrackedDomainsControl,
   parameters: {
     chromatic: { disableSnapshot: false },
   },
 }
 
-const Template: ComponentStory<typeof TrackedDomainsView> = (
-  args: TrackedDomainsViewProps
-) => <TrackedDomainsView {...args} />
+const Template: ComponentStory<typeof TrackedDomainsControl> = (
+  args: TrackedDomainsControlProps
+) => <TrackedDomainsControl {...args} />
 
 export const WithoutDomains = Template.bind({})
 WithoutDomains.args = {
-  trackedDomains: [],
-  saveButtonState: State.Unchanged,
+  initialTrackedDomains: [],
 }
 
-export const WithDomainsUnchanged = Template.bind({})
-WithDomainsUnchanged.args = {
-  trackedDomains: ["example.org", "foo.com"],
-  saveButtonState: State.Unchanged,
-}
-
-export const WithDomainsChanged = Template.bind({})
-WithDomainsChanged.args = {
-  ...WithDomainsUnchanged.args,
-  saveButtonState: State.Changed,
-}
-
-export const WithDomainsSaving = Template.bind({})
-WithDomainsSaving.args = {
-  ...WithDomainsUnchanged.args,
-  saveButtonState: State.Saving,
-}
-
-export const WithDomainsSavedSuccessfully = Template.bind({})
-WithDomainsSavedSuccessfully.args = {
-  ...WithDomainsUnchanged.args,
-  saveButtonState: State.SavedSuccesfully,
-}
-
-export const WithDomainsFailure = Template.bind({})
-WithDomainsFailure.args = {
-  ...WithDomainsUnchanged.args,
-  saveButtonState: State.Failure,
+export const WithDomains = Template.bind({})
+WithDomains.args = {
+  initialTrackedDomains: ["example.org", "foo.com"],
 }

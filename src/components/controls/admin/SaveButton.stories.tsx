@@ -3,7 +3,7 @@ import React from "react"
 import SaveButton, { SaveButtonProps, State } from "./SaveButton"
 
 export default {
-  title: "Controls/Admin/Tracked Domains/Save Button",
+  title: "Controls/Admin/Save Button",
   component: SaveButton,
   parameters: {
     chromatic: { disableSnapshot: false },
@@ -37,4 +37,10 @@ SavedSuccesfully.args = {
 export const Failure = Template.bind({})
 Failure.args = {
   state: State.Failure,
+}
+
+export const Disabled = Template.bind({})
+Disabled.args = {
+  state: State.Changed,
+  disabled: true,
 }

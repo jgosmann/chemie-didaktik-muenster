@@ -26,4 +26,14 @@ describe("SaveButton", () => {
       })
     })
   })
+
+  Object.keys(State).forEach(state => {
+    describe(`when disabled in ${state} state`, () => {
+      it("does NOT call the onClick callback when clicked", () => {
+        render(<SaveButton state={state as State} onClick={onClick} disabled />)
+        screen.getByRole("button").click()
+        expect(onClick).not.toHaveBeenCalled()
+      })
+    })
+  })
 })
