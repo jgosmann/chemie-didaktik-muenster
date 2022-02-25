@@ -1,17 +1,27 @@
 import { useEffect, useState } from "react"
 
 export class PendingPromise {
-  private constructor(public isLoading: true) {}
+  private constructor(public readonly isLoading: true) {}
 
-  static instance = new PendingPromise(true)
+  static readonly instance = new PendingPromise(true)
 }
 
 export class FulfilledPromise<T> {
-  constructor(public isLoading: false, public value: T) {}
+  public readonly isLoading: false
+  public readonly value: T
+
+  constructor(value: T) {
+    this.value = value
+  }
 }
 
 export class RejectedPromise {
-  constructor(public isLoading: false, public error: unknown) {}
+  public readonly isLoading: false
+  public readonly error: unknown
+
+  constructor(error: unknown) {
+    this.error = error
+  }
 }
 
 export type CompletedPromise<T> = FulfilledPromise<T> | RejectedPromise
@@ -24,8 +34,8 @@ const usePromise = <T>(promise: Promise<T>): PromiseState<T> => {
   useEffect(() => {
     setState(PendingPromise.instance)
     promise
-      .then(value => setState(new FulfilledPromise(false, value)))
-      .catch(err => setState(new RejectedPromise(false, err)))
+      .then(value => setState(new FulfilledPromise(value)))
+      .catch(err => setState(new RejectedPromise(err)))
   }, [promise])
 
   return state
