@@ -2,6 +2,7 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Link } from "gatsby"
 import React from "react"
+import Message, { Type } from "../Message"
 import { Breadcrumb } from "../navigation/Breadcrumbs"
 
 export interface SearchResultsProps {
@@ -14,10 +15,9 @@ export interface SearchResultsProps {
 
 const SearchResults = ({ results }: SearchResultsProps) =>
   results.length == 0 ? (
-    <div className="bg-red-100 rounded-lg text-xl mt-4 p-2 border border-red-200 text-red-800">
-      <FontAwesomeIcon icon={faInfoCircle} fixedWidth className="mr-2" />
+    <Message type={Type.Info} className="text-xl">
       Leider wurde kein passender Inhalt gefunden.
-    </div>
+    </Message>
   ) : (
     <ul>
       {results.map(result => (

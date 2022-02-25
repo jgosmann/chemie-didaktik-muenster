@@ -14,6 +14,9 @@ module.exports = {
       white: colors.white,
       gray: colors.gray,
       black: colors.black,
+      green: colors.green,
+      blue: colors.blue,
+      yellow: colors.yellow,
     },
     extend: {
       fontFamily: {

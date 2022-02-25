@@ -51,6 +51,9 @@
   .primary {
     @apply text-white hover:text-white active:text-white visited:text-white bg-primary-light hover:bg-primary;
   }
+  .primary:disabled {
+    @apply bg-gray-200 hover:bg-gray-200 text-gray-400 hover:text-gray-400 active:text-gray-400 visited:text-gray-400;
+  }
 }
 
 .no-image-transition.gatsby-image-wrapper [data-main-image] {

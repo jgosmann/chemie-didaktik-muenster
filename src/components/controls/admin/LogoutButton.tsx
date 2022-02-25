@@ -1,17 +1,15 @@
-import * as React from "react"
-import { useAuth0 } from "@auth0/auth0-react"
+import React from "react"
 
-const LoginButton = () => {
-  const { logout } = useAuth0()
+export interface LogoutButtonProps {
+  logout?: () => void
+}
 
+const LogoutButton = ({ logout }: LogoutButtonProps) => {
   return (
-    <button
-      className="btn primary"
-      onClick={() => logout({ returnTo: window?.location.toString() })}
-    >
+    <button className="btn primary" onClick={logout}>
       Ausloggen
     </button>
   )
 }
 
-export default LoginButton
+export default LogoutButton
