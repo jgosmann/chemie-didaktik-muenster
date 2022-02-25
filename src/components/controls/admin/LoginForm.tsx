@@ -21,12 +21,6 @@ const LoginForm = ({ onSubmit, isProcessing, message }: LoginFormProps) => {
   const usernameRef = useRef(null)
   const passwordRef = useRef(null)
 
-  useEffect(() => {
-    if (usernameRef.current) {
-      usernameRef.current.focus()
-    }
-  }, [usernameRef])
-
   return (
     <form ref={formRef}>
       {message && (
