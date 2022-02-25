@@ -146,7 +146,7 @@ def verify_password(password: str, password_hash: dict) -> bool:
         return False
 
 
-def create_oauth2_server(settings: Settings):
+def create_oauth2_server(settings: Settings) -> Server:
     validator = CdmAnalyticsRequestValidator(settings)
     oauth2_server = Server(
         validator, token_generator=jwt_hs256_token_generator(settings.jwt_key)

@@ -69,3 +69,5 @@ yarn-error.log
 .yarn-integrity
 
 __pycache__
+/analytics-client
+/analytics/openapi.json

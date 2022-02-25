@@ -18,6 +18,7 @@ from fastapi import (
 )
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
+from oauthlib.oauth2 import Server
 from psycopg.types.json import Jsonb
 from pydantic import BaseModel
 
@@ -37,10 +38,33 @@ from cdm_analytics.settings import Settings
 
 logger = logging.getLogger(__name__)
 
-settings = Settings()
-oauth2_server = create_oauth2_server(settings)
+_uncached = object()
+
+
+def cache(fn):
+    value = _uncached
+
+    def with_caching():
+        nonlocal value
+        if value is _uncached:
+            value = fn()
+        return value
+
+    return with_caching
+
+
+@cache
+def settings() -> Settings:
+    return Settings()
+
+
+@cache
+def oauth2_server() -> Server:
+    return create_oauth2_server(settings())
+
+
 app = FastAPI()
-app.on_event("startup")(lambda: db_conn_pool.start_pool(settings))
+app.on_event("startup")(lambda: db_conn_pool.start_pool(settings()))
 
 origins = ["http://localhost:8000", "http://localhost:9000"]
 app.add_middleware(
@@ -61,13 +85,13 @@ async def db_connection() -> psycopg.AsyncConnection:
 
 @app.on_event("startup")
 def perform_db_migrations():
-    database = yoyo.get_backend(settings.db_connection_string)
+    database = yoyo.get_backend(settings().db_connection_string)
     migrations = yoyo.read_migrations("cdm_analytics/db_migrations")
     with database.lock():
         database.apply_migrations(database.to_apply(migrations))
 
     # pylint: disable=not-context-manager
-    with psycopg.connect(settings.db_connection_string) as conn:
+    with psycopg.connect(settings().db_connection_string) as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT COUNT(*) FROM users")
             result = cur.fetchone()
@@ -87,7 +111,7 @@ async def authenticated(token: str = Depends(oauth2_scheme)) -> dict:
     try:
         claims = jwt.decode(
             token,
-            settings.jwt_key,
+            settings().jwt_key,
             algorithms=["HS256"],
             issuer=RESOURCE_OWNER_ID,
             audience=RESOURCE_OWNER_ID,
