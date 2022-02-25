@@ -16,6 +16,7 @@ from fastapi import (
     responses,
     status,
 )
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from psycopg.types.json import Jsonb
 from pydantic import BaseModel
@@ -40,6 +41,15 @@ settings = Settings()
 oauth2_server = create_oauth2_server(settings)
 app = FastAPI()
 app.on_event("startup")(lambda: db_conn_pool.start_pool(settings))
+
+origins = ["http://localhost:8000", "http://localhost:9000"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
