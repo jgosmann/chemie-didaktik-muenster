@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Literal
 from urllib.parse import urlparse
 
 import jwt
@@ -284,9 +284,43 @@ async def get_statistics_clicks(
         return ClickStatistics(clicks=await cursor.fetchall())
 
 
-@app.post("/auth/token")
-async def post_token(request: Request) -> Response:
-    headers, body, status = oauth2_server.create_token_response(
+class TokenResponse(BaseModel):
+    access_token: str
+    expires_in: int
+    scope: str
+    token_type: Literal["Bearer"]
+
+
+@app.post(
+    "/auth/token",
+    response_model=TokenResponse,
+    openapi_extra={
+        "requestBody": {
+            "content": {
+                "application/x-www-form-urlencoded": {
+                    "schema": {
+                        "required": ["grant_type", "client_id"],
+                        "type": "object",
+                        "properties": {
+                            "grant_type": {
+                                "type": "string",
+                                "enum": ["client_credentials", "password"],
+                            },
+                            "client_id": {"type": "string"},
+                            "username": {"type": "string"},
+                            "password": {"type": "string"},
+                        },
+                    }
+                }
+            },
+            "required": True,
+        }
+    },
+)
+async def post_token(
+    request: Request,
+) -> Response:
+    headers, body, status = oauth2_server().create_token_response(
         str(request.url), request.method, await request.body(), request.headers
     )
     return Response(status_code=status, headers=headers, content=body)
