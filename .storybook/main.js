@@ -10,6 +10,14 @@ module.exports = {
   core: {
     builder: "webpack5",
   },
+  // workaround for bug
+  // https://github.com/storybookjs/storybook/issues/13834
+  babel: async options => ({
+    ...options,
+    plugins: options.plugins.filter(
+      p => typeof p !== "string" || !p.includes("plugin-transform-classes")
+    ),
+  }),
   webpackFinal: async config => {
     // Transpile Gatsby module because Gatsby includes un-transpiled ES6 code.
     config.module.rules[0].exclude = [/node_modules\/(?!(gatsby)\/)/]
