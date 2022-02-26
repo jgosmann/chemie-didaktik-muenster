@@ -13,4 +13,17 @@ export const handlers = [
   rest.post(withBaseUrl("/profile/change-password"), (req, res, ctx) =>
     res(ctx.status(204))
   ),
+  rest.get(withBaseUrl("/users"), (req, res, ctx) =>
+    res(
+      ctx.status(200),
+      ctx.json({
+        users: [
+          { username: "john", realname: "John Wick" },
+          { username: "jane", comment: "Some lengthy comment." },
+        ],
+      })
+    )
+  ),
+  rest.put(withBaseUrl("/users/*"), (req, res, ctx) => res(ctx.status(204))),
+  rest.delete(withBaseUrl("/users/*"), (req, res, ctx) => res(ctx.status(204))),
 ]

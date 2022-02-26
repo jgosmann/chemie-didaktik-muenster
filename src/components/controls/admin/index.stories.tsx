@@ -1,18 +1,20 @@
 import React from "react"
 import { ComponentStory } from "@storybook/react"
-import AdminArea, { AdminAreaProps } from "."
+import AdminAreaComponent, { AdminAreaProps } from "."
 
 export default {
   title: "Admin Area",
-  component: AdminArea,
+  component: AdminAreaComponent,
   parameters: {
     chromatic: { disableSnapshot: true },
   },
 }
 
-const Template: ComponentStory<typeof AdminArea> = (args: AdminAreaProps) => (
-  <AdminArea {...args} />
-)
+const Template: ComponentStory<typeof AdminAreaComponent> = (
+  args: AdminAreaProps
+) => <AdminAreaComponent {...args} />
 
-export const Default = Template.bind({})
-Default.args = {}
+export const AdminArea = Template.bind({})
+AdminArea.args = {
+  loggedInUser: "john",
+}

@@ -50,7 +50,7 @@ const ChangePassword = () => {
       onSaveSucceeded={onSaveSucceeded}
       formatError={formatError}
     >
-      <h2 className="text-xl mt-4 mb-1">Passwort ändern</h2>
+      <h2 className="text-xl mb-1">Passwort ändern</h2>
       <div className="mb-2">
         <label htmlFor="old-password" className="block mb-1">
           Altes Passwort

@@ -39,6 +39,7 @@ const LoginForm = ({ onSubmit, isProcessing, message }: LoginFormProps) => {
           type="text"
           className="w-full"
           disabled={isProcessing}
+          autoCapitalize="username"
           required
         />
       </div>
@@ -53,6 +54,7 @@ const LoginForm = ({ onSubmit, isProcessing, message }: LoginFormProps) => {
           type="password"
           className="w-full"
           disabled={isProcessing}
+          autoComplete="current-password"
           required
         />
       </div>

@@ -9,7 +9,11 @@ const AdminPage = () => {
   return (
     <Layout crumbs={[{ title: "Administration", slug: "admin" }]}>
       <Seo title="Startseite" />
-      <AuthController render={logout => <AdminArea logout={logout} />} />
+      <AuthController
+        render={(username, logout) => (
+          <AdminArea loggedInUser={username} logout={logout} />
+        )}
+      />
     </Layout>
   )
 }

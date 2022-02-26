@@ -23,7 +23,7 @@ const TrackedDomainsControl = ({
 
   return (
     <SaveableForm save={save} disabled={trackedDomains.length === 0}>
-      <h2 className="text-xl mt-4 mb-1">
+      <h2 className="text-xl mb-1">
         <label htmlFor="tracked-domains">Getrackte Domains</label>
       </h2>
       <Input

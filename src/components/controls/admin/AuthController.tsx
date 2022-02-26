@@ -12,36 +12,38 @@ import AnalyticsClientContext, { createClient } from "./AnalyticsClient"
 import LoginForm, { LoginMessage } from "./LoginForm"
 
 export interface AuthControllerProps {
-  render: (logout: () => void) => React.ReactNode
+  render: (username: string, logout: () => void) => React.ReactNode
 }
 
 const AuthController = ({ render }: AuthControllerProps) => {
   const [message, setMessage] = useState<LoginMessage | null>(null)
-  const [token, setToken] = useState<string | null>(
-    typeof window !== "undefined" && window.sessionStorage.getItem("auth-token")
+  const [auth, setAuth] = useState<{ token: string; username: string } | null>(
+    typeof window !== "undefined" &&
+      JSON.parse(window.sessionStorage.getItem("auth"))
   )
-  const [authPromise, setAuthPromise] = useState<Promise<TokenResponse | null>>(
-    new Promise(resolve => resolve(null))
-  )
+  const [authPromise, setAuthPromise] = useState<
+    Promise<[string, TokenResponse] | null>
+  >(new Promise(resolve => resolve(null)))
   const promiseState = usePromise(authPromise)
 
   useEffect(() => {
-    if (token) {
-      window?.sessionStorage.setItem("auth-token", token)
+    if (auth) {
+      window?.sessionStorage.setItem("auth", JSON.stringify(auth))
     } else {
-      window?.sessionStorage.removeItem("auth-token")
+      window?.sessionStorage.removeItem("auth")
     }
-  }, [token])
+  }, [auth])
   useEffect(() => {
     if (promiseState instanceof FulfilledPromise && promiseState.value) {
-      setToken(promiseState.value.access_token)
+      const [username, tokenResponse] = promiseState.value
+      setAuth({ token: tokenResponse.access_token, username })
       const timeoutID = setTimeout(() => {
-        setToken(null)
+        setAuth(null)
         setMessage({
           type: Type.Info,
           text: "Die Sitzung ist abgelaufen. Bitte erneut einloggen.",
         })
-      }, Math.max(0, promiseState.value.expires_in - 60) * 1000)
+      }, Math.max(0, tokenResponse.expires_in - 60) * 1000)
       return () => clearTimeout(timeoutID)
     } else if (promiseState instanceof RejectedPromise) {
       if (
@@ -76,25 +78,29 @@ const AuthController = ({ render }: AuthControllerProps) => {
         )
         .join("&")
       setAuthPromise(
-        client.request.request({
-          method: "POST",
-          url: "/auth/token",
-          body,
-          mediaType: "application/x-www-form-urlencoded",
-          errors: {
-            422: `Validation Error`,
-          },
-        })
+        client.request
+          .request<TokenResponse>({
+            method: "POST",
+            url: "/auth/token",
+            body,
+            mediaType: "application/x-www-form-urlencoded",
+            errors: {
+              422: `Validation Error`,
+            },
+          })
+          .then(response => [username, response])
       )
     },
     [client]
   )
 
-  if (token) {
+  if (auth) {
     return (
-      <AnalyticsClientContext.Provider value={createClient({ TOKEN: token })}>
-        {render(() => {
-          setToken(null)
+      <AnalyticsClientContext.Provider
+        value={createClient({ TOKEN: auth.token })}
+      >
+        {render(auth.username, () => {
+          setAuth(null)
           setMessage({ type: Type.Success, text: "Sie haben sich ausgeloggt." })
         })}
       </AnalyticsClientContext.Provider>

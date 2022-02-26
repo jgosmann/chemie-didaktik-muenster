@@ -84,8 +84,9 @@ describe("AuthController", () => {
       render(
         <AnalyticsClientContext.Provider value={mockClient}>
           <AuthController
-            render={logout => (
+            render={(username, logout) => (
               <div data-testid="render">
+                <div data-testid="username">{username}</div>
                 <button onClick={logout} data-testid="logout">
                   logout
                 </button>
@@ -142,6 +143,7 @@ describe("AuthController", () => {
     it("shows the return value of the render function", async () => {
       await waitFor(() => {
         expect(screen.queryByTestId("render")).toBeInTheDocument()
+        expect(screen.queryByTestId("username")).toHaveTextContent("username")
       })
     })
 
