@@ -1,6 +1,6 @@
 import { faUser } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import React from "react"
+import React, { useCallback } from "react"
 import DeleteButton from "./DeleteButton"
 
 export interface UserData {
@@ -20,16 +20,28 @@ const User = ({
   comment,
   onDelete,
   disableDeletion,
-}: UserProps) => (
-  <div className="flex gap-4 items-center">
-    <FontAwesomeIcon icon={faUser} />
-    <div className="grow">
-      {username}
-      {realname && ` (${realname})`}
-      {comment && <p className="text-xs text-gray-800">{comment}</p>}
+}: UserProps) => {
+  const confirm = useCallback(() => {
+    if (
+      window.confirm(
+        `Sind Sie sicher, dass sie den Benutzer '${username}' löschen möchten?`
+      )
+    ) {
+      onDelete(username)
+    }
+  }, [username, onDelete])
+
+  return (
+    <div className="flex gap-4 items-center">
+      <FontAwesomeIcon icon={faUser} />
+      <div className="grow">
+        {username}
+        {realname && ` (${realname})`}
+        {comment && <p className="text-xs text-gray-800">{comment}</p>}
+      </div>
+      {!disableDeletion && <DeleteButton onClick={confirm} />}
     </div>
-    {!disableDeletion && <DeleteButton onClick={() => onDelete(username)} />}
-  </div>
-)
+  )
+}
 
 export default User

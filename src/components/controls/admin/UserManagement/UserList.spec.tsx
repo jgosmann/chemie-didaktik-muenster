@@ -8,6 +8,7 @@ import { rest } from "msw"
 
 describe("UserList", () => {
   beforeEach(() => {
+    window.confirm = jest.fn(() => true)
     render(
       <UserList
         loggedInUser="foo"
