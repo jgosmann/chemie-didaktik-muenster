@@ -17,6 +17,11 @@ window.___navigate = pathname => {
   action("NavigateTo:")(pathname)
 }
 
+import { initialize, mswDecorator } from "msw-storybook-addon"
+import { handlers } from "../src/mocks/handlers"
+initialize()
+export const decorators = [mswDecorator]
+
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
   chromatic: { disableSnapshot: true },
@@ -25,5 +30,8 @@ export const parameters = {
       color: /(background|color)$/i,
       date: /Date$/,
     },
+  },
+  msw: {
+    handlers,
   },
 }

@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useRef } from "react"
 import { useState } from "react"
 import SaveButton, { State } from "./SaveButton"
 
@@ -6,35 +6,66 @@ export interface SaveFormProps {
   children?: React.ReactNode
   save: () => Promise<void>
   disabled?: boolean
+  saveLabel?: string
+  onChange?: () => void
+  onSaveSucceeded?: () => void
+  formatError?: (error: unknown) => string
 }
 
-const SaveForm = ({ children, save, disabled }: SaveFormProps): JSX.Element => {
+const SaveForm = ({
+  children,
+  save,
+  saveLabel,
+  disabled,
+  onChange,
+  onSaveSucceeded,
+  formatError,
+}: SaveFormProps): JSX.Element => {
+  const formRef = useRef(null)
   const [state, setState] = useState(State.Unchanged)
+  const [errorMessage, setErrorMessage] = useState<string>(null)
 
-  const onChange = useCallback(() => {
+  const onChangeInternal = useCallback(() => {
     setState(State.Changed)
-  }, [])
+    if (onChange) onChange()
+  }, [onChange])
 
   const onSave = useCallback(
     ev => {
       ev.preventDefault()
-      setState(State.Saving)
-      save()
-        .then(() => {
-          setState(State.SavedSuccesfully)
-        })
-        .catch(e => {
-          setState(State.Failure)
-          console.error(e)
-        })
+      if (formRef.current?.reportValidity()) {
+        setState(State.Saving)
+        save()
+          .then(() => {
+            setState(State.SavedSuccesfully)
+            if (onSaveSucceeded) {
+              onSaveSucceeded()
+            }
+          })
+          .catch(e => {
+            setState(State.Failure)
+            const message = formatError && formatError(e)
+            if (message) {
+              setErrorMessage(message)
+            } else {
+              console.error(e)
+            }
+          })
+      }
     },
     [save]
   )
 
   return (
-    <form onChange={onChange}>
+    <form onChange={onChangeInternal} ref={formRef}>
       {children}
-      <SaveButton state={state} onClick={onSave} disabled={disabled} />
+      <SaveButton
+        saveLabel={saveLabel}
+        state={state}
+        onClick={onSave}
+        disabled={disabled}
+        errorMessage={errorMessage}
+      />
     </form>
   )
 }

@@ -44,3 +44,15 @@ Disabled.args = {
   state: State.Changed,
   disabled: true,
 }
+
+export const CustomLabel = Template.bind({})
+CustomLabel.args = {
+  state: State.Unchanged,
+  saveLabel: "Apply",
+}
+
+export const CustomError = Template.bind({})
+CustomError.args = {
+  state: State.Failure,
+  errorMessage: "Custom error",
+}

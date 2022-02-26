@@ -15,16 +15,22 @@ export interface SaveButtonProps {
   disabled?: boolean
   state: State
   onClick: (ev: React.FormEvent) => void
+  saveLabel?: string
+  errorMessage?: string
 }
 
 const SaveButton = ({
   disabled,
   state,
   onClick,
+  saveLabel = "Änderungen speichern",
+  errorMessage,
 }: SaveButtonProps): JSX.Element => (
   <>
     {state === State.Failure && (
-      <Message type={Type.Error}>Es ist ein Fehler aufgetreten.</Message>
+      <Message type={Type.Error}>
+        {errorMessage ?? "Es ist ein Fehler aufgetreten."}
+      </Message>
     )}
     <button
       disabled={
@@ -46,7 +52,7 @@ const SaveButton = ({
           Gespeichert
         </>
       ) : (
-        "Änderungen speichern"
+        saveLabel
       )}
     </button>
   </>

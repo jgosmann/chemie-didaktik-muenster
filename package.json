@@ -61,7 +61,8 @@
     "identity-obj-proxy": "^3.0.0",
     "isomorphic-fetch": "^3.0.0",
     "jest": "^27.4.3",
-    "msw": "^0.38.1",
+    "msw": "^0.36.0",
+    "msw-storybook-addon": "^1.6.0",
     "openapi-typescript-codegen": "^0.19.0",
     "postcss": "^8.3.11",
     "prettier": "^2.4.1",
@@ -93,5 +94,8 @@
   },
   "bugs": {
     "url": "https://github.com/gatsbyjs/gatsby/issues"
+  },
+  "msw": {
+    "workerDirectory": ".storybook/msw"
   }
 }

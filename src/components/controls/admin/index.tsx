@@ -1,4 +1,5 @@
 import React from "react"
+import ChangePassword from "./ChangePassword"
 import LogoutButton from "./LogoutButton"
 import TrackedDomains from "./TrackedDomains"
 
@@ -12,7 +13,14 @@ const AdminArea = ({ logout }: AdminAreaProps): JSX.Element => (
       <h1 className="text-2xl">Administration</h1>
       <LogoutButton logout={logout} />
     </div>
-    <TrackedDomains />
+    <div className="flex flex-wrap gap-16">
+      <div className="rounded bg-gray-100  shadow p-4">
+        <TrackedDomains />
+      </div>
+      <div className="rounded bg-gray-100  shadow p-4">
+        <ChangePassword />
+      </div>
+    </div>
   </>
 )
 

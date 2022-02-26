@@ -32,6 +32,10 @@ describe("TrackedDomainsControl", () => {
         expect(request.body).toEqual({
           tracked_domains: ["foo.com", "example.org"],
         })
+
+        await waitFor(() =>
+          expect(screen.getByText("Gespeichert")).toBeInTheDocument()
+        )
       })
     })
   })
