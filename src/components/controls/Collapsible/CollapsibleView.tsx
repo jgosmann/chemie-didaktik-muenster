@@ -46,7 +46,7 @@ export const renderDefaultLabel = ({
   onToggle,
 }: RenderLabelProps) => (
   <div className="flex justify-between gap-2">
-    <div>{label}</div>
+    <div className="grow">{label}</div>
     <ToggleButton onToggle={onToggle} isExpanded={isExpanded} />
   </div>
 )
