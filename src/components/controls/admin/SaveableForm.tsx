@@ -8,7 +8,6 @@ export interface SaveFormProps {
   disabled?: boolean
   saveLabel?: string
   onChange?: () => void
-  onSaveSucceeded?: () => void
   formatError?: (error: unknown) => string
 }
 
@@ -18,7 +17,6 @@ const SaveForm = ({
   saveLabel,
   disabled,
   onChange,
-  onSaveSucceeded,
   formatError,
 }: SaveFormProps): JSX.Element => {
   const formRef = useRef(null)
@@ -38,9 +36,7 @@ const SaveForm = ({
         save()
           .then(() => {
             setState(State.SavedSuccesfully)
-            if (onSaveSucceeded) {
-              onSaveSucceeded()
-            }
+            formRef.current.reset()
           })
           .catch(e => {
             setState(State.Failure)
@@ -57,7 +53,15 @@ const SaveForm = ({
   )
 
   return (
-    <form onChange={onChangeInternal} ref={formRef}>
+    <form
+      onChange={onChangeInternal}
+      ref={formRef}
+      className={
+        state === State.Unchanged || state == State.SavedSuccesfully
+          ? ""
+          : "changed"
+      }
+    >
       {children}
       <SaveButton
         saveLabel={saveLabel}

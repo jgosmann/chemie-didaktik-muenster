@@ -44,20 +44,11 @@ const AddUser = ({ onUserAdded }: AddUserProps) => {
     }
   }, [])
 
-  const onSaveSucceeded = useCallback(() => {
-    usernameRef.current.value = ""
-    realnameRef.current.value = ""
-    commentRef.current.value = ""
-    passwordRef.current.value = ""
-    passwordConfirmationRef.current.value = ""
-  }, [])
-
   return (
     <SaveableForm
       save={save}
       saveLabel="Benutzer hinzufügen"
       onChange={checkValidity}
-      onSaveSucceeded={onSaveSucceeded}
     >
       <div className="grid grid-cols-2 max-w-md gap-4">
         <div>

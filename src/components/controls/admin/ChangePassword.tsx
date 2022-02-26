@@ -31,11 +31,6 @@ const ChangePassword = () => {
     }
   }, [])
 
-  const onSaveSucceeded = useCallback(() => {
-    oldPasswordRef.current.value = ""
-    newPasswordRef.current.value = ""
-    newPasswordConfirmationRef.current.value = ""
-  }, [])
   const formatError = useCallback(err => {
     if (err instanceof ApiError && err.status == 401) {
       return "Das alte Passwort ist ungültig."
@@ -47,7 +42,6 @@ const ChangePassword = () => {
       saveLabel="Passwort ändern"
       save={save}
       onChange={checkValidity}
-      onSaveSucceeded={onSaveSucceeded}
       formatError={formatError}
     >
       <h2 className="text-xl mb-1">Passwort ändern</h2>

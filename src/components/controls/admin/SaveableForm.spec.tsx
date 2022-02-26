@@ -6,8 +6,8 @@ import SaveableForm from "./SaveableForm"
 describe("SaveableForm", () => {
   let resolveSave, rejectSave
   let save
+  let form
   const onChange = jest.fn()
-  const onSaveSucceeded = jest.fn()
   const formatError = jest.fn()
 
   beforeEach(() => {
@@ -20,16 +20,11 @@ describe("SaveableForm", () => {
     )
     onChange.mockReset()
     formatError.mockClear()
-    render(
-      <SaveableForm
-        save={save}
-        onChange={onChange}
-        onSaveSucceeded={onSaveSucceeded}
-        formatError={formatError}
-      >
+    form = render(
+      <SaveableForm save={save} onChange={onChange} formatError={formatError}>
         <input type="text" required />
       </SaveableForm>
-    )
+    ).container.firstChild
   })
 
   describe("initially", () => {
@@ -38,11 +33,21 @@ describe("SaveableForm", () => {
         "Änderungen speichern"
       )
       expect(screen.getByRole("button")).toBeDisabled()
+      expect(form).not.toHaveClass("changed")
     })
 
-    it("calls onChange on changes", () => {
-      userEvent.type(screen.getByRole("textbox"), "a")
-      expect(onChange).toHaveBeenCalled()
+    describe("when changed", () => {
+      beforeEach(() => {
+        userEvent.type(screen.getByRole("textbox"), "a")
+      })
+
+      it("calls onChange on changes", () => {
+        expect(onChange).toHaveBeenCalled()
+      })
+
+      it("adds the 'changed' CSS class", () => {
+        expect(form).toHaveClass("changed")
+      })
     })
   })
 
@@ -88,6 +93,7 @@ describe("SaveableForm", () => {
         beforeEach(async () => {
           await act(async () => resolveSave())
         })
+
         it("renders the save button in succesfully-saved state", async () => {
           await waitFor(() => {
             expect(screen.getByRole("button")).toHaveTextContent("Gespeichert")
@@ -95,10 +101,14 @@ describe("SaveableForm", () => {
           })
         })
 
-        it("calls the onSaveSucceeded callback", async () => {
+        it("clears the form", async () => {
           await waitFor(() => {
-            expect(onSaveSucceeded).toHaveBeenCalled()
+            expect(screen.getByRole("textbox")).toHaveValue("")
           })
+        })
+
+        it("removes the 'changed' CSS class", () => {
+          expect(form).not.toHaveClass("changed")
         })
       })
 
@@ -110,6 +120,10 @@ describe("SaveableForm", () => {
             expect(screen.getByTitle("Fehler")).toBeInTheDocument()
             expect(screen.getByRole("button")).toBeEnabled()
           })
+        })
+
+        it("keeps the 'changed' CSS class", () => {
+          expect(form).toHaveClass("changed")
         })
 
         it("uses the formatError to format the error message", async () => {
