@@ -187,35 +187,35 @@ def test_tracks_referrers(app, user_session, builder_session):
 
     assert requests.post(
         app.url("/actions/increment"),
-        headers={"Referer": "http://source-domain.net/path-a"},
+        json="http://source-domain.net/path-a",
     ).ok
     assert requests.post(
         app.url("/actions/increment"),
-        headers={"Referer": "http://www.source-domain.net/path-a"},
+        json="http://www.source-domain.net/path-a/",
     ).ok
     assert requests.post(
         app.url("/actions/increment"),
-        headers={"Referer": "https://www.source-domain.net/path-a"},
+        json="https://www.source-domain.net/path-a",
     ).ok
     assert requests.post(
         app.url("/actions/increment"),
-        headers={"Referer": "https://source-domain.org/path-b"},
+        json="https://source-domain.org/path-b",
     ).ok
     assert requests.post(
         app.url("/actions/increment"),
-        headers={"Referer": "https://SOURCE-DOMAIN.org/path-b"},
+        json="https://SOURCE-DOMAIN.org/path-b",
     ).ok
     assert requests.post(
         app.url("/actions/increment"),
-        headers={"Referer": "https://source-domain.org/path-b/child"},
+        json="https://source-domain.org/path-b/child",
     ).ok
     assert requests.post(
         app.url("/actions/increment"),
-        headers={"Referer": "http://untracked-domain.com/path-a"},
+        json="http://untracked-domain.com/path-a",
     )
     assert requests.post(
         app.url("/actions/increment"),
-        headers={"Referer": "http://source-domain.org/untracked-path"},
+        json="http://source-domain.org/untracked-path",
     )
 
     assert user_session.get(app.url("/statistics/clicks")).json() == {
@@ -243,7 +243,7 @@ def test_increment_action_without_referer(app, user_session):
 @pytest.mark.parametrize("referer", ["path-only", "//[::1/path"])
 def test_increment_action_without_invalid_referer(referer, app, user_session):
     status_code = user_session.post(
-        app.url("/actions/increment"), headers={"Referer": referer}
+        app.url("/actions/increment"), json=referer
     ).status_code
     assert 400 <= status_code < 500
 

@@ -34,7 +34,7 @@ const obtainAnalyticsToken = () => {
     )}`
     console.log("url", `${process.env.ANALYTICS_URL}/auth/token`)
     const req = http.request(
-      `${process.env.ANALYTICS_URL}/auth/token`,
+      `${process.env.GATSBY_ANALYTICS_URL}/auth/token`,
       {
         method: "POST",
         headers: {
@@ -67,7 +67,7 @@ const obtainAnalyticsToken = () => {
 const putTrackedPaths = (authToken, paths) => {
   return new Promise((resolve, reject) => {
     const req = http.request(
-      `${process.env.ANALYTICS_URL}/tracked/paths`,
+      `${process.env.GATSBY_ANALYTICS_URL}/tracked/paths`,
       {
         method: "PUT",
         headers: {

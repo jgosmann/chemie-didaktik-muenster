@@ -9,7 +9,6 @@ from fastapi import (
     Body,
     Depends,
     FastAPI,
-    Header,
     HTTPException,
     Request,
     Response,
@@ -214,20 +213,22 @@ async def put_tracked_paths(
     await conn.commit()
 
 
+def _remove_trailing_slash(path: str) -> str:
+    if path.endswith("/"):
+        return path[:-1]
+    else:
+        return path
+
+
 @app.post(
     "/actions/increment",
     status_code=status.HTTP_204_NO_CONTENT,
     response_class=responses.Response,
 )
-async def post_increment_action(referer_header: str = Header(None, alias="Referer")):
-    if not referer_header:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="missing `Referer` header"
-        )
-
+async def post_increment_action(referrer: str = Body(...)):
     try:
-        referrer = urlparse(referer_header)
-        if not referrer.hostname:
+        parsed_referrer = urlparse(referrer)
+        if not parsed_referrer.hostname:
             raise ValueError("missing hostname")
     except ValueError as err:
         raise HTTPException(
@@ -235,6 +236,7 @@ async def post_increment_action(referer_header: str = Header(None, alias="Refere
             detail="invalid `Referer` header",
         ) from err
 
+    canonical_path = _remove_trailing_slash(parsed_referrer.path)
     async with db_conn_pool.connection() as conn:
         async with conn.cursor() as cursor:
             await cursor.execute(
@@ -244,8 +246,9 @@ async def post_increment_action(referer_header: str = Header(None, alias="Refere
                   AND exists(SELECT 1 FROM tracked_paths WHERE absolute_path = %s)
             """,
                 (
-                    [referrer.hostname] + list(all_parent_domains(referrer.hostname)),
-                    referrer.path,
+                    [parsed_referrer.hostname]
+                    + list(all_parent_domains(parsed_referrer.hostname)),
+                    canonical_path,
                 ),
             )
             tracking_domain_row = await cursor.fetchone()
@@ -257,7 +260,7 @@ async def post_increment_action(referer_header: str = Header(None, alias="Refere
                     ON CONFLICT (domain_name, absolute_path)
                     DO UPDATE SET click_count = clicks.click_count + 1
                 """,
-                    (tracking_domain_row[0], referrer.path, 1),
+                    (tracking_domain_row[0], canonical_path, 1),
                 )
         await conn.commit()
 

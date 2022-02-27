@@ -11,10 +11,12 @@ import "./src/styles/global.css"
 import React from "react"
 import { StaticLayout } from "./src/components/layout"
 import LocationContext from "./src/components/LocationContext"
+import AnalyticsTracker from "./src/components/AnalyticsTracker"
 
 export const wrapPageElement = ({ element, props }) => {
   return (
     <LocationContext.Provider value={props.location}>
+      <AnalyticsTracker location={props.location} />
       <StaticLayout {...props}>{element}</StaticLayout>
     </LocationContext.Provider>
   )
