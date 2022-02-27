@@ -3,6 +3,9 @@ const { createRemoteFileNode } = require("gatsby-source-filesystem")
 const OpenAPI = require("openapi-typescript-codegen")
 const { resolve } = require("path")
 const { extractVideoId } = require("./src/youtube-url-parser")
+const http = require("http")
+
+require("dotenv").config({ path: resolve(process.cwd(), ".env.development") })
 
 const baseCrumb = { title: "Startseite", slug: "" }
 
@@ -21,6 +24,99 @@ exports.onPreInit = () => {
     output: "./analytics-client",
     clientName: "AnalyticsClient",
   })
+}
+
+const obtainAnalyticsToken = () => {
+  return new Promise((resolve, reject) => {
+    const clientId = process.env.ANALYTICS_BUILDER_CLIENT_ID
+    const body = `grant_type=client_credentials&scope=tracked-paths&client_id=${encodeURI(
+      clientId
+    )}`
+    console.log("url", `${process.env.ANALYTICS_URL}/auth/token`)
+    const req = http.request(
+      `${process.env.ANALYTICS_URL}/auth/token`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.ANALYTICS_BUILDER_CLIENT_SECRET}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Length": Buffer.byteLength(body),
+        },
+      },
+      res => {
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          reject(
+            new Error(
+              `Failed to get authorization to update tracked pages: got ${res.statusCode} HTTP status`
+            )
+          )
+        }
+        let chunks = []
+        res.on("data", chunk => chunks.push(chunk))
+        res.on("end", () => {
+          resolve(JSON.parse(chunks.join()))
+        })
+      }
+    )
+    req.on("error", reject)
+    req.write(body)
+    req.end()
+  })
+}
+
+const putTrackedPaths = (authToken, paths) => {
+  return new Promise((resolve, reject) => {
+    const req = http.request(
+      `${process.env.ANALYTICS_URL}/tracked/paths`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      },
+      res => {
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          reject(
+            new Error(
+              `Failed to update tracked pages: got ${res.statusCode} HTTP status`
+            )
+          )
+        }
+        resolve()
+      }
+    )
+    req.on("error", reject)
+    req.write(
+      JSON.stringify({
+        tracked_paths: paths,
+      })
+    )
+    req.end()
+  })
+}
+
+exports.onPostBuild = async ({ graphql }) => {
+  const [pages, tokenResponse] = await Promise.all([
+    graphql(`
+      {
+        allSitePage {
+          nodes {
+            path
+          }
+        }
+      }
+    `),
+    obtainAnalyticsToken(),
+  ])
+
+  try {
+    await putTrackedPaths(
+      tokenResponse.access_token,
+      pages.data.allSitePage.nodes.map(node => node.path)
+    )
+  } catch (err) {
+    console.error(`Failet to update tracket pages: ${err.message}`, err)
+  }
 }
 
 exports.createSchemaCustomization = ({ actions }) => {
