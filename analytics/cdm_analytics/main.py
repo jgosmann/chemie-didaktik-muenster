@@ -84,13 +84,13 @@ async def db_connection() -> psycopg.AsyncConnection:
 
 @app.on_event("startup")
 def perform_db_migrations():
-    database = yoyo.get_backend(settings().db_connection_string)
+    database = yoyo.get_backend(settings().database_url)
     migrations = yoyo.read_migrations("cdm_analytics/db_migrations")
     with database.lock():
         database.apply_migrations(database.to_apply(migrations))
 
     # pylint: disable=not-context-manager
-    with psycopg.connect(settings().db_connection_string) as conn:
+    with psycopg.connect(settings().database_url) as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT COUNT(*) FROM users")
             result = cur.fetchone()

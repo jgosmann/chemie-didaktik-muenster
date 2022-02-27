@@ -102,7 +102,7 @@ class CdmAnalyticsRequestValidator(RequestValidator):
         self, username, password, client, request, *args, **kwargs
     ) -> bool:
         # pylint: disable=not-context-manager
-        with psycopg.connect(self.settings.db_connection_string) as conn:
+        with psycopg.connect(self.settings.database_url) as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     "SELECT password_hash FROM users WHERE username = %s", (username,)

@@ -14,7 +14,7 @@ class DbConnectionPool:
 
     def start_pool(self, settings: Settings):
         self._pool = AsyncConnectionPool(
-            settings.db_connection_string,
+            settings.database_url,
             min_size=settings.db_pool_min,
             max_size=settings.db_pool_max,
         )
