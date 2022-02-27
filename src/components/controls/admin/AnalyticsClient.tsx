@@ -6,7 +6,7 @@ import {
 
 export const createClient = (config?: Partial<OpenAPIConfig>) =>
   new AnalyticsClient({
-    BASE: process.env.GATSBY_ANALYTICS_URL,
+    BASE: process.env.GATSBY_ANALYTICS_URL || "http://localhost:8001",
     ...config,
   })
 

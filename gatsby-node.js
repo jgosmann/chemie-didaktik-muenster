@@ -32,7 +32,6 @@ const obtainAnalyticsToken = () => {
     const body = `grant_type=client_credentials&scope=tracked-paths&client_id=${encodeURI(
       clientId
     )}`
-    console.log("url", `${process.env.ANALYTICS_URL}/auth/token`)
     const req = http.request(
       `${process.env.GATSBY_ANALYTICS_URL}/auth/token`,
       {
@@ -96,6 +95,11 @@ const putTrackedPaths = (authToken, paths) => {
 }
 
 exports.onPostBuild = async ({ graphql }) => {
+  if (!process.env.ANALYTICS_URL) {
+    console.warn("ANALYTICS_URL unset, not publishing pages to track.")
+    return
+  }
+
   const [pages, tokenResponse] = await Promise.all([
     graphql(`
       {

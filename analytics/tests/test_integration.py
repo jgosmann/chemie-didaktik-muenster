@@ -92,8 +92,9 @@ TEST_USER = "testuser"
 TEST_USER_PASSWORD = "testuser"
 
 
+# require app fixture to ensure DB migrations ran
 @pytest.fixture(autouse=True)
-def clean_db():
+def clean_db(app):
     # pylint: disable=not-context-manager
     with psycopg.connect(
         "host=127.0.0.1 dbname=postgres user=postgres password=postgres-dev-password"
