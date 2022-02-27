@@ -5,7 +5,7 @@ const { resolve } = require("path")
 const { extractVideoId } = require("./src/youtube-url-parser")
 const http = require("http")
 
-require("dotenv").config({ path: resolve(process.cwd(), ".env.development") })
+require("dotenv").config()
 
 const baseCrumb = { title: "Startseite", slug: "" }
 
