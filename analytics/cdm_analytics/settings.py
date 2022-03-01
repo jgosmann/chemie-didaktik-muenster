@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import BaseSettings
 
 
@@ -8,3 +10,8 @@ class Settings(BaseSettings):
 
     jwt_key: str
     builder_access_token: str
+
+    additional_cors_origins: List[str] = [
+        "http://localhost:8000",
+        "http://localhost:9000",
+    ]

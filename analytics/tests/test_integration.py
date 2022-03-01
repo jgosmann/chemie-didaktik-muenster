@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 import time
@@ -14,6 +15,7 @@ from cdm_analytics.auth import (
     generate_create_user_sql,
 )
 
+TEST_ADDITIONAL_CORS_ORIGINS = ["domain-a.org", "domain-org"]
 TEST_BUILDER_ACCESS_TOKEN = "builder access token"
 
 
@@ -29,6 +31,7 @@ class App:
             env = dict(**os.environ)
             env["JWT_KEY"] = "test jwt key"
             env["BUILDER_ACCESS_TOKEN"] = TEST_BUILDER_ACCESS_TOKEN
+            env["ADDITIONAL_CORS_ORIGINS"] = json.dumps(TEST_ADDITIONAL_CORS_ORIGINS)
             # pylint: disable=consider-using-with
             self._proc = subprocess.Popen(
                 [
@@ -343,3 +346,50 @@ def test_access_prohibited_without_token(app):
     ]
     for method, path in restricted_endpoints:
         assert requests.request(method, app.url(path)).status_code == 401
+
+
+def assert_cors_headers(headers: requests.structures.CaseInsensitiveDict, domain: str):
+    assert headers.get("Access-Control-Allow-Origin") == domain
+    assert headers.get("Vary") == "Origin"
+    assert headers.get("Access-Control-Allow-Credentials")
+
+
+user_endpoints = [
+    ("get", "/tracked/domains"),
+    ("put", "/tracked/domains"),
+    ("get", "/statistics/clicks"),
+    ("get", "/users"),
+    ("put", "/users/new-user"),
+    ("delete", f"/users/{TEST_USER}"),
+    ("post", "/profile/change-password"),
+]
+
+
+def test_cors_headers_from_env(app, user_session):
+    for method, path in user_endpoints:
+        options_headers = requests.options(
+            app.url(path), headers={"Origin": TEST_ADDITIONAL_CORS_ORIGINS[0]}
+        ).headers
+        assert_cors_headers(options_headers, TEST_ADDITIONAL_CORS_ORIGINS[0])
+
+        main_headers = user_session.request(
+            method, app.url(path), headers={"Origin": TEST_ADDITIONAL_CORS_ORIGINS[0]}
+        ).headers
+        assert_cors_headers(main_headers, TEST_ADDITIONAL_CORS_ORIGINS[0])
+
+
+def test_cors_headers_from_tracked_domain(app, user_session):
+    domain = "abc.de"
+    data = {"tracked_domains": [domain, "example.org"]}
+    assert user_session.put(app.url("/tracked/domains"), json=data).ok
+
+    for method, path in user_endpoints:
+        options_headers = requests.options(
+            app.url(path), headers={"Origin": domain}
+        ).headers
+        assert_cors_headers(options_headers, domain)
+
+        main_headers = user_session.request(
+            method, app.url(path), headers={"Origin": domain}
+        ).headers
+        assert_cors_headers(main_headers, domain)

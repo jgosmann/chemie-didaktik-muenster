@@ -65,13 +65,21 @@ def oauth2_server() -> Server:
 app = FastAPI()
 app.on_event("startup")(lambda: db_conn_pool.start_pool(settings()))
 
-origins = ["http://localhost:8000", "http://localhost:9000"]
+
+class DynamicCORSMiddleware(CORSMiddleware):
+    tracked_domains: List[str] = []
+
+    def is_allowed_origin(self, origin: str) -> bool:
+        return (
+            origin in self.tracked_domains
+            or origin in settings().additional_cors_origins
+        )
+
+
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
+    DynamicCORSMiddleware,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
 )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
@@ -96,6 +104,17 @@ def perform_db_migrations():
             result = cur.fetchone()
             if result[0] == 0:
                 cur.execute(*generate_create_initial_user_sql())
+
+
+@app.on_event("startup")
+def load_cors_domains():
+    # pylint: disable=not-context-manager
+    with psycopg.connect(settings().database_url) as conn:
+        with conn.cursor(
+            row_factory=psycopg.rows.args_row(lambda domain_name: domain_name)
+        ) as cur:
+            cur.execute("SELECT domain_name FROM tracked_domains")
+            DynamicCORSMiddleware.tracked_domains = cur.fetchall()
 
 
 credentials_exception = HTTPException(
@@ -176,6 +195,7 @@ async def put_tracked_domains(
             for domain in body.tracked_domains:
                 await copy.write_row((domain,))
     await conn.commit()
+    DynamicCORSMiddleware.tracked_domains = body.tracked_domains
 
 
 class TrackedPathsBody(BaseModel):
