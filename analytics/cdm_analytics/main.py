@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import List, Literal
 from urllib.parse import urlparse
 
@@ -62,7 +63,14 @@ def oauth2_server() -> Server:
     return create_oauth2_server(settings())
 
 
-app = FastAPI()
+enable_docs = os.environ.get("ENABLE_DOCS", "").lower() in (
+    "yes",
+    "y",
+    "true",
+    "enable",
+    "1",
+)
+app = FastAPI(**{} if enable_docs else {"docs_url": None, "redoc_url": None})
 app.on_event("startup")(lambda: db_conn_pool.start_pool(settings()))
 
 

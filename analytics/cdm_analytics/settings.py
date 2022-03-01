@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     jwt_key: str
     builder_access_token: str
 
+    enable_docs: bool = False
+
     additional_cors_origins: List[str] = [
         "http://localhost:8000",
         "http://localhost:9000",
