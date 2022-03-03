@@ -88,8 +88,8 @@ const putTrackedPaths = (authToken, paths) => {
 }
 
 exports.onPostBuild = async ({ graphql }) => {
-  if (!process.env.ANALYTICS_URL) {
-    console.warn("ANALYTICS_URL unset, not publishing pages to track.")
+  if (!process.env.GATSBY_ANALYTICS_URL) {
+    console.warn("GATSBY_ANALYTICS_URL unset, not publishing pages to track.")
     return
   }
 
