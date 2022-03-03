@@ -1,4 +1,3 @@
-const { spawnSync } = require("child_process")
 const { createRemoteFileNode } = require("gatsby-source-filesystem")
 const OpenAPI = require("openapi-typescript-codegen")
 const { resolve } = require("path")
@@ -13,14 +12,6 @@ const baseCrumb = { title: "Startseite", slug: "" }
 
 exports.onPreInit = () => {
   const specPath = resolve("./analytics/openapi.json")
-  const proc = spawnSync(
-    "poetry",
-    ["run", "python3", "-m", "cdm_analytics.write_spec", specPath],
-    { cwd: "./analytics" }
-  )
-  if (proc.status != 0) {
-    throw "failed to generate analytics client"
-  }
   OpenAPI.generate({
     input: specPath,
     output: "./analytics-client",

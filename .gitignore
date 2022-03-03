@@ -70,4 +70,3 @@ yarn-error.log
 
 __pycache__
 /analytics-client
-/analytics/openapi.json

@@ -1,4 +1,5 @@
 .cache
+analytics/openapi.json
 package.json
 package-lock.json
 public
