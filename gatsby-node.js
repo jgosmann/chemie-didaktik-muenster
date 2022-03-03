@@ -121,7 +121,7 @@ exports.onPostBuild = async ({ graphql }) => {
       pages.data.allSitePage.nodes.map(node => node.path)
     )
   } catch (err) {
-    console.error(`Failet to update tracket pages: ${err.message}`, err)
+    console.error(`Failed to update tracked pages: ${err.message}`, err)
   }
 }
 
