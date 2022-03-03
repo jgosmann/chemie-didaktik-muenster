@@ -25,10 +25,12 @@ export const query = graphql`
         title
         slug
       }
-      video
-      videoThumb {
-        childImageSharp {
-          gatsbyImageData(layout: FIXED, width: 640, height: 400)
+      video {
+        youtubeId
+        thumb {
+          childImageSharp {
+            gatsbyImageData(layout: FIXED, width: 640, height: 400)
+          }
         }
       }
       description {
@@ -40,10 +42,12 @@ export const query = graphql`
         crumbs {
           slug
         }
-        shortVideo
-        shortVideoThumb {
-          childImageSharp {
-            ...CardVideoThumbFragment
+        shortVideo {
+          youtubeId
+          thumb {
+            childImageSharp {
+              ...CardVideoThumbFragment
+            }
           }
         }
         shortDescription {
@@ -70,15 +74,16 @@ export interface ConceptPageType extends AboutAuthorMedia {
   title: string
   slug: string
   crumbs: Breadcrumb[]
-  video?: string
-  videoThumb?: FileNode
+  video?: { youtubeId: string; thumb: FileNode }
   description: RenderRichTextData<ContentfulRichTextGatsbyReference>
   linkedContent: Array<{
     id: string
     title: string
     crumbs: Breadcrumb[]
-    shortVideo?: string
-    shortVideoThumb?: ImageDataLike
+    shortVideo?: {
+      youtubeId: string
+      thumb: ImageDataLike
+    }
     shortDescription: RenderRichTextData<ContentfulRichTextGatsbyReference>
     downloadLink?: FileNode & { file: { url: string } }
   }>
@@ -98,7 +103,6 @@ const ConceptPage = ({ data }: ConceptPageProps) => {
     slug,
     crumbs,
     video,
-    videoThumb,
     description,
     linkedContent,
     studentPresentations,
@@ -109,8 +113,8 @@ const ConceptPage = ({ data }: ConceptPageProps) => {
       <Seo title={title} />
       {video && (
         <Video
-          url={video}
-          thumb={videoThumb}
+          url={video.youtubeId}
+          thumb={video.thumb}
           className="my-8 mx-auto rounded shadow"
           width="640"
           height="400"
@@ -129,10 +133,10 @@ const ConceptPage = ({ data }: ConceptPageProps) => {
             link={subpage.crumbs.map(c => c.slug).join("/")}
             download={subpage.downloadLink?.file.url}
             video={
-              subpage.shortVideo && subpage.shortVideoThumb
+              subpage.shortVideo
                 ? {
-                    url: subpage.shortVideo,
-                    thumb: subpage.shortVideoThumb,
+                    url: subpage.shortVideo.youtubeId,
+                    thumb: subpage.shortVideo.thumb,
                   }
                 : undefined
             }

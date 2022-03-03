@@ -6,7 +6,7 @@ import FaqBtnLink from "./FaqBtnLink"
 import VideoBtn from "./VideoBtn"
 
 export interface AboutAuthorMedia {
-  aboutAuthorVideo?: string
+  aboutAuthorVideo?: { youtubeId: string }
   aboutAuthorPreview?: { title: string; gatsbyImageData: IGatsbyImageData }
 }
 
@@ -19,7 +19,9 @@ export interface NavButtonsProps {
 
 export const query = graphql`
   fragment ConceptNavAuthorMedia on ContentfulConceptPage {
-    aboutAuthorVideo
+    aboutAuthorVideo {
+      youtubeId
+    }
     aboutAuthorPreview {
       title
       gatsbyImageData(layout: FIXED, width: 42, height: 42)
@@ -47,7 +49,7 @@ const NavButtons = ({
         </BtnLink>
       )}
       {aboutAuthorMedia?.aboutAuthorVideo && (
-        <VideoBtn videoUrl={aboutAuthorMedia.aboutAuthorVideo}>
+        <VideoBtn videoUrl={aboutAuthorMedia.aboutAuthorVideo.youtubeId}>
           {aboutAuthorPreview && (
             <span className="inline-block overflow-hidden rounded-full align-middle shadow-md mr-2">
               <GatsbyImage

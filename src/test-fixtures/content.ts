@@ -30,8 +30,7 @@ export const conceptPage = ({ id, title }: { id: string; title: string }) => ({
     { title, slug: id },
   ],
   description: loremIpsum(),
-  shortVideo: testVideoUrl,
-  shortVideoThumb: youtubeThumbnail(),
+  shortVideo: { youtubeId: testVideoUrl, thumb: youtubeThumbnail() },
   shortDescription: richText(`Some short description of ${title}.`),
   linkedContent: [],
 })
@@ -44,8 +43,10 @@ export const conceptPageWithAllOptionalContent = ({
   title: string
 }) => ({
   ...conceptPage({ id, title }),
-  video: testVideoUrl,
-  videoThumb: fileNode(youtubeThumbnail({ width: 640, height: 400 })),
+  video: {
+    youtubeId: testVideoUrl,
+    thumb: fileNode(youtubeThumbnail({ width: 640, height: 400 })),
+  },
   linkedContent: [
     {
       id: "linked-content-0",
@@ -61,8 +62,10 @@ export const conceptPageWithAllOptionalContent = ({
       shortDescription: richText(
         "Some short descritpion for the linked content 0."
       ),
-      shortVideo: testVideoUrl,
-      shortVideoThumb: fileNode(youtubeThumbnail()),
+      shortVideo: {
+        youtubeId: testVideoUrl,
+        thumb: fileNode(youtubeThumbnail()),
+      },
     },
     {
       id: "linked-content-1",
@@ -80,7 +83,7 @@ export const conceptPageWithAllOptionalContent = ({
       ),
     },
   ],
-  aboutAuthorVideo: testVideoUrl,
+  aboutAuthorVideo: { youtubeId: testVideoUrl },
   aboutAuthorPreview: fileNode(youtubeThumbnail({ width: 42, height: 42 })),
   studentPresentations: richText("Student presentations content."),
   additionalBackground: richText("Additional background content"),

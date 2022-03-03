@@ -36,9 +36,12 @@ export const DetailsPage = () => (
           { title: "Details Page", slug: "details-page" },
         ],
         video0: {
-          videoIds: [testVideoId],
-          videoThumbs: [
-            fileNode(youtubeThumbnail({ width: 640, height: 480 })),
+          videos: [
+            {
+              youtubeId: testVideoId,
+              title: "TestVideo",
+              thumb: fileNode(youtubeThumbnail({ width: 640, height: 480 })),
+            },
           ],
         },
         description: loremIpsum(),

@@ -21,10 +21,12 @@ export const query = graphql`
         slug
       }
       video0 {
-        videoIds
-        videoThumbs {
-          childImageSharp {
-            gatsbyImageData(layout: FIXED, width: 640, height: 400)
+        videos {
+          youtubeId
+          thumb {
+            childImageSharp {
+              gatsbyImageData(layout: FIXED, width: 640, height: 400)
+            }
           }
         }
       }
@@ -56,7 +58,7 @@ export interface DetailsPageProps {
     contentfulDetailsPage: {
       title: string
       crumbs: Breadcrumb[]
-      video0?: { videoIds: string[]; videoThumbs: FileNode[] }
+      video0?: { videos: Array<{ youtubeId: string; thumb: FileNode }> }
       description: RenderRichTextData<ContentfulRichTextGatsbyReference>
     }
     parent: Parent
@@ -73,11 +75,11 @@ const DetailsPage = ({ data }: DetailsPageProps) => {
       <Seo title={title} />
       <div className="flex justify-center gap-8 flex-row-reverse flex-wrap my-8 items-start">
         {video0 &&
-          video0.videoIds.map((videoId, i) => (
+          video0.videos.map((video, i) => (
             <Video
-              key={videoId}
-              url={videoId}
-              thumb={video0.videoThumbs[i]}
+              key={video.youtubeId}
+              url={video.youtubeId}
+              thumb={video.thumb}
               className="my-8 mx-auto rounded shadow"
               width="640"
               height="400"

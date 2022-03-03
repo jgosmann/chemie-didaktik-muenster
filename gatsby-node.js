@@ -3,7 +3,9 @@ const { createRemoteFileNode } = require("gatsby-source-filesystem")
 const OpenAPI = require("openapi-typescript-codegen")
 const { resolve } = require("path")
 const { extractVideoId } = require("./src/youtube-url-parser")
+const crypto = require("crypto")
 const http = require("http")
+const https = require("https")
 
 require("dotenv").config()
 
@@ -53,7 +55,7 @@ const obtainAnalyticsToken = () => {
         let chunks = []
         res.on("data", chunk => chunks.push(chunk))
         res.on("end", () => {
-          resolve(JSON.parse(chunks.join()))
+          resolve(JSON.parse(chunks.join("")))
         })
       }
     )
@@ -123,6 +125,34 @@ exports.onPostBuild = async ({ graphql }) => {
   }
 }
 
+const fetchYoutubeVideoData = videoIds =>
+  new Promise((resolve, reject) => {
+    const url = new URL("https://www.googleapis.com/youtube/v3/videos")
+    url.searchParams.set("id", videoIds.join(","))
+    url.searchParams.set("key", process.env.YOUTUBE_API_KEY)
+    url.searchParams.set("part", "snippet")
+    const req = https.request(
+      url,
+      {
+        method: "GET",
+      },
+      res => {
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          reject(
+            new Error(`Failed to get data for video IDs ${videoIds.join(", ")}`)
+          )
+        }
+        let chunks = []
+        res.on("data", chunk => chunks.push(chunk))
+        res.on("end", () => {
+          resolve(JSON.parse(chunks.join("")).items)
+        })
+      }
+    )
+    req.on("error", reject)
+    req.end()
+  })
+
 exports.createSchemaCustomization = ({ actions }) => {
   const { createFieldExtension, createTypes } = actions
 
@@ -159,22 +189,6 @@ exports.createSchemaCustomization = ({ actions }) => {
           }
 
           return [baseCrumb, crumb]
-        },
-      }
-    },
-  })
-
-  createFieldExtension({
-    name: "videoIds",
-    args: { source: "String" },
-    extend({ source: sourceField }, prevFieldConfig) {
-      return {
-        resolve: async (source, args, context, info) => {
-          return source[sourceField]
-            .split(/\s+/)
-            .map(url => url.trim())
-            .filter(url => url !== "")
-            .map(extractVideoId)
         },
       }
     },
@@ -223,21 +237,27 @@ exports.createSchemaCustomization = ({ actions }) => {
       description: Content
       studentPresentations: Content
       additionalBackground: Content
-      shortVideoThumb: File @link(from: "fields.shortVideoThumb")
-      videoThumb: File @link(from: "fields.videoThumb")
-      abourtAuthorVideoThumb: File @link(from: "fields.aboutAuthorVideoThumb")
+      video: YtVideo @link
+      shortVideo: YtVideo @link
+      aboutAuthorVideo: YtVideo @link
     }
 
     type ContentfulDetailsPage implements Linkable {
       crumbs: [Crumb!]! @crumbs
       shortDescription: Content
       description: Content
-      shortVideoThumb: File @link(from: "fields.shortVideoThumb")
+      shortVideo: YtVideo @link
     }
     
     type contentfulDetailsPageVideo0TextNode implements Node {
-      videoIds: [String!]! @videoIds(source: "video0")
-      videoThumbs: [File!]! @link(from: "fields.video0Thumbs")
+      videos: [YtVideo!]! @link(from: "fields.videos")
+    }
+    
+    type YtVideo implements Node {
+      id: ID!
+      youtubeId: ID!
+      title: String
+      thumb: File @link
     }
     
     type ContentfulStartseite implements Linkable {
@@ -247,18 +267,24 @@ exports.createSchemaCustomization = ({ actions }) => {
   `)
 }
 
-const createYoutubeThumbFileNode = async (videoId, options) => {
-  try {
-    return await createRemoteFileNode({
-      ...options,
-      url: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-    })
-  } catch (err) {
-    return await createRemoteFileNode({
-      ...options,
-      url: `https://img.youtube.com/vi/${videoId}/default.jpg`,
-    })
+const createYoutubeThumbFileNode = async (videoData, options) => {
+  const sortedUrls = Object.values(videoData.snippet.thumbnails)
+    .sort((a, b) => b.width - a.width)
+    .map(thumb => thumb.url)
+
+  let lastErr
+  for (const url of sortedUrls) {
+    try {
+      return await createRemoteFileNode({
+        ...options,
+        url,
+      })
+    } catch (err) {
+      lastErr = err
+    }
   }
+
+  throw lastErr
 }
 
 exports.onCreateNode = async ({
@@ -268,58 +294,68 @@ exports.onCreateNode = async ({
   cache,
   createNodeId,
 }) => {
-  const createYoutubeThumbNode = async fieldName => {
-    if (node[fieldName]) {
-      const videoId = extractVideoId(node[fieldName])
-      let fileNode = await createYoutubeThumbFileNode(videoId, {
-        parentNodeId: node.id,
-        createNode,
-        createNodeId,
-        cache,
-        store,
-      })
-      if (fileNode) {
-        createNodeField({ node, name: `${fieldName}Thumb`, value: fileNode.id })
-      }
-    }
-  }
-
-  const createMultipleYoutubeThumbNode = async fieldName => {
+  const createYoutubeNodes = async (node, fieldName) => {
     const videoIds = node[fieldName]
       .split(/\s+/)
       .map(url => url.trim())
       .filter(url => url !== "")
       .map(extractVideoId)
-    const fileNodes = await Promise.all(
-      videoIds.map(videoId => {
-        console.log(`create node for ${videoId}`)
-        return createYoutubeThumbFileNode(videoId, {
-          parentNodeId: node.id,
+    const videoData = await fetchYoutubeVideoData(videoIds)
+    return await Promise.all(
+      videoData.map(async video => {
+        const nodeId = createNodeId(`YtVideo-${video.id}`)
+        const thumbFileNode = await createYoutubeThumbFileNode(video, {
+          parentNodeId: nodeId,
           createNode,
           createNodeId,
           cache,
           store,
         })
+        const fieldData = {
+          id: nodeId,
+          youtubeId: video.id,
+          title: video.snippet.title,
+          thumb: thumbFileNode.id,
+        }
+        await createNode({
+          ...fieldData,
+          parent: node.id,
+          children: [],
+          internal: {
+            type: "YtVideo",
+            contentDigest: crypto
+              .createHash("md5")
+              .update(JSON.stringify(fieldData))
+              .digest("hex"),
+          },
+        })
+        return nodeId
       })
     )
+  }
 
-    createNodeField({
-      node,
-      name: `${fieldName}Thumbs`,
-      value: fileNodes.map(node => node.id),
-    })
+  const convertToYoutubeNode = async (node, fieldName) => {
+    if (node[fieldName]) {
+      const videoIds = await createYoutubeNodes(node, fieldName)
+      node[fieldName] = videoIds[0]
+    }
   }
 
   if (node.internal.type === "ContentfulConceptPage") {
     await Promise.all([
-      createYoutubeThumbNode("shortVideo"),
-      createYoutubeThumbNode("video"),
-      createYoutubeThumbNode("aboutAuthorVideo"),
+      convertToYoutubeNode(node, "shortVideo"),
+      convertToYoutubeNode(node, "video"),
+      convertToYoutubeNode(node, "aboutAuthorVideo"),
     ])
   } else if (node.internal.type === "ContentfulDetailsPage") {
-    await createYoutubeThumbNode("shortVideo")
+    await convertToYoutubeNode(node, "shortVideo")
   } else if (node.internal.type === "contentfulDetailsPageVideo0TextNode") {
-    await createMultipleYoutubeThumbNode("video0")
+    const videoNodeIds = await createYoutubeNodes(node, "video0")
+    createNodeField({
+      node,
+      name: `videos`,
+      value: videoNodeIds,
+    })
   }
 }
 

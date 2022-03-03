@@ -20,8 +20,10 @@ interface IndexPageQuery {
         title: string
         titleImage?: { gatsbyImageData: IGatsbyImageData }
         slug: string
-        shortVideo: string
-        shortVideoThumb?: ImageDataLike
+        shortVideo?: {
+          youtubeId: string
+          thumb: ImageDataLike
+        }
         shortDescription: RichTextFragment
       }>
     }>
@@ -48,10 +50,12 @@ const IndexPage = () => {
               gatsbyImageData(layout: CONSTRAINED, height: 24)
             }
             slug
-            shortVideo
-            shortVideoThumb {
-              childImageSharp {
-                ...CardVideoThumbFragment
+            shortVideo {
+              youtubeId
+              thumb {
+                childImageSharp {
+                  ...CardVideoThumbFragment
+                }
               }
             }
             shortDescription {
@@ -84,10 +88,10 @@ const IndexPage = () => {
               }
               link={"/" + conceptPage.slug}
               video={
-                conceptPage.shortVideo && conceptPage.shortVideoThumb
+                conceptPage.shortVideo
                   ? {
-                      url: conceptPage.shortVideo,
-                      thumb: conceptPage.shortVideoThumb,
+                      url: conceptPage.shortVideo.youtubeId,
+                      thumb: conceptPage.shortVideo.thumb,
                     }
                   : undefined
               }
