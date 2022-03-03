@@ -21,30 +21,49 @@ export default {
   },
 }
 
-export const DetailsPage = () => (
+const data = {
+  parent: conceptPageWithAllOptionalContent({
+    id: "concept-page",
+    title: "Concept page",
+  }),
+  contentfulDetailsPage: {
+    title: "Details Page",
+    crumbs: [
+      { title: "Startseite", slug: "" },
+      { title: "Concept page", slug: "concept-page" },
+      { title: "Details Page", slug: "details-page" },
+    ],
+    video0: {
+      videos: [
+        {
+          youtubeId: testVideoId,
+          title: "TestVideo",
+          thumb: fileNode(youtubeThumbnail({ width: 640, height: 480 })),
+        },
+      ],
+    },
+    description: loremIpsum(),
+  },
+}
+
+export const DetailsPage = () => <DetailsPageTemplate data={data} />
+
+export const DetailsPageWithMultipleVideos = () => (
   <DetailsPageTemplate
     data={{
-      parent: conceptPageWithAllOptionalContent({
-        id: "concept-page",
-        title: "Concept page",
-      }),
+      ...data,
       contentfulDetailsPage: {
-        title: "Details Page",
-        crumbs: [
-          { title: "Startseite", slug: "" },
-          { title: "Concept page", slug: "concept-page" },
-          { title: "Details Page", slug: "details-page" },
-        ],
+        ...data.contentfulDetailsPage,
         video0: {
           videos: [
+            ...data.contentfulDetailsPage.video0.videos,
             {
               youtubeId: testVideoId,
-              title: "TestVideo",
+              title: "Second test video",
               thumb: fileNode(youtubeThumbnail({ width: 640, height: 480 })),
             },
           ],
         },
-        description: loremIpsum(),
       },
     }}
   />

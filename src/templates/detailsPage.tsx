@@ -23,6 +23,7 @@ export const query = graphql`
       video0 {
         videos {
           youtubeId
+          title
           thumb {
             childImageSharp {
               gatsbyImageData(layout: FIXED, width: 640, height: 400)
@@ -58,7 +59,9 @@ export interface DetailsPageProps {
     contentfulDetailsPage: {
       title: string
       crumbs: Breadcrumb[]
-      video0?: { videos: Array<{ youtubeId: string; thumb: FileNode }> }
+      video0?: {
+        videos: Array<{ youtubeId: string; thumb: FileNode; title: string }>
+      }
       description: RenderRichTextData<ContentfulRichTextGatsbyReference>
     }
     parent: Parent
@@ -76,13 +79,17 @@ const DetailsPage = ({ data }: DetailsPageProps) => {
       <div className="flex justify-center gap-8 flex-row-reverse flex-wrap my-8 items-start">
         {video0 &&
           video0.videos.map((video, i) => (
-            <Video
-              key={video.youtubeId}
-              {...video}
-              className="my-8 mx-auto rounded shadow"
-              width="640"
-              height="400"
-            />
+            <div key={video.youtubeId} className="my-8">
+              {video0.videos.length > 1 && (
+                <h1 className="text-xl mb-2">{video.title}</h1>
+              )}
+              <Video
+                {...video}
+                className="mx-auto rounded shadow"
+                width="640"
+                height="400"
+              />
+            </div>
           ))}
         <div className="prose">
           {description && <RichText content={description} />}
