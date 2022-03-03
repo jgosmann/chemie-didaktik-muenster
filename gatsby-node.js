@@ -25,7 +25,10 @@ const obtainAnalyticsToken = () => {
     const body = `grant_type=client_credentials&scope=tracked-paths&client_id=${encodeURI(
       clientId
     )}`
-    const req = http.request(
+    const protocol = process.env.GATSBY_ANALYTICS_URL.startsWith("https://")
+      ? https
+      : http
+    const req = protocol.request(
       `${process.env.GATSBY_ANALYTICS_URL}/auth/token`,
       {
         method: "POST",
@@ -58,7 +61,10 @@ const obtainAnalyticsToken = () => {
 
 const putTrackedPaths = (authToken, paths) => {
   return new Promise((resolve, reject) => {
-    const req = http.request(
+    const protocol = process.env.GATSBY_ANALYTICS_URL.startsWith("https://")
+      ? https
+      : http
+    const req = protocol.request(
       `${process.env.GATSBY_ANALYTICS_URL}/tracked/paths`,
       {
         method: "PUT",
