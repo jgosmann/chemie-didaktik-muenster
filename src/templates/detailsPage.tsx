@@ -77,20 +77,22 @@ const DetailsPage = ({ data }: DetailsPageProps) => {
     <Layout crumbs={crumbs}>
       <Seo title={title} />
       <div className="flex justify-center gap-8 flex-row-reverse flex-wrap my-8 items-start">
-        {video0 &&
-          video0.videos.map((video, i) => (
-            <div key={video.youtubeId} className="my-8">
-              {video0.videos.length > 1 && (
-                <h1 className="text-xl mb-2">{video.title}</h1>
-              )}
-              <Video
-                {...video}
-                className="mx-auto rounded shadow"
-                width="640"
-                height="400"
-              />
-            </div>
-          ))}
+        <div className="flex flex-wrap gap-8 max-w-full justify-center">
+          {video0 &&
+            video0.videos.map(video => (
+              <div key={video.youtubeId} className="max-w-full">
+                {video0.videos.length > 1 && (
+                  <h1 className="text-xl mb-2">{video.title}</h1>
+                )}
+                <Video
+                  {...video}
+                  className="rounded shadow"
+                  width="640"
+                  height="400"
+                />
+              </div>
+            ))}
+        </div>
         <div className="prose">
           {description && <RichText content={description} />}
         </div>
