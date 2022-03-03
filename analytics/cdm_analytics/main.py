@@ -87,6 +87,7 @@ class DynamicCORSMiddleware(CORSMiddleware):
 app.add_middleware(
     DynamicCORSMiddleware,
     allow_credentials=True,
+    allow_headers=["*"],
     allow_methods=["*"],
 )
 

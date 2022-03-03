@@ -348,10 +348,18 @@ def test_access_prohibited_without_token(app):
         assert requests.request(method, app.url(path)).status_code == 401
 
 
-def assert_cors_headers(headers: requests.structures.CaseInsensitiveDict, domain: str):
+def assert_cors_headers(
+    headers: requests.structures.CaseInsensitiveDict, domain: str, *, is_preflight=False
+):
     assert headers.get("Access-Control-Allow-Origin") == domain
     assert headers.get("Vary") == "Origin"
     assert headers.get("Access-Control-Allow-Credentials")
+    if is_preflight:
+        allow_headers = headers.get("Access-Control-Allow-Headers", "")
+        assert (
+            "authorization" in [v.strip().lower() for v in allow_headers.split(",")]
+            or allow_headers == "*"
+        )
 
 
 user_endpoints = [
@@ -368,12 +376,21 @@ user_endpoints = [
 def test_cors_headers_from_env(app, user_session):
     for method, path in user_endpoints:
         options_headers = requests.options(
-            app.url(path), headers={"Origin": TEST_ADDITIONAL_CORS_ORIGINS[0]}
+            app.url(path),
+            headers={
+                "Origin": TEST_ADDITIONAL_CORS_ORIGINS[0],
+                "Access-Control-Request-Headers": "Authorization",
+                "Access-Control-Request-Method": method,
+            },
         ).headers
-        assert_cors_headers(options_headers, TEST_ADDITIONAL_CORS_ORIGINS[0])
+        assert_cors_headers(
+            options_headers, TEST_ADDITIONAL_CORS_ORIGINS[0], is_preflight=True
+        )
 
         main_headers = user_session.request(
-            method, app.url(path), headers={"Origin": TEST_ADDITIONAL_CORS_ORIGINS[0]}
+            method,
+            app.url(path),
+            headers={"Origin": TEST_ADDITIONAL_CORS_ORIGINS[0]},
         ).headers
         assert_cors_headers(main_headers, TEST_ADDITIONAL_CORS_ORIGINS[0])
 
@@ -385,11 +402,18 @@ def test_cors_headers_from_tracked_domain(app, user_session):
 
     for method, path in user_endpoints:
         options_headers = requests.options(
-            app.url(path), headers={"Origin": domain}
+            app.url(path),
+            headers={
+                "Origin": domain,
+                "Access-Control-Request-Headers": "Authorization",
+                "Access-Control-Request-Method": method,
+            },
         ).headers
-        assert_cors_headers(options_headers, domain)
+        assert_cors_headers(options_headers, domain, is_preflight=True)
 
         main_headers = user_session.request(
-            method, app.url(path), headers={"Origin": domain}
+            method,
+            app.url(path),
+            headers={"Origin": domain},
         ).headers
         assert_cors_headers(main_headers, domain)
