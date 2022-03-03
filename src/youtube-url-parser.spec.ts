@@ -13,6 +13,7 @@ describe("youtube-url-parser", () =>
     "http://youtu.be/IdkCEioCp24",
     "https://www.youtu.be/IdkCEioCp24",
     "https://youtu.be/IdkCEioCp24&t=26",
+    "IdkCEioCp24",
   ].forEach(url => {
     it(`extracts video ID from ${url}`, () => {
       expect(extractVideoId(url)).toEqual("IdkCEioCp24")

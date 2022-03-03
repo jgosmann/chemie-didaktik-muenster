@@ -20,7 +20,7 @@ export interface CardProps {
   download?: string
   link: string
   video?: {
-    url: string
+    youtubeId: string
     thumb: ImageDataLike
   }
 }
@@ -30,9 +30,7 @@ const Card = ({ title, video, children, download, link }: CardProps) => (
     <h4 className="text-primary m-2">
       <Link to={link}>{title}</Link>
     </h4>
-    {video && (
-      <Video url={video.url} thumb={video.thumb} width="256" height="160" />
-    )}
+    {video && <Video {...video} width="256" height="160" />}
     <div className="prose leading-snug text-sm m-2 grow">{children}</div>
     <div className="flex flex-row flex-wrap justify-between m-2 mt-2">
       <div>

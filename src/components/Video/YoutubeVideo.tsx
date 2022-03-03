@@ -3,7 +3,7 @@ import YouTube from "react-youtube"
 import { extractVideoId } from "../../youtube-url-parser"
 
 export interface YoutubeVideoProps {
-  url: string
+  urlOrId: string
   width?: string
   height?: string
   className?: string
@@ -13,10 +13,10 @@ export interface YoutubeVideoProps {
 const YoutubeVideo = React.forwardRef<YT.Player, YoutubeVideoProps>(
   function YoutubeVideo(
     // eslint-disable-next-line react/prop-types
-    { url, width, height, className, autoplay = false }: YoutubeVideoProps,
+    { urlOrId, width, height, className, autoplay = false }: YoutubeVideoProps,
     ref
   ): JSX.Element {
-    const videoId = extractVideoId(url)
+    const videoId = extractVideoId(urlOrId)
     return (
       <YouTube
         videoId={videoId}

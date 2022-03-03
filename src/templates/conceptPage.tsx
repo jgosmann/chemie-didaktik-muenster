@@ -113,8 +113,7 @@ const ConceptPage = ({ data }: ConceptPageProps) => {
       <Seo title={title} />
       {video && (
         <Video
-          url={video.youtubeId}
-          thumb={video.thumb}
+          {...video}
           className="my-8 mx-auto rounded shadow"
           width="640"
           height="400"
@@ -132,14 +131,7 @@ const ConceptPage = ({ data }: ConceptPageProps) => {
             title={subpage.title}
             link={subpage.crumbs.map(c => c.slug).join("/")}
             download={subpage.downloadLink?.file.url}
-            video={
-              subpage.shortVideo
-                ? {
-                    url: subpage.shortVideo.youtubeId,
-                    thumb: subpage.shortVideo.thumb,
-                  }
-                : undefined
-            }
+            video={subpage.shortVideo}
           >
             {subpage.shortDescription && (
               <RichText content={subpage.shortDescription} />

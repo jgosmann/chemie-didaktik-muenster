@@ -5,10 +5,10 @@ import YoutubeVideo from "../Video/YoutubeVideo"
 
 export interface VideoBtnProps {
   children?: React.ReactNode
-  videoUrl: string
+  youtubeId: string
 }
 
-const VideoBtn = ({ children, videoUrl }: VideoBtnProps) => {
+const VideoBtn = ({ children, youtubeId }: VideoBtnProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [hasConsent, setHasConsent] = useState(false)
   const video = useRef<YT.Player>(null)
@@ -27,7 +27,7 @@ const VideoBtn = ({ children, videoUrl }: VideoBtnProps) => {
       >
         {hasConsent ? (
           <YoutubeVideo
-            url={videoUrl}
+            urlOrId={youtubeId}
             width="640"
             height="400"
             ref={video}

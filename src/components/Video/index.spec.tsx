@@ -1,7 +1,7 @@
 import React from "react"
 import { render, screen } from "@testing-library/react"
 import Video from "."
-import { testVideoUrl } from "../../test-fixtures/video"
+import { testVideoId } from "../../test-fixtures/video"
 
 jest.mock("./YoutubeVideo")
 
@@ -15,7 +15,7 @@ describe("Video", () => {
   beforeEach(() => {
     render(
       <Video
-        url={testVideoUrl}
+        youtubeId={testVideoId}
         thumb={{
           parent: "",
           children: [],

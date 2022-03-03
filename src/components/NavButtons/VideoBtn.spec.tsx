@@ -2,7 +2,7 @@ import React from "react"
 import { render, screen } from "@testing-library/react"
 
 import VideoBtn from "./VideoBtn"
-import { testVideoUrl } from "../../test-fixtures/video"
+import { testVideoId } from "../../test-fixtures/video"
 
 jest.mock("../Video/YoutubeVideo")
 
@@ -14,7 +14,7 @@ describe("VideoBtn", () => {
   const videoPlayer = () => screen.queryByTitle("YouTube video player")
 
   beforeEach(() => {
-    render(<VideoBtn videoUrl={testVideoUrl}>Open video</VideoBtn>)
+    render(<VideoBtn youtubeId={testVideoId}>Open video</VideoBtn>)
   })
 
   describe("initially", () => {

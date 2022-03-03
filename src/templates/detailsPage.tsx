@@ -78,8 +78,7 @@ const DetailsPage = ({ data }: DetailsPageProps) => {
           video0.videos.map((video, i) => (
             <Video
               key={video.youtubeId}
-              url={video.youtubeId}
-              thumb={video.thumb}
+              {...video}
               className="my-8 mx-auto rounded shadow"
               width="640"
               height="400"

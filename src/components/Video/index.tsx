@@ -6,7 +6,7 @@ import YoutubeConsent from "./YoutubeConsent"
 import YoutubeVideo from "./YoutubeVideo"
 
 export interface VideoProps {
-  url: string
+  youtubeId: string
   thumb?: ImageDataLike
   width?: string
   height?: string
@@ -15,7 +15,7 @@ export interface VideoProps {
 
 const Video = React.forwardRef<YT.Player, VideoProps>(function Video(
   // eslint-disable-next-line react/prop-types
-  { url, thumb, width, height, className = "" }: VideoProps,
+  { youtubeId, thumb, width, height, className = "" }: VideoProps,
   ref
 ): JSX.Element {
   const [state, setState] = useState("no-consent")
@@ -34,7 +34,7 @@ const Video = React.forwardRef<YT.Player, VideoProps>(function Video(
     return (
       <YoutubeVideo
         ref={ref}
-        url={url}
+        urlOrId={youtubeId}
         width={width}
         height={height}
         className={`max-w-full max-h-screen ${className}`}

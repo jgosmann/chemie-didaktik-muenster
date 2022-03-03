@@ -87,14 +87,7 @@ const IndexPage = () => {
                 />
               }
               link={"/" + conceptPage.slug}
-              video={
-                conceptPage.shortVideo
-                  ? {
-                      url: conceptPage.shortVideo.youtubeId,
-                      thumb: conceptPage.shortVideo.thumb,
-                    }
-                  : undefined
-              }
+              video={conceptPage.shortVideo}
             >
               {conceptPage.shortDescription && (
                 <RichText content={conceptPage.shortDescription} />

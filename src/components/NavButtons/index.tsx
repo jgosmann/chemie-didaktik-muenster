@@ -49,7 +49,7 @@ const NavButtons = ({
         </BtnLink>
       )}
       {aboutAuthorMedia?.aboutAuthorVideo && (
-        <VideoBtn videoUrl={aboutAuthorMedia.aboutAuthorVideo.youtubeId}>
+        <VideoBtn youtubeId={aboutAuthorMedia.aboutAuthorVideo.youtubeId}>
           {aboutAuthorPreview && (
             <span className="inline-block overflow-hidden rounded-full align-middle shadow-md mr-2">
               <GatsbyImage
