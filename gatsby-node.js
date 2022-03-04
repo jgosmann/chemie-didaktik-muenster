@@ -238,16 +238,16 @@ exports.createSchemaCustomization = ({ actions }) => {
       description: Content
       studentPresentations: Content
       additionalBackground: Content
-      video: YtVideo @link
-      shortVideo: YtVideo @link
-      aboutAuthorVideo: YtVideo @link
+      video: YtVideo @link(from: "fields.video")
+      shortVideo: YtVideo @link(from: "fields.shortVideo")
+      aboutAuthorVideo: YtVideo @link(from: "fields.aboutAuthorVideo")
     }
 
     type ContentfulDetailsPage implements Linkable {
       crumbs: [Crumb!]! @crumbs
       shortDescription: Content
       description: Content
-      shortVideo: YtVideo @link
+      shortVideo: YtVideo @link(from: "fields.shortVideo")
     }
     
     type contentfulDetailsPageVideo0TextNode implements Node {
@@ -338,7 +338,7 @@ exports.onCreateNode = async ({
   const convertToYoutubeNode = async (node, fieldName) => {
     if (node[fieldName]) {
       const videoIds = await createYoutubeNodes(node, fieldName)
-      node[fieldName] = videoIds[0]
+      createNodeField({ node, name: fieldName, value: videoIds[0] })
     }
   }
 
@@ -351,11 +351,11 @@ exports.onCreateNode = async ({
   } else if (node.internal.type === "ContentfulDetailsPage") {
     await convertToYoutubeNode(node, "shortVideo")
   } else if (node.internal.type === "contentfulDetailsPageVideo0TextNode") {
-    const videoNodeIds = await createYoutubeNodes(node, "video0")
+    const videoIds = await createYoutubeNodes(node, "video0")
     createNodeField({
       node,
       name: `videos`,
-      value: videoNodeIds,
+      value: videoIds,
     })
   }
 }
