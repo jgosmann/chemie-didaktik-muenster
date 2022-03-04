@@ -99,20 +99,20 @@ exports.onPostBuild = async ({ graphql }) => {
     return
   }
 
-  const [pages, tokenResponse] = await Promise.all([
-    graphql(`
-      {
-        allSitePage {
-          nodes {
-            path
+  try {
+    const [pages, tokenResponse] = await Promise.all([
+      graphql(`
+        {
+          allSitePage {
+            nodes {
+              path
+            }
           }
         }
-      }
-    `),
-    obtainAnalyticsToken(),
-  ])
+      `),
+      obtainAnalyticsToken(),
+    ])
 
-  try {
     await putTrackedPaths(
       tokenResponse.access_token,
       pages.data.allSitePage.nodes.map(node => node.path)
