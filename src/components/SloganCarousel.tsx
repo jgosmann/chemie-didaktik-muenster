@@ -60,9 +60,10 @@ const Carousel = ({ slogans, autoplay }: CarousalProps) => {
               dangerouslySetInnerHTML={{
                 __html: sloganData.slogan.childMarkdownRemark.html,
               }}
-              className="flex justify-center place-items-center text-xl xl:text-2xl px-32 py-8 text-center text-white absolute inset-0"
+              className="flex justify-center place-items-center text-xl xl:text-2xl px-32 py-8 text-center text-gray-800 absolute inset-0"
               style={{
-                textShadow: "1px 1px 4px rgba(0, 0, 0, 0.6)",
+                textShadow:
+                  "0px 0px 2px #fff, 0px 0px 4px #fff, 0px 0px 8px #fff",
                 transform: "translateZ(10px)",
               }}
             />
