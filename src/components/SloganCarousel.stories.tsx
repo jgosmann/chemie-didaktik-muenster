@@ -17,6 +17,7 @@ export const SloganCarousel = () => (
         id: "slogan-0",
         html: "<strong>Slogan</strong>: id 0",
         fill: "r",
+        attribution: "red",
       }),
       slogan({
         id: "slogan1",

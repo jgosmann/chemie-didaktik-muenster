@@ -13,6 +13,7 @@ export interface SloganFragment {
       html: string
     }
   }
+  attribution?: string
   image: { gatsbyImageData: IGatsbyImageData }
 }
 
@@ -24,6 +25,7 @@ export const query = graphql`
         html
       }
     }
+    attribution
     image {
       gatsbyImageData(layout: FULL_WIDTH)
     }
@@ -67,6 +69,16 @@ const Carousel = ({ slogans, autoplay }: CarousalProps) => {
                 transform: "translateZ(10px)",
               }}
             />
+            {sloganData.attribution && (
+              <div
+                className="absolute bottom-0 right-0 text-xs p-2 text-gray-400"
+                style={{
+                  transform: "translateZ(10px)",
+                }}
+              >
+                {sloganData.attribution}
+              </div>
+            )}
           </div>
         ))}
       </Slider>

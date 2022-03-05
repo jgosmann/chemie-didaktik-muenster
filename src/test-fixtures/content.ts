@@ -7,12 +7,15 @@ export const slogan = ({
   id,
   html,
   fill,
+  attribution,
 }: {
   id: string
   html: string
   fill: string
+  attribution?: string
 }) => ({
   id,
+  attribution,
   slogan: {
     childMarkdownRemark: {
       html,

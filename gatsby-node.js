@@ -250,6 +250,10 @@ exports.createSchemaCustomization = ({ actions }) => {
       shortVideo: YtVideo @link(from: "fields.shortVideo")
     }
     
+    type ContentfulSlogan implements Node {
+      attribution: String
+    }
+    
     type contentfulDetailsPageVideo0TextNode implements Node {
       videos: [YtVideo!]! @link(from: "fields.videos")
     }
