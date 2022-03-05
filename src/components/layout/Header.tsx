@@ -3,6 +3,13 @@ import { StaticImage } from "gatsby-plugin-image"
 
 const Header = () => (
   <header className="fixed top-0 h-16 w-full z-50 bg-primary flex flex-nowrap items-center justify-between shadow">
+    <a
+      id="skip-to-main"
+      href="#main"
+      className="sr-only focus:not-sr-only block bg-white rounded"
+    >
+      <span className="p-2">Zum Hauptinhalt</span>
+    </a>
     <a href="https://www.uni-muenster.de/Chemie.dc/">
       <StaticImage
         src="../../images/cdm-logo-white.png"

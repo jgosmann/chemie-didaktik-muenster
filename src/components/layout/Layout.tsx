@@ -27,7 +27,9 @@ const Layout = ({ children, crumbs }: LayoutProps) => {
           <FontAwesomeIcon icon={faBars} />
         </button>
       </div>
-      <main className="pb-2">{children}</main>
+      <main id="main" className="pb-2">
+        {children}
+      </main>
     </div>
   )
 }
