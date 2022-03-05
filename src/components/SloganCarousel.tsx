@@ -54,13 +54,17 @@ const Carousel = ({ slogans, autoplay }: CarousalProps) => {
               image={sloganData.image.gatsbyImageData}
               alt={""}
               className="absolute inset-0 w-full h-full"
+              style={{ transform: "translateZ(0px)" }}
             />
             <div
               dangerouslySetInnerHTML={{
                 __html: sloganData.slogan.childMarkdownRemark.html,
               }}
               className="flex justify-center place-items-center text-xl xl:text-2xl px-32 py-8 text-center text-white absolute inset-0"
-              style={{ textShadow: "1px 1px 4px rgba(0, 0, 0, 0.6)" }}
+              style={{
+                textShadow: "1px 1px 4px rgba(0, 0, 0, 0.6)",
+                transform: "translateZ(10px)",
+              }}
             />
           </div>
         ))}
