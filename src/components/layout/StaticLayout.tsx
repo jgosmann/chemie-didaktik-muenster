@@ -1,8 +1,9 @@
-import React, { useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 
 import Header from "./Header"
 import Footer from "./Footer"
 import SideNav from "./SideNav"
+import LocationContext from "../LocationContext"
 
 export interface StaticLayoutViewProps {
   children: React.ReactNode
@@ -36,6 +37,9 @@ export const SetIsSideNavOpenContext = React.createContext<
 
 const StaticLayout = ({ children, ...props }: StaticLayoutProps) => {
   const [isSideNavOpen, setIsSideNavOpen] = useState(false)
+
+  const location = useContext(LocationContext)
+  useEffect(() => setIsSideNavOpen(false), [location])
 
   return (
     <StaticLayoutView
