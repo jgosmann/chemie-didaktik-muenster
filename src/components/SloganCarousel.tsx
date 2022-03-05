@@ -43,7 +43,7 @@ const Carousel = ({ slogans, autoplay }: CarousalProps) => {
     <div style={{ fontSize: 0 }}>
       <Slider
         autoplay={autoplay && !prefersReducedMotion}
-        autoplaySpeed={5000}
+        autoplaySpeed={10000}
         speed={prefersReducedMotion ? 0 : 300}
         dots
         className="rounded shadow overflow-hidden my-8"
