@@ -224,6 +224,13 @@ async def get_tracked_paths(
     return TrackedPathsBody(tracked_paths=rows)
 
 
+def _remove_trailing_slash(path: str) -> str:
+    if path.endswith("/"):
+        return path[:-1]
+    else:
+        return path
+
+
 @app.put(
     "/tracked/paths",
     status_code=status.HTTP_204_NO_CONTENT,
@@ -238,15 +245,8 @@ async def put_tracked_paths(
         await cursor.execute("TRUNCATE tracked_paths")
         async with cursor.copy("COPY tracked_paths (absolute_path) FROM STDIN") as copy:
             for path in body.tracked_paths:
-                await copy.write_row((path,))
+                await copy.write_row((_remove_trailing_slash(path),))
     await conn.commit()
-
-
-def _remove_trailing_slash(path: str) -> str:
-    if path.endswith("/"):
-        return path[:-1]
-    else:
-        return path
 
 
 @app.post(

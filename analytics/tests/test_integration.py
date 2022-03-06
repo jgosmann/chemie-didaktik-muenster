@@ -174,9 +174,8 @@ def test_tracked_paths(app, builder_session):
     url = app.url("/tracked/paths")
     assert builder_session.get(url).json() == {"tracked_paths": []}
 
-    data = {"tracked_paths": ["/a/b/c", "/xyz"]}
-    assert builder_session.put(url, json=data).ok
-    assert builder_session.get(url).json() == data
+    assert builder_session.put(url, json={"tracked_paths": ["/a/b/c", "/xyz/"]}).ok
+    assert builder_session.get(url).json() == {"tracked_paths": ["/a/b/c", "/xyz"]}
 
 
 def test_tracks_referrers(app, user_session, builder_session):
