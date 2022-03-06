@@ -286,6 +286,19 @@ def test_created_user_can_login_until_deleted(app, user_session):
     }
 
 
+def test_creating_a_duplicate_user_is_disallowed(app, user_session):
+    username = "new-user"
+    assert user_session.put(
+        app.url(f"/users/{username}"), json={"password": "secret"}
+    ).ok
+    assert (
+        user_session.put(
+            app.url(f"/users/{username}"), json={"password": "foo"}
+        ).status_code
+        == 409
+    )
+
+
 def test_deleting_own_user_is_disallowed(app, user_session):
     assert user_session.delete(app.url(f"/users/{TEST_USER}")).status_code == 405
 

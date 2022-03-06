@@ -395,15 +395,20 @@ async def put_user(
     conn: psycopg.AsyncConnection = Depends(db_connection),
     authenticated_user: dict = Depends(authenticated_user),
 ):
-    async with conn.cursor() as cursor:
-        await cursor.execute(
-            *generate_create_user_sql(
-                username,
-                password=request.password,
-                realname=request.realname,
-                comment=request.comment,
+    try:
+        async with conn.cursor() as cursor:
+            await cursor.execute(
+                *generate_create_user_sql(
+                    username,
+                    password=request.password,
+                    realname=request.realname,
+                    comment=request.comment,
+                )
             )
-        )
+    except psycopg.errors.UniqueViolation as err:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="usernames must be unique"
+        ) from err
 
 
 @app.delete(

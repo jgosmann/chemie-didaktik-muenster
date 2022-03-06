@@ -3,7 +3,8 @@ import { act, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import AddUser from "./AddUser"
 import { withBaseUrl } from "../../../../mocks/handlers"
-import { waitForRequest } from "../../../../mocks/server"
+import server, { waitForRequest } from "../../../../mocks/server"
+import { rest } from "msw"
 
 describe("AddUser", () => {
   const onUserAdded = jest.fn()
@@ -86,6 +87,28 @@ describe("AddUser", () => {
             realname: "Real Name",
             comment: "comment",
           })
+        })
+      })
+    })
+
+    describe("if the username already exists", () => {
+      beforeEach(async () => {
+        server.use(
+          rest.put(withBaseUrl("/users/*"), (req, res, ctx) =>
+            res(ctx.status(409))
+          )
+        )
+        await act(async () => screen.getByRole("button").click())
+      })
+
+      it("shows an error message that he username exists", async () => {
+        await waitFor(() => {
+          expect(
+            screen.getByLabelText("Benutzername (für Login)")
+          ).toBeInvalid()
+          expect(
+            screen.getByText("Der Benutzername existiert bereits.")
+          ).toBeInTheDocument()
         })
       })
     })

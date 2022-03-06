@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useRef } from "react"
 import SaveableForm from "../SaveableForm"
 import InputField from "../../../InputField"
 import AnalyticsClientContext from "../AnalyticsClient"
-import { UserData } from "../../../../../analytics-client"
+import { ApiError, UserData } from "../../../../../analytics-client"
 
 export interface AddUserProps {
   onUserAdded?: (user: UserData) => void
@@ -44,11 +44,21 @@ const AddUser = ({ onUserAdded }: AddUserProps) => {
     }
   }, [])
 
+  const formatError = useCallback((error: unknown) => {
+    if (error instanceof ApiError && error.status === 409) {
+      usernameRef.current.setCustomValidity(
+        "Der Benutzername existiert bereits."
+      )
+      return "Der Benutzername existiert bereits."
+    }
+  }, [])
+
   return (
     <SaveableForm
       save={save}
       saveLabel="Benutzer hinzufügen"
       onChange={checkValidity}
+      formatError={formatError}
     >
       <div className="grid grid-cols-2 max-w-md gap-4">
         <div>
