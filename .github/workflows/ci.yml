@@ -7,7 +7,7 @@ on:
     branches: [main, develop]
 
 jobs:
-  General:
+  Node:
     runs-on: ubuntu-latest
 
     strategy:
@@ -35,6 +35,27 @@ jobs:
           CI: true
           NODE_OPTIONS: --openssl-legacy-provider
 
+  Python:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        check:
+          - name: pylint
+            run: poetry run pylint cdm_analytics
+          - name: Unit tests
+            run: docker-compose up -d && poetry run pytest --verbose
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/setup-analytics
+
+      - name: ${{ matrix.check.name }}
+        run: ${{ matrix.check.run }}
+        working-directory: analytics
+        env:
+          CI: true
+
   E2E:
     name: Build and E2E test
     runs-on: ubuntu-latest
@@ -59,20 +80,6 @@ jobs:
           GATSBY_ANALYTICS_URL: http://127.0.0.1:8001
           NODE_OPTIONS: --openssl-legacy-provider
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-
-  Analytics:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup-analytics
-
-      - run: docker-compose up -d
-        working-directory: analytics
-      - run: poetry run pytest --verbose
-        working-directory: analytics
-        env:
-          CI: true
 
   Chromatic:
     runs-on: ubuntu-latest

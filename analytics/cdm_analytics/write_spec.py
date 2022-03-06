@@ -2,8 +2,9 @@ import argparse
 import json
 from typing import Optional, Sequence
 
-from cdm_analytics.main import app
 from fastapi.openapi.utils import get_openapi
+
+from cdm_analytics.main import app
 
 
 def write_spec(args: Optional[Sequence[str]] = None):
