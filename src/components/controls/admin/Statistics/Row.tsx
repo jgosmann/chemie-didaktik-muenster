@@ -22,8 +22,8 @@ export const Header = () => (
     <NumberCell className="border-b-2 p-1 m-1">
       davon auf exakten Pfad
     </NumberCell>
-    <Cell className="border-b-2 m-0"></Cell>
-    <Cell className="border-b-2 grow p-1 m-1 mr-0">Pfad</Cell>
+    <Cell className="border-b-2 m-0 p-0"></Cell>
+    <Cell className="border-b-2 grow p-1 pl-2 m-1 mr-0">Pfad</Cell>
   </div>
 )
 
