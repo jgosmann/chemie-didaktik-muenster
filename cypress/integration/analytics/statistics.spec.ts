@@ -16,7 +16,7 @@ const saveForm = (childSelector: string) => {
 
 describe("Analytics", () => {
   beforeEach(() => {
-    login("testuser", "testuser")
+    login("admin", "chemie-didaktik-münster")
   })
 
   it("it tracks page clicks", () => {
@@ -63,18 +63,18 @@ describe("Analytics", () => {
   })
 
   it("allows to change the password", () => {
-    cy.get("#old-password").type("testuser")
+    cy.get("#old-password").type("chemie-didaktik-münster")
     cy.get("#new-password").type("new-password")
     cy.get("#new-password-confirmation").type("new-password")
     saveForm("#old-password")
 
-    login("testuser", "new-password")
+    login("admin", "new-password")
 
     cy.get(".logout").should("exist")
 
     cy.get("#old-password").type("new-password")
-    cy.get("#new-password").type("testuser")
-    cy.get("#new-password-confirmation").type("testuser")
+    cy.get("#new-password").type("chemie-didaktik-münster")
+    cy.get("#new-password-confirmation").type("chemie-didaktik-münster")
     saveForm("#old-password")
   })
 })

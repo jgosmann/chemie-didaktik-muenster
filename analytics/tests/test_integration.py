@@ -71,7 +71,7 @@ class App:
 
     def is_healthy(self) -> bool:
         try:
-            return requests.get(self.url("/health")).ok
+            return requests.head(self.url("/health")).ok
         except requests.ConnectionError:
             return False
 

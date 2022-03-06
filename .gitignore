@@ -70,3 +70,4 @@ yarn-error.log
 
 __pycache__
 /analytics-client
+/cypress/videos

@@ -19,8 +19,25 @@ jobs:
             run: npm run lint
           - name: Test
             run: npm test
-          - name: Build
-            run: npm run build
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "17.x"
+          cache: "npm"
+      - run: npm ci
+      - run: npx openapi --input ./analytics/openapi.json --output ./analytics-client --name AnalyticsClient
+
+      - name: ${{ matrix.check.name }}
+        run: ${{ matrix.check.run }}
+        env:
+          CI: true
+          NODE_OPTIONS: --openssl-legacy-provider
+
+  E2E:
+    name: Build and E2E test
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -30,15 +47,16 @@ jobs:
           node-version: "17.x"
           cache: "npm"
       - run: npm ci
-      - run: poetry run python3 -m cdm_analytics.write_spec openapi.json
-        working-directory: analytics
-      - run: npx openapi --input ./analytics/openapi.json --output ./analytics-client --name AnalyticsClient
 
-      - name: ${{ matrix.check.name }}
-        run: ${{ matrix.check.run }}
+      - run: docker-compose up -d
+        working-directory: analytics
+      - run: npm run e2e
         env:
           CI: true
+          ANALYTICS_BUILDER_CLIENT_ID: e25bc9ce-73d8-4e8c-8c0c-b0d8fcffe24f
+          ANALYTICS_BUILDER_CLIENT_SECRET: "builder access token"
           CONTENTFUL_ACCESS_TOKEN: ${{ secrets.CONTENTFUL_ACCESS_TOKEN }}
+          GATSBY_ANALYTICS_URL: http://127.0.0.1:8001
           NODE_OPTIONS: --openssl-legacy-provider
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
 
@@ -70,8 +88,6 @@ jobs:
           cache: "npm"
 
       - run: npm ci
-      - run: poetry run python3 -m cdm_analytics.write_spec openapi.json
-        working-directory: analytics
       - run: npx openapi --input ./analytics/openapi.json --output ./analytics-client --name AnalyticsClient
 
       - name: Publish to Chromatic for visual verification

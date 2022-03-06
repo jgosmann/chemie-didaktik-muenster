@@ -164,6 +164,9 @@ async def authenticated_builder(claims: dict = Depends(authenticated)) -> dict:
     return claims
 
 
+@app.head(
+    "/health", status_code=status.HTTP_204_NO_CONTENT, response_class=responses.Response
+)
 @app.get(
     "/health", status_code=status.HTTP_204_NO_CONTENT, response_class=responses.Response
 )

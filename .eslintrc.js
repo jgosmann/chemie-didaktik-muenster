@@ -30,6 +30,7 @@ module.exports = {
     },
     {
       files: [
+        "e2e.js",
         "gatsby-config.js",
         "gatsby-node.js",
         "jest.config.js",
