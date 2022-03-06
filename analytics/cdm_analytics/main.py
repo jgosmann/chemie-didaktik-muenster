@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import List, Literal
+from typing import AsyncGenerator, List, Literal
 from urllib.parse import urlparse
 
 import jwt
@@ -70,7 +70,10 @@ enable_docs = os.environ.get("ENABLE_DOCS", "").lower() in (
     "enable",
     "1",
 )
-app = FastAPI(**{} if enable_docs else {"docs_url": None, "redoc_url": None})
+app = FastAPI(
+    docs_url="/docs" if enable_docs else None,
+    redoc_url="/redoc" if enable_docs else None,
+)
 app.on_event("startup")(lambda: db_conn_pool.start_pool(settings()))
 
 
@@ -94,7 +97,7 @@ app.add_middleware(
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 
-async def db_connection() -> psycopg.AsyncConnection:
+async def db_connection() -> AsyncGenerator[psycopg.AsyncConnection, None]:
     async with db_conn_pool.connection() as conn:
         yield conn
 
@@ -431,7 +434,8 @@ async def delete_user(
         )
     async with conn.cursor() as cursor:
         await cursor.execute("SELECT count(*) FROM USERS")
-        if (await cursor.fetchone())[0] == 1:
+        remaining_users_count = await cursor.fetchone()
+        if remaining_users_count and remaining_users_count[0] == 1:
             raise HTTPException(
                 status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
                 detail="you cannot delete the last remaining user",

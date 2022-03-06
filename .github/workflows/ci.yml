@@ -43,6 +43,8 @@ jobs:
         check:
           - name: pylint
             run: poetry run pylint cdm_analytics
+          - name: mypy
+            run: poetry run mypy cdm_analytics
           - name: Unit tests
             run: docker-compose up -d && poetry run pytest --verbose
 

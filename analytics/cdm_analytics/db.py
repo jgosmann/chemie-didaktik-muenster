@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import AsyncContextManager, Optional
 
 import psycopg
 from psycopg_pool import AsyncConnectionPool
@@ -19,7 +19,7 @@ class DbConnectionPool:
             max_size=settings.db_pool_max,
         )
 
-    def connection(self) -> psycopg.AsyncConnection:
+    def connection(self) -> AsyncContextManager[psycopg.AsyncConnection]:
         if not self._pool:
             raise RuntimeError("connection pool not started")
         return self._pool.connection()
