@@ -28,7 +28,7 @@ const analytics_backend = child_process.spawn(
     cwd: path.resolve("./analytics"),
     env: {
       ...process.env,
-      JWT_KEY: "signing key",
+      SECURE_KEY: "signing key",
       BUILDER_ACCESS_TOKEN: process.env.ANALYTICS_BUILDER_CLIENT_SECRET,
       ADDITIONAL_CORS_DOMAINS: '["http://localhost:9000"]',
     },

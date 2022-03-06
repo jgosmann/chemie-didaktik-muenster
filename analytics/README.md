@@ -3,7 +3,7 @@
 ## Start backend
 
 ```bash
-JWT_KEY='signing key' BUILDER_ACCESS_TOKEN='builder access token' \
+SECURE_KEY='signing key' BUILDER_ACCESS_TOKEN='builder access token' \
   poetry run uvicorn cdm_analytics.main:app --reload --port 8001
 ```
 

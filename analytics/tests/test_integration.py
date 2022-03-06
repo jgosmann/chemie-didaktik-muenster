@@ -29,7 +29,7 @@ class App:
     def start(self):
         if self._proc is None:
             env = dict(**os.environ)
-            env["JWT_KEY"] = "test jwt key"
+            env["SECURE_KEY"] = "test jwt key,old key"
             env["BUILDER_ACCESS_TOKEN"] = TEST_BUILDER_ACCESS_TOKEN
             env["ADDITIONAL_CORS_ORIGINS"] = json.dumps(TEST_ADDITIONAL_CORS_ORIGINS)
             # pylint: disable=consider-using-with

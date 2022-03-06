@@ -137,18 +137,21 @@ credentials_exception = HTTPException(
 
 
 async def authenticated(token: str = Depends(oauth2_scheme)) -> dict:
+    for key in settings().jwt_keys:
+        try:
+            claims = jwt.decode(
+                token,
+                key,
+                algorithms=["HS256"],
+                issuer=RESOURCE_OWNER_ID,
+                audience=RESOURCE_OWNER_ID,
+            )
+            break
+        except jwt.exceptions.InvalidTokenError:
+            pass
+    else:
+        raise credentials_exception
 
-    try:
-        claims = jwt.decode(
-            token,
-            settings().jwt_key,
-            algorithms=["HS256"],
-            issuer=RESOURCE_OWNER_ID,
-            audience=RESOURCE_OWNER_ID,
-        )
-    except jwt.exceptions.InvalidTokenError as err:
-        logger.info("unauthorized: %s", err)
-        raise credentials_exception from err
     if RESOURCE_OWNER_ID not in claims["aud"]:
         raise credentials_exception
 

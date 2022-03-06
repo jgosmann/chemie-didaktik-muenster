@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     db_pool_min: int = 2
     db_pool_max: int = 15
 
-    jwt_key: str
+    secure_key: str
     builder_access_token: str
 
     enable_docs: bool = False
@@ -17,3 +17,11 @@ class Settings(BaseSettings):
         "http://localhost:8000",
         "http://localhost:9000",
     ]
+
+    @property
+    def current_jwt_key(self) -> str:
+        return self.jwt_keys[0]
+
+    @property
+    def jwt_keys(self) -> List[str]:
+        return self.secure_key.split(",")
