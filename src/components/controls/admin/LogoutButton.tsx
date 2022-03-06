@@ -6,7 +6,7 @@ export interface LogoutButtonProps {
 
 const LogoutButton = ({ logout }: LogoutButtonProps) => {
   return (
-    <button className="btn primary" onClick={logout}>
+    <button className="logout btn primary" onClick={logout}>
       Ausloggen
     </button>
   )

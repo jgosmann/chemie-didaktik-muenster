@@ -61,12 +61,12 @@ const SaveForm = ({
           ? ""
           : "changed"
       }
+      onSubmit={onSave}
     >
       {children}
       <SaveButton
         saveLabel={saveLabel}
         state={state}
-        onClick={onSave}
         disabled={disabled}
         errorMessage={errorMessage}
       />

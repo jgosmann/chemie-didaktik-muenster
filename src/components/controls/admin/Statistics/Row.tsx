@@ -29,8 +29,10 @@ export const Header = () => (
 
 const Row = ({ children, node, treeIcons }: RowProps) => (
   <div className="flex items-stretch hover:bg-gray-100 rounded">
-    <NumberCell>{node.nestedCount + node.count}</NumberCell>
-    <NumberCell>{node.count}</NumberCell>
+    <NumberCell className="clicks-total">
+      {node.nestedCount + node.count}
+    </NumberCell>
+    <NumberCell className="clicks-exact">{node.count}</NumberCell>
     <Cell className="my-0 pl-0">
       {treeIcons?.map((treeIconProps, i) => (
         <TreeIcon

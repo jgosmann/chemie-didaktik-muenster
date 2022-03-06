@@ -14,7 +14,6 @@ export enum State {
 export interface SaveButtonProps {
   disabled?: boolean
   state: State
-  onClick: (ev: React.FormEvent) => void
   saveLabel?: string
   errorMessage?: string
 }
@@ -22,7 +21,6 @@ export interface SaveButtonProps {
 const SaveButton = ({
   disabled,
   state,
-  onClick,
   saveLabel = "Änderungen speichern",
   errorMessage,
 }: SaveButtonProps): JSX.Element => (
@@ -39,7 +37,7 @@ const SaveButton = ({
       className={`btn primary mt-2 ${
         state === State.SavedSuccesfully ? "!text-green-800" : ""
       }`}
-      onClick={onClick}
+      type="submit"
     >
       {state === State.Saving ? (
         <>

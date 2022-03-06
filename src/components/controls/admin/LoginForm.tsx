@@ -60,7 +60,7 @@ const LoginForm = ({ onSubmit, isProcessing, message }: LoginFormProps) => {
       </div>
       <button
         type="submit"
-        className="btn primary w-full"
+        className="login btn primary w-full"
         disabled={isProcessing}
         onClick={ev => {
           ev.preventDefault()
