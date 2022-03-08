@@ -33,7 +33,7 @@ const Row = ({ children, node, treeIcons }: RowProps) => (
       {node.nestedCount + node.count}
     </NumberCell>
     <NumberCell className="clicks-exact">{node.count}</NumberCell>
-    <Cell className="my-0 pl-0">
+    <Cell className="my-0 py-0 pl-0">
       {treeIcons?.map((treeIconProps, i) => (
         <TreeIcon
           key={i}
