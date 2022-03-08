@@ -18,8 +18,11 @@ export interface AuthControllerProps {
 const AuthController = ({ render }: AuthControllerProps) => {
   const [message, setMessage] = useState<LoginMessage | null>(null)
   const [auth, setAuth] = useState<{ token: string; username: string } | null>(
-    typeof window !== "undefined" &&
-      JSON.parse(window.sessionStorage.getItem("auth"))
+    null
+  )
+  useEffect(
+    () => setAuth(JSON.parse(window.sessionStorage.getItem("auth"))),
+    []
   )
   const [authPromise, setAuthPromise] = useState<
     Promise<[string, TokenResponse] | null>
