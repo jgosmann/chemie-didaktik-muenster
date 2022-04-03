@@ -26,7 +26,12 @@ export const query = graphql`
           title
           thumb {
             childImageSharp {
-              gatsbyImageData(layout: FIXED, width: 640, height: 400)
+              gatsbyImageData(
+                layout: FIXED
+                width: 640
+                height: 400
+                transformOptions: { cropFocus: CENTER }
+              )
             }
           }
         }
