@@ -11,6 +11,7 @@ import RichText from "../components/RichText"
 import Seo from "../components/seo"
 import Video from "../components/Video"
 import { FileNode } from "gatsby-plugin-image/dist/src/components/hooks"
+import extractDescription from "../components/RichText/extractDescription"
 
 export const query = graphql`
   query DetailsPageQuery($id: String!, $parentId: String!) {
@@ -80,7 +81,7 @@ const DetailsPage = ({ data }: DetailsPageProps) => {
   } = data
   return (
     <Layout crumbs={crumbs}>
-      <Seo title={title} />
+      <Seo title={title} description={extractDescription(description)} />
       <div className="flex justify-center gap-8 flex-row-reverse flex-wrap my-8 items-start">
         <div className="flex flex-wrap gap-8 max-w-full justify-center">
           {video0 &&
