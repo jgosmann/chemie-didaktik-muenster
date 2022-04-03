@@ -11,6 +11,7 @@ import Collapsible from "../controls/Collapsible"
 import { DefaultCryptedEmail, DefaultCryptedPhone } from "../crypted"
 import { IdHierarchy } from "./toc"
 import { ToggleButton } from "../controls/Collapsible/CollapsibleView"
+import CryptedEmail from "../crypted/Email"
 
 interface ContentfulAsset extends ContentfulRichTextGatsbyReference {
   title: string
@@ -26,21 +27,28 @@ export type RichTextFragment = RenderRichTextData<
 const replacePlaceholder = (
   text: React.ReactNode,
   placeholder: string,
-  component: React.ReactNode
+  componentFactory: (arg?: string) => React.ReactNode
 ) => {
-  if (typeof text === "string" && text.match(placeholder)) {
-    const parts = text.split(placeholder)
-    return parts.flatMap((part, index) => {
-      if (index > 0) {
-        return (
-          <>
-            {component}
-            {part}
-          </>
-        )
-      }
-      return part
-    })
+  if (typeof text === "string") {
+    const match = text.match(new RegExp(`<!--${placeholder}(?:\\s+(.*))?-->`))
+    if (match) {
+      const parts = text.split(new RegExp(`<!--${placeholder}(?:\\s+.*)?-->`))
+      return parts
+        .filter(part => part !== undefined)
+        .flatMap((part, index) => {
+          if (index > 0) {
+            return [componentFactory(match[1]), part]
+          }
+          return [part]
+        })
+    }
+  }
+  return [text]
+}
+
+const removePlaceholders = (text: React.ReactNode) => {
+  if (typeof text === "string") {
+    return text.replace(/<!--.*?-->/g, "")
   }
   return text
 }
@@ -67,26 +75,38 @@ const baseRenderers = {
       if (typeof child === "string") {
         return child.split("\n").flatMap((line, index) => {
           if (index > 0) {
-            return (
-              <>
-                <br />
-                {line}
-              </>
-            )
+            return [<br key={index} />, line]
           }
-          return line
+          return [line]
         })
       }
-      return child
-    })
-    const withCustomComponents = React.Children.map(withLineBreaks, child =>
-      React.Children.map(
-        replacePlaceholder(child, "<!--telefon-->", <DefaultCryptedPhone />),
-        child =>
-          replacePlaceholder(child, "<!--email-->", <DefaultCryptedEmail />)
-      )
+      return [child]
+    }).flat(1)
+    const withEmail = React.Children.map(withLineBreaks, child =>
+      replacePlaceholder(child, "email", email => {
+        if (email) {
+          const [name, fullDomain] = email.split("@", 2)
+          const domainParts = fullDomain.split(".")
+          return (
+            <CryptedEmail
+              name={name}
+              domain={domainParts.slice(0, -1).join(".")}
+              tld={domainParts.at(-1)}
+            />
+          )
+        } else {
+          return <DefaultCryptedEmail />
+        }
+      })
+    ).flat(1)
+    const withPhone = React.Children.map(withEmail, child =>
+      replacePlaceholder(child, "telefon", () => <DefaultCryptedPhone />)
+    ).flat(1)
+    const withoutRemainingPlaceholders = React.Children.map(
+      withPhone,
+      removePlaceholders
     )
-    return <p>{withCustomComponents}</p>
+    return <p>{withoutRemainingPlaceholders}</p>
   },
   [INLINES.ASSET_HYPERLINK]: (
     { data }: Block | Inline,
