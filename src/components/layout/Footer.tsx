@@ -23,6 +23,13 @@ const Footer = () => (
     <div className="w-1/3 min-w-max box-border p-3 text-right grow">
       <Link
         className="text-gray-100 active:text-gray-100 hover:text-gray-100 visited:text-gray-100"
+        to="/impressum"
+      >
+        Impressum
+      </Link>
+      <br />
+      <Link
+        className="text-gray-100 active:text-gray-100 hover:text-gray-100 visited:text-gray-100"
         to="/datenschutzerklaerung"
       >
         Datenschutzerklärung
