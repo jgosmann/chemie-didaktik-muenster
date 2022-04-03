@@ -69,6 +69,7 @@ export const conceptPageWithAllOptionalContent = ({
         youtubeId: testVideoUrl,
         thumb: fileNode(youtubeThumbnail()),
       },
+      externalDownloadLink: "https://localhost",
     },
     {
       id: "linked-content-1",

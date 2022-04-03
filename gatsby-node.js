@@ -248,6 +248,7 @@ exports.createSchemaCustomization = ({ actions }) => {
       shortDescription: Content
       description: Content
       shortVideo: YtVideo @link(from: "fields.shortVideo")
+      externalDownloadLink: String
     }
     
     type ContentfulSlogan implements Node {

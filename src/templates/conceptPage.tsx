@@ -58,6 +58,7 @@ export const query = graphql`
             url
           }
         }
+        externalDownloadLink
       }
       studentPresentations {
         ...RichTextFragment
@@ -86,6 +87,7 @@ export interface ConceptPageType extends AboutAuthorMedia {
     }
     shortDescription: RenderRichTextData<ContentfulRichTextGatsbyReference>
     downloadLink?: FileNode & { file: { url: string } }
+    externalDownloadLink?: string
   }>
   studentPresentations?: object
   additionalBackground?: object
@@ -130,7 +132,9 @@ const ConceptPage = ({ data }: ConceptPageProps) => {
             key={subpage.id}
             title={subpage.title}
             link={subpage.crumbs.map(c => c.slug).join("/")}
-            download={subpage.downloadLink?.file.url}
+            download={
+              subpage.downloadLink?.file.url ?? subpage.externalDownloadLink
+            }
             video={subpage.shortVideo}
           >
             {subpage.shortDescription && (
