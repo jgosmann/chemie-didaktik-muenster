@@ -8,7 +8,7 @@ module.exports = {
   siteMetadata: {
     title: `Chemie-Didaktik Münster`,
     description: ``,
-    author: ``,
+    author: `Institut für Didaktik der Chemie, Westfälische Wilhelms-Universität Münster`,
     siteUrl: `https://keen-goldstine-fde965.netlify.app/`,
   },
   plugins: [
