@@ -7,7 +7,12 @@ const extractTextFromContent = content =>
 module.exports = {
   siteMetadata: {
     title: `Chemie-Didaktik Münster`,
-    description: ``,
+    description:
+      `Hier finden Sie neue Konzepte und Lernmaterialien für den ` +
+      `Unterricht in naturwissenschaftlichen Fächern: praktikabel, ` +
+      `wissenschaftlich fundiert, kostenlos herunterzuladen (beachten Sie ` +
+      `die Lizenzregeln). Sie finden außerdem Videos von Versuchen, die Sie ` +
+      `im Unterricht einsetzen können.`,
     author: `Institut für Didaktik der Chemie, Westfälische Wilhelms-Universität Münster`,
     siteUrl: `https://keen-goldstine-fde965.netlify.app/`,
   },
