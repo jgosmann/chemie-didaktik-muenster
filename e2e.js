@@ -40,6 +40,7 @@ waitOn({ resources: ["http://127.0.0.1:8001/health"], timeout: 5000 })
   .then(() => {
     const build = child_process.spawnSync("gatsby", ["build"], {
       stdio: "inherit",
+      env: { ...process.env, NODE_OPTIONS: "" },
     })
     if (build.status !== 0) {
       throw new Error("Gatsby build failed.")

@@ -15,7 +15,6 @@ import Layout from "../components/layout"
 import RichText from "../components/RichText"
 import Seo from "../components/seo"
 import Video from "../components/Video"
-import extractText from "../components/RichText/extractText"
 import extractDescription from "../components/RichText/extractDescription"
 
 export const query = graphql`
