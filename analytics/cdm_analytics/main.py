@@ -2,10 +2,11 @@ import logging
 import os
 from dataclasses import replace
 from functools import cache
-from typing import List, Literal
+from typing import List, Literal, Optional
 from urllib.parse import urlparse
 
 import jwt
+from deta import Deta
 from fastapi import (
     Body,
     Depends,
@@ -33,15 +34,20 @@ from cdm_analytics.domains import all_parent_domains
 from cdm_analytics.repositories.click_counts import (
     ClickCountKey,
     ClickCountsRepository,
+    DetaClickCountsRepository,
     InMemoryClickCountsRepository,
 )
 from cdm_analytics.repositories.tracked import (
+    DetaTrackedDomainsRepository,
+    DetaTrackedPathsRepository,
     InMemoryTrackedDomainsRepository,
     InMemoryTrackedPathsRepository,
     TrackedDomainsRepository,
     TrackedPathsRepository,
 )
 from cdm_analytics.repositories.users import (
+    Cardinality,
+    DetaUsersRepository,
     InMemoryUsersRepository,
     UniqueViolationError,
     User,
@@ -58,22 +64,45 @@ def settings() -> Settings:
 
 
 @cache
-def get_tracked_domains_repository() -> TrackedDomainsRepository:
+def get_deta() -> Optional[Deta]:
+    loaded_settings = settings()
+    if loaded_settings.use_in_memory_db:
+        return None
+    return Deta(loaded_settings.deta_project_key)
+
+
+@cache
+def get_tracked_domains_repository(
+    deta: Optional[Deta] = Depends(get_deta),
+) -> TrackedDomainsRepository:
+    if deta:
+        return DetaTrackedDomainsRepository(deta, "sets", "tracked_domains")
     return InMemoryTrackedDomainsRepository()
 
 
 @cache
-def get_tracked_paths_repository() -> TrackedPathsRepository:
+def get_tracked_paths_repository(
+    deta: Optional[Deta] = Depends(get_deta),
+) -> TrackedPathsRepository:
+    if deta:
+        return DetaTrackedPathsRepository(deta, "sets", "tracked_paths")
     return InMemoryTrackedPathsRepository()
 
 
 @cache
-def get_click_counts_repository() -> ClickCountsRepository:
+def get_click_counts_repository(
+    deta: Optional[Deta] = Depends(get_deta),
+) -> ClickCountsRepository:
+    if deta:
+        return DetaClickCountsRepository(deta, "click_counts")
     return InMemoryClickCountsRepository()
 
 
 @cache
 def get_users_repository() -> UsersRepository:
+    deta = get_deta()
+    if deta:
+        return DetaUsersRepository(deta, "users")
     return InMemoryUsersRepository()
 
 
@@ -118,10 +147,14 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 
 @app.on_event("startup")
-async def perform_db_migrations():
+def ensure_initial_user_exists():
     users_repository = get_users_repository()
-    if await users_repository.count() == 0:
-        await users_repository.insert(
+    if users_repository.cardinality_sync() == Cardinality.EMPTY:
+        logger.warning(
+            "No existing users, creating default user. "
+            "Please change the credentials!"
+        )
+        users_repository.insert_sync(
             User(
                 username="admin",
                 realname="",
@@ -132,10 +165,11 @@ async def perform_db_migrations():
 
 
 @app.on_event("startup")
-async def load_cors_domains():
-    tracked_domains_repository = get_tracked_domains_repository()
-    async for domain in tracked_domains_repository.fetch_all():
-        DynamicCORSMiddleware.tracked_domains.append(domain)
+def load_cors_domains():
+    tracked_domains_repository = get_tracked_domains_repository(get_deta())
+    DynamicCORSMiddleware.tracked_domains = list(
+        tracked_domains_repository.fetch_all_sync()
+    )
 
 
 credentials_exception = HTTPException(
@@ -242,7 +276,11 @@ async def get_tracked_paths(
 
 
 def _remove_trailing_slash(path: str) -> str:
-    if path.endswith("/"):
+    if path == "":
+        return "/"
+    elif path == "/":
+        return path
+    elif path.endswith("/"):
         return path[:-1]
     else:
         return path
@@ -445,7 +483,7 @@ async def delete_user(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             detail="you must not delete yourself",
         )
-    if await users_repository.count() == 1:
+    if await users_repository.cardinality() == Cardinality.ONE:
         raise HTTPException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             detail="you cannot delete the last remaining user",
