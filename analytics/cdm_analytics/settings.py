@@ -4,10 +4,6 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    database_url = "postgres://postgres:postgres-dev-password@127.0.0.1:5432/postgres"
-    db_pool_min: int = 2
-    db_pool_max: int = 15
-
     secure_key: str
     builder_access_token: str
 

@@ -4,7 +4,6 @@ import subprocess
 import time
 import urllib.parse
 
-import psycopg
 import pytest
 import requests
 
@@ -12,11 +11,19 @@ from cdm_analytics.auth import (
     BUILDER_CLIENT_ID,
     FRONTEND_CLIENT_ID,
     TRACKED_PATHS_SCOPE,
-    generate_create_user_sql,
 )
 
 TEST_ADDITIONAL_CORS_ORIGINS = ["domain-a.org", "domain-org"]
 TEST_BUILDER_ACCESS_TOKEN = "builder access token"
+
+
+class TestSession(requests.Session):
+    def request(self, *args, **kwargs):
+        kwargs.setdefault("timeout", 1)
+        return super().request(*args, **kwargs)
+
+
+test_session = TestSession()
 
 
 class App:
@@ -71,7 +78,7 @@ class App:
 
     def is_healthy(self) -> bool:
         try:
-            return requests.head(self.url("/health")).ok
+            return test_session.head(self.url("/health")).ok
         except requests.ConnectionError:
             return False
 
@@ -91,32 +98,12 @@ def app():
         yield instance
 
 
-TEST_USER = "testuser"
-TEST_USER_PASSWORD = "testuser"
-
-
-# require app fixture to ensure DB migrations ran
-@pytest.fixture(autouse=True)
-def clean_db(app):
-    # pylint: disable=not-context-manager
-    with psycopg.connect(
-        "host=127.0.0.1 dbname=postgres user=postgres password=postgres-dev-password"
-    ) as conn:
-        with conn.cursor() as cursor:
-            cursor.execute("TRUNCATE tracked_domains")
-            cursor.execute("TRUNCATE tracked_paths")
-            cursor.execute("TRUNCATE clicks")
-            cursor.execute("TRUNCATE users")
-        conn.commit()
-        with conn.cursor() as cursor:
-            cursor.execute(
-                *generate_create_user_sql(TEST_USER, password=TEST_USER_PASSWORD)
-            )
-        conn.commit()
+TEST_USER = "admin"
+TEST_USER_PASSWORD = "chemie-didaktik-muenster"
 
 
 def login(app: App, username: str, password: str) -> requests.Session:
-    response = requests.post(
+    response = test_session.post(
         app.url("/auth/token"),
         data={
             "client_id": FRONTEND_CLIENT_ID,
@@ -124,11 +111,12 @@ def login(app: App, username: str, password: str) -> requests.Session:
             "username": username,
             "password": password,
         },
+        timeout=1,
     )
     response.raise_for_status()
     token = response.json()["access_token"]
 
-    session = requests.Session()
+    session = TestSession()
     session.headers["Authorization"] = f"Bearer {token}"
     return session
 
@@ -147,11 +135,12 @@ def authorize_builder(app: App) -> requests.Session:
             "scope": TRACKED_PATHS_SCOPE,
         },
         headers={"Authorization": f"Bearer {TEST_BUILDER_ACCESS_TOKEN}"},
+        timeout=1,
     )
     response.raise_for_status()
     token = response.json()["access_token"]
 
-    session = requests.Session()
+    session = TestSession()
     session.headers["Authorization"] = f"Bearer {token}"
     return session
 
@@ -188,35 +177,35 @@ def test_tracks_referrers(app, user_session, builder_session):
         json={"tracked_paths": ["/path-a", "/path-b", "/path-b/child"]},
     ).ok
 
-    assert requests.post(
+    assert test_session.post(
         app.url("/actions/increment"),
         json="http://source-domain.net/path-a",
     ).ok
-    assert requests.post(
+    assert test_session.post(
         app.url("/actions/increment"),
         json="http://www.source-domain.net/path-a/",
     ).ok
-    assert requests.post(
+    assert test_session.post(
         app.url("/actions/increment"),
         json="https://www.source-domain.net/path-a",
     ).ok
-    assert requests.post(
+    assert test_session.post(
         app.url("/actions/increment"),
         json="https://source-domain.org/path-b",
     ).ok
-    assert requests.post(
+    assert test_session.post(
         app.url("/actions/increment"),
         json="https://SOURCE-DOMAIN.org/path-b",
     ).ok
-    assert requests.post(
+    assert test_session.post(
         app.url("/actions/increment"),
         json="https://source-domain.org/path-b/child",
     ).ok
-    assert requests.post(
+    assert test_session.post(
         app.url("/actions/increment"),
         json="http://untracked-domain.com/path-a",
     )
-    assert requests.post(
+    assert test_session.post(
         app.url("/actions/increment"),
         json="http://source-domain.org/untracked-path",
     )
@@ -357,7 +346,7 @@ def test_access_prohibited_without_token(app):
         ("post", "/profile/change-password"),
     ]
     for method, path in restricted_endpoints:
-        assert requests.request(method, app.url(path)).status_code == 401
+        assert test_session.request(method, app.url(path)).status_code == 401
 
 
 def assert_cors_headers(
@@ -387,7 +376,7 @@ user_endpoints = [
 
 def test_cors_headers_from_env(app, user_session):
     for method, path in user_endpoints:
-        options_headers = requests.options(
+        options_headers = test_session.options(
             app.url(path),
             headers={
                 "Origin": TEST_ADDITIONAL_CORS_ORIGINS[0],
@@ -413,7 +402,7 @@ def test_cors_headers_from_tracked_domain(app, user_session):
     assert user_session.put(app.url("/tracked/domains"), json=data).ok
 
     for method, path in user_endpoints:
-        options_headers = requests.options(
+        options_headers = test_session.options(
             app.url(path),
             headers={
                 "Origin": domain,

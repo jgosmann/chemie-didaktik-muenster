@@ -2,13 +2,12 @@ import hashlib
 import logging
 import os
 from datetime import datetime, timedelta
-from typing import List, NamedTuple, Tuple
+from typing import List, NamedTuple
 
 import jwt
-import psycopg
 from oauthlib.oauth2 import RequestValidator, Server
-from psycopg.types.json import Jsonb
 
+from cdm_analytics.repositories.users import PasswordHash, UsersRepository
 from cdm_analytics.settings import Settings
 
 logger = logging.getLogger(__name__)
@@ -43,10 +42,11 @@ def jwt_hs256_token_generator(key: str):
 
 
 class CdmAnalyticsRequestValidator(RequestValidator):
-    # pylint: disable=abstract-method,no-self-use
+    # pylint: disable=abstract-method
 
-    def __init__(self, settings: Settings):
+    def __init__(self, settings: Settings, user_repository: UsersRepository):
         self.settings = settings
+        self.user_repository = user_repository
 
     def authenticate_client(self, request, *args, **kwargs) -> bool:
         is_authenticated = request.client_id == FRONTEND_CLIENT_ID or (
@@ -101,76 +101,45 @@ class CdmAnalyticsRequestValidator(RequestValidator):
     def validate_user(
         self, username, password, client, request, *args, **kwargs
     ) -> bool:
-        # pylint: disable=not-context-manager
-        with psycopg.connect(self.settings.database_url) as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    "SELECT password_hash FROM users WHERE username = %s", (username,)
-                )
-                row = cur.fetchone()
-                if not row:
-                    return False
-                password_hash = row[0]
+        user = self.user_repository.get_user_sync(username)
+        if not user:
+            return False
 
-        is_authorized = verify_password(password, password_hash)
+        is_authorized = verify_password(password, user.password_hash)
         if is_authorized:
             request.subject = username
         return is_authorized
 
 
-def hash_password(password: str) -> dict:
-    if len(password) > 1024:
-        raise ValueError("password too long")
-
+def hash_password(password: str) -> PasswordHash:
     salt = os.urandom(32)
     hash_params = {"r": 8, "p": 1, "n": 2**14}
-    return {
-        "salt": salt.hex(),
-        "algo": "scrypt",
-        "params": hash_params,
-        "hash": hashlib.scrypt(
-            password.encode("utf-8"), salt=salt, **hash_params
-        ).hex(),
-    }
+    return PasswordHash(
+        salt,
+        "scrypt",
+        params=hash_params,
+        hash=hashlib.scrypt(password.encode("utf-8"), salt=salt, **hash_params),
+    )
 
 
-def verify_password(password: str, password_hash: dict) -> bool:
-    if password_hash["algo"] == "scrypt":
-        return bytes.fromhex(password_hash["hash"]) == hashlib.scrypt(
+def verify_password(password: str, password_hash: PasswordHash) -> bool:
+    if password_hash.algo == "scrypt":
+        return password_hash.hash == hashlib.scrypt(
             password.encode("utf-8"),
-            salt=bytes.fromhex(password_hash["salt"]),
-            **password_hash["params"],
+            salt=password_hash.salt,
+            **password_hash.params,
         )
     else:
-        logger.error("unsupported password hash: %s", password_hash["algo"])
+        logger.error("unsupported password hash: %s", password_hash.algo)
         return False
 
 
-def create_oauth2_server(settings: Settings) -> Server:
-    validator = CdmAnalyticsRequestValidator(settings)
+def create_oauth2_server(
+    settings: Settings, users_repository: UsersRepository
+) -> Server:
+    validator = CdmAnalyticsRequestValidator(settings, users_repository)
     oauth2_server = Server(
         validator, token_generator=jwt_hs256_token_generator(settings.current_jwt_key)
     )
     oauth2_server.password_grant.refresh_token = False
     return oauth2_server
-
-
-def generate_create_user_sql(
-    username: str, *, password: str, realname: str = "", comment: str = ""
-) -> Tuple[str, dict]:
-    return (
-        """
-            INSERT INTO users (username, realname, comment, password_hash)
-            VALUES (%(username)s, %(realname)s, %(comment)s, %(password_hash)s)
-        """,
-        {
-            "username": username,
-            "realname": realname,
-            "comment": comment,
-            "password_hash": Jsonb(hash_password(password)),
-        },
-    )
-
-
-def generate_create_initial_user_sql() -> Tuple[str, dict]:
-    return generate_create_user_sql("admin", password="chemie-didaktik-münster")

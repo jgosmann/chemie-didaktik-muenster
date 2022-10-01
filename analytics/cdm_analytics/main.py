@@ -1,11 +1,11 @@
 import logging
 import os
-from typing import AsyncGenerator, List, Literal
+from dataclasses import replace
+from functools import cache
+from typing import List, Literal
 from urllib.parse import urlparse
 
 import jwt
-import psycopg
-import yoyo
 from fastapi import (
     Body,
     Depends,
@@ -19,7 +19,6 @@ from fastapi import (
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from oauthlib.oauth2 import Server
-from psycopg.types.json import Jsonb
 from pydantic import BaseModel
 
 from cdm_analytics.auth import (
@@ -27,30 +26,30 @@ from cdm_analytics.auth import (
     RESOURCE_OWNER_ID,
     TRACKED_PATHS_SCOPE,
     create_oauth2_server,
-    generate_create_initial_user_sql,
-    generate_create_user_sql,
     hash_password,
     verify_password,
 )
-from cdm_analytics.db import db_conn_pool
 from cdm_analytics.domains import all_parent_domains
+from cdm_analytics.repositories.click_counts import (
+    ClickCountKey,
+    ClickCountsRepository,
+    InMemoryClickCountsRepository,
+)
+from cdm_analytics.repositories.tracked import (
+    InMemoryTrackedDomainsRepository,
+    InMemoryTrackedPathsRepository,
+    TrackedDomainsRepository,
+    TrackedPathsRepository,
+)
+from cdm_analytics.repositories.users import (
+    InMemoryUsersRepository,
+    UniqueViolationError,
+    User,
+    UsersRepository,
+)
 from cdm_analytics.settings import Settings
 
 logger = logging.getLogger(__name__)
-
-_uncached = object()
-
-
-def cache(fn):
-    value = _uncached
-
-    def with_caching():
-        nonlocal value
-        if value is _uncached:
-            value = fn()
-        return value
-
-    return with_caching
 
 
 @cache
@@ -59,8 +58,30 @@ def settings() -> Settings:
 
 
 @cache
-def oauth2_server() -> Server:
-    return create_oauth2_server(settings())
+def get_tracked_domains_repository() -> TrackedDomainsRepository:
+    return InMemoryTrackedDomainsRepository()
+
+
+@cache
+def get_tracked_paths_repository() -> TrackedPathsRepository:
+    return InMemoryTrackedPathsRepository()
+
+
+@cache
+def get_click_counts_repository() -> ClickCountsRepository:
+    return InMemoryClickCountsRepository()
+
+
+@cache
+def get_users_repository() -> UsersRepository:
+    return InMemoryUsersRepository()
+
+
+@cache
+def get_oauth2_server(
+    users_repository: UsersRepository = Depends(get_users_repository),
+) -> Server:
+    return create_oauth2_server(settings(), users_repository)
 
 
 enable_docs = os.environ.get("ENABLE_DOCS", "").lower() in (
@@ -74,7 +95,6 @@ app = FastAPI(
     docs_url="/docs" if enable_docs else None,
     redoc_url="/redoc" if enable_docs else None,
 )
-app.on_event("startup")(lambda: db_conn_pool.start_pool(settings()))
 
 
 class DynamicCORSMiddleware(CORSMiddleware):
@@ -97,36 +117,25 @@ app.add_middleware(
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 
-async def db_connection() -> AsyncGenerator[psycopg.AsyncConnection, None]:
-    async with db_conn_pool.connection() as conn:
-        yield conn
+@app.on_event("startup")
+async def perform_db_migrations():
+    users_repository = get_users_repository()
+    if await users_repository.count() == 0:
+        await users_repository.insert(
+            User(
+                username="admin",
+                realname="",
+                comment="",
+                password_hash=hash_password("chemie-didaktik-muenster"),
+            )
+        )
 
 
 @app.on_event("startup")
-def perform_db_migrations():
-    database = yoyo.get_backend(settings().database_url)
-    migrations = yoyo.read_migrations("cdm_analytics/db_migrations")
-    with database.lock():
-        database.apply_migrations(database.to_apply(migrations))
-
-    # pylint: disable=not-context-manager
-    with psycopg.connect(settings().database_url) as conn:
-        with conn.cursor() as cur:
-            cur.execute("SELECT COUNT(*) FROM users")
-            result = cur.fetchone()
-            if result[0] == 0:
-                cur.execute(*generate_create_initial_user_sql())
-
-
-@app.on_event("startup")
-def load_cors_domains():
-    # pylint: disable=not-context-manager
-    with psycopg.connect(settings().database_url) as conn:
-        with conn.cursor(
-            row_factory=psycopg.rows.args_row(lambda domain_name: domain_name)
-        ) as cur:
-            cur.execute("SELECT domain_name FROM tracked_domains")
-            DynamicCORSMiddleware.tracked_domains = cur.fetchall()
+async def load_cors_domains():
+    tracked_domains_repository = get_tracked_domains_repository()
+    async for domain in tracked_domains_repository.fetch_all():
+        DynamicCORSMiddleware.tracked_domains.append(domain)
 
 
 credentials_exception = HTTPException(
@@ -186,15 +195,16 @@ class TrackedDomainsBody(BaseModel):
 
 @app.get("/tracked/domains", response_model=TrackedDomainsBody)
 async def get_tracked_domains(
-    conn: psycopg.AsyncConnection = Depends(db_connection),
+    tracked_domains_repository: TrackedDomainsRepository = Depends(
+        get_tracked_domains_repository
+    ),
     authenticated_user: dict = Depends(authenticated_user),
 ) -> TrackedDomainsBody:
-    async with conn.cursor(
-        row_factory=psycopg.rows.args_row(lambda domain_name: domain_name)
-    ) as cursor:
-        await cursor.execute("SELECT domain_name FROM tracked_domains")
-        rows = await cursor.fetchall()
-    return TrackedDomainsBody(tracked_domains=rows)
+    return TrackedDomainsBody(
+        tracked_domains=sorted(
+            [domain async for domain in tracked_domains_repository.fetch_all()]
+        )
+    )
 
 
 @app.put(
@@ -204,15 +214,12 @@ async def get_tracked_domains(
 )
 async def put_tracked_domains(
     body: TrackedDomainsBody,
-    conn: psycopg.AsyncConnection = Depends(db_connection),
+    tracked_domains_repository: TrackedDomainsRepository = Depends(
+        get_tracked_domains_repository
+    ),
     authenticated_user: dict = Depends(authenticated_user),
 ):
-    async with conn.cursor() as cursor:
-        await cursor.execute("TRUNCATE tracked_domains")
-        async with cursor.copy("COPY tracked_domains (domain_name) FROM STDIN") as copy:
-            for domain in body.tracked_domains:
-                await copy.write_row((domain,))
-    await conn.commit()
+    await tracked_domains_repository.replace(body.tracked_domains)
     DynamicCORSMiddleware.tracked_domains = body.tracked_domains
 
 
@@ -222,15 +229,16 @@ class TrackedPathsBody(BaseModel):
 
 @app.get("/tracked/paths", response_model=TrackedPathsBody)
 async def get_tracked_paths(
-    conn: psycopg.AsyncConnection = Depends(db_connection),
+    tracked_paths_repository: TrackedPathsRepository = Depends(
+        get_tracked_paths_repository
+    ),
     authenticated_builder: dict = Depends(authenticated_builder),
 ) -> TrackedPathsBody:
-    async with conn.cursor(
-        row_factory=psycopg.rows.args_row(lambda domain_name: domain_name)
-    ) as cursor:
-        await cursor.execute("SELECT absolute_path FROM tracked_paths")
-        rows = await cursor.fetchall()
-    return TrackedPathsBody(tracked_paths=rows)
+    return TrackedPathsBody(
+        tracked_paths=sorted(
+            [path async for path in tracked_paths_repository.fetch_all()]
+        )
+    )
 
 
 def _remove_trailing_slash(path: str) -> str:
@@ -247,15 +255,14 @@ def _remove_trailing_slash(path: str) -> str:
 )
 async def put_tracked_paths(
     body: TrackedPathsBody,
-    conn: psycopg.AsyncConnection = Depends(db_connection),
+    tracked_paths_repository: TrackedPathsRepository = Depends(
+        get_tracked_paths_repository
+    ),
     authenticated_builder: dict = Depends(authenticated_builder),
 ):
-    async with conn.cursor() as cursor:
-        await cursor.execute("TRUNCATE tracked_paths")
-        async with cursor.copy("COPY tracked_paths (absolute_path) FROM STDIN") as copy:
-            for path in body.tracked_paths:
-                await copy.write_row((_remove_trailing_slash(path),))
-    await conn.commit()
+    await tracked_paths_repository.replace(
+        _remove_trailing_slash(path) for path in body.tracked_paths
+    )
 
 
 @app.post(
@@ -263,7 +270,18 @@ async def put_tracked_paths(
     status_code=status.HTTP_204_NO_CONTENT,
     response_class=responses.Response,
 )
-async def post_increment_action(referrer: str = Body(...)):
+async def post_increment_action(
+    referrer: str = Body(...),
+    tracked_domains_repository: TrackedDomainsRepository = Depends(
+        get_tracked_domains_repository
+    ),
+    tracked_paths_repository: TrackedPathsRepository = Depends(
+        get_tracked_paths_repository
+    ),
+    click_counts_repository: ClickCountsRepository = Depends(
+        get_click_counts_repository
+    ),
+):
     try:
         parsed_referrer = urlparse(referrer)
         if not parsed_referrer.hostname:
@@ -275,32 +293,16 @@ async def post_increment_action(referrer: str = Body(...)):
         ) from err
 
     canonical_path = _remove_trailing_slash(parsed_referrer.path)
-    async with db_conn_pool.connection() as conn:
-        async with conn.cursor() as cursor:
-            await cursor.execute(
-                """
-                SELECT lower(domain_name) FROM tracked_domains
-                WHERE lower(domain_name) = ANY(%s)
-                  AND exists(SELECT 1 FROM tracked_paths WHERE absolute_path = %s)
-            """,
-                (
-                    [parsed_referrer.hostname]
-                    + list(all_parent_domains(parsed_referrer.hostname)),
-                    canonical_path,
-                ),
+    if not await tracked_paths_repository.contains(canonical_path):
+        return
+    for domain in [parsed_referrer.hostname] + list(
+        all_parent_domains(parsed_referrer.hostname)
+    ):
+        canonical_domain = domain.lower()
+        if await tracked_domains_repository.contains(canonical_domain):
+            await click_counts_repository.increment(
+                ClickCountKey(canonical_domain, canonical_path)
             )
-            tracking_domain_row = await cursor.fetchone()
-            if tracking_domain_row:
-                await cursor.execute(
-                    """
-                    INSERT INTO clicks (domain_name, absolute_path, click_count)
-                    VALUES (%s, %s, %s)
-                    ON CONFLICT (domain_name, absolute_path)
-                    DO UPDATE SET click_count = clicks.click_count + 1
-                """,
-                    (tracking_domain_row[0], canonical_path, 1),
-                )
-        await conn.commit()
 
 
 class ClickCount(BaseModel):
@@ -315,14 +317,17 @@ class ClickStatistics(BaseModel):
 
 @app.get("/statistics/clicks", response_model=ClickStatistics)
 async def get_statistics_clicks(
-    conn: psycopg.AsyncConnection = Depends(db_connection),
+    click_counts_repository: ClickCountsRepository = Depends(
+        get_click_counts_repository
+    ),
     authenticated_user: dict = Depends(authenticated_user),
 ) -> ClickStatistics:
-    async with conn.cursor(row_factory=psycopg.rows.class_row(ClickCount)) as cursor:
-        await cursor.execute(
-            "SELECT domain_name, absolute_path as path, click_count as count FROM clicks"
-        )
-        return ClickStatistics(clicks=await cursor.fetchall())
+    return ClickStatistics(
+        clicks=[
+            ClickCount(domain_name=key.domain_name, path=key.absolute_path, count=count)
+            async for key, count in click_counts_repository.fetch_all()
+        ]
+    )
 
 
 class TokenResponse(BaseModel):
@@ -360,8 +365,9 @@ class TokenResponse(BaseModel):
 )
 async def post_token(
     request: Request,
+    oauth2_server: Server = Depends(get_oauth2_server),
 ) -> Response:
-    headers, body, status = oauth2_server().create_token_response(
+    headers, body, status = oauth2_server.create_token_response(
         str(request.url), request.method, await request.body(), request.headers
     )
     return Response(status_code=status, headers=headers, content=body)
@@ -379,12 +385,17 @@ class UsersResponseBody(BaseModel):
 
 @app.get("/users", response_model=UsersResponseBody)
 async def get_users(
-    conn: psycopg.AsyncConnection = Depends(db_connection),
+    users_repository: UsersRepository = Depends(get_users_repository),
     authenticated_user: dict = Depends(authenticated_user),
 ) -> UsersResponseBody:
-    async with conn.cursor(row_factory=psycopg.rows.class_row(UserData)) as cursor:
-        await cursor.execute("SELECT username, realname, comment FROM users")
-        return UsersResponseBody(users=await cursor.fetchall())
+    return UsersResponseBody(
+        users=[
+            UserData(
+                username=user.username, realname=user.realname, comment=user.comment
+            )
+            async for user in users_repository.fetch_all()
+        ]
+    )
 
 
 class CreateUserRequest(BaseModel):
@@ -401,20 +412,19 @@ class CreateUserRequest(BaseModel):
 async def put_user(
     username: str,
     request: CreateUserRequest,
-    conn: psycopg.AsyncConnection = Depends(db_connection),
+    users_repository: UsersRepository = Depends(get_users_repository),
     authenticated_user: dict = Depends(authenticated_user),
 ):
     try:
-        async with conn.cursor() as cursor:
-            await cursor.execute(
-                *generate_create_user_sql(
-                    username,
-                    password=request.password,
-                    realname=request.realname,
-                    comment=request.comment,
-                )
+        await users_repository.insert(
+            User(
+                username,
+                request.realname,
+                request.comment,
+                hash_password(request.password),
             )
-    except psycopg.errors.UniqueViolation as err:
+        )
+    except UniqueViolationError as err:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="usernames must be unique"
         ) from err
@@ -427,7 +437,7 @@ async def put_user(
 )
 async def delete_user(
     username: str,
-    conn: psycopg.AsyncConnection = Depends(db_connection),
+    users_repository: UsersRepository = Depends(get_users_repository),
     authenticated_user: dict = Depends(authenticated_user),
 ):
     if authenticated_user["sub"] == username:
@@ -435,15 +445,12 @@ async def delete_user(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             detail="you must not delete yourself",
         )
-    async with conn.cursor() as cursor:
-        await cursor.execute("SELECT count(*) FROM USERS")
-        remaining_users_count = await cursor.fetchone()
-        if remaining_users_count and remaining_users_count[0] == 1:
-            raise HTTPException(
-                status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
-                detail="you cannot delete the last remaining user",
-            )
-        await cursor.execute("DELETE FROM users WHERE username = %s", (username,))
+    if await users_repository.count() == 1:
+        raise HTTPException(
+            status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+            detail="you cannot delete the last remaining user",
+        )
+    await users_repository.delete(username)
 
 
 @app.post(
@@ -454,26 +461,18 @@ async def delete_user(
 async def change_password(
     old_password: str = Body(...),
     new_password: str = Body(...),
-    conn: psycopg.AsyncConnection = Depends(db_connection),
+    users_repository: UsersRepository = Depends(get_users_repository),
     authenticated_user: dict = Depends(authenticated_user),
 ):
-    async with conn.cursor() as cursor:
-        await cursor.execute(
-            "SELECT password_hash FROM users WHERE username = %s",
-            (authenticated_user["sub"],),
+    user = await users_repository.get_user(authenticated_user["sub"])
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="you have been deleted"
         )
-        result = await cursor.fetchone()
-        if not result:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT, detail="you have been deleted"
-            )
-        old_password_hash = result[0]
-
-        if not verify_password(old_password, old_password_hash):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="wrong password"
-            )
-
-        await cursor.execute(
-            "UPDATE users SET password_hash = %s", (Jsonb(hash_password(new_password)),)
+    if not verify_password(old_password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="wrong password"
         )
+    await users_repository.save(
+        replace(user, password_hash=hash_password(new_password))
+    )

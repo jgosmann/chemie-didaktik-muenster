@@ -10,7 +10,6 @@ SECURE_KEY='signing key' BUILDER_ACCESS_TOKEN='builder access token' \
 ## Running the tests
 
 ```bash
-docker-compose up -d
 poetry run pytest
 ```
 
