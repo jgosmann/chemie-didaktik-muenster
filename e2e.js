@@ -23,7 +23,15 @@ const shutdown = process => {
 
 const analytics_backend = child_process.spawn(
   "poetry",
-  ["run", "uvicorn", "cdm_analytics.main:app", "--port", "8001"],
+  [
+    "run",
+    "uvicorn",
+    "cdm_analytics.main:app",
+    "--host",
+    "localhost",
+    "--port",
+    "8001",
+  ],
   {
     cwd: path.resolve("./analytics"),
     env: {
