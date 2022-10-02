@@ -55,6 +55,10 @@ describe("AuthController", () => {
               reject(
                 new ApiError(
                   {
+                    method: "POST",
+                    url: "/auth/token",
+                  },
+                  {
                     ok: false,
                     url: "login",
                     status: 400,
