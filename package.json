@@ -62,7 +62,7 @@
     "identity-obj-proxy": "^3.0.0",
     "isomorphic-fetch": "^3.0.0",
     "jest": "^27.4.3",
-    "msw": "^0.36.0",
+    "msw": "^0.47.3",
     "msw-storybook-addon": "^1.6.0",
     "openapi-typescript-codegen": "^0.20.1",
     "postcss": "^8.3.11",
