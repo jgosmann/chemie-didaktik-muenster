@@ -1,5 +1,5 @@
 import React from "react"
-import { render, screen } from "@testing-library/react"
+import { act, render, screen } from "@testing-library/react"
 
 import VideoBtn from "./VideoBtn"
 import { testVideoId } from "../../test-fixtures/video"
@@ -29,7 +29,7 @@ describe("VideoBtn", () => {
 
   describe("when clicking the button for the first time", () => {
     beforeEach(() => {
-      screen.getByText("Open video").click()
+      act(() => screen.getByText("Open video").click())
     })
 
     it("shows the consent popup", () => {
@@ -42,7 +42,7 @@ describe("VideoBtn", () => {
 
     describe("if consent is given", () => {
       beforeEach(() => {
-        screen.getByText("Den Inhalt anzeigen").click()
+        act(() => screen.getByText("Den Inhalt anzeigen").click())
       })
 
       it("does not show the consent popup", () => {
@@ -67,10 +67,12 @@ describe("VideoBtn", () => {
 
   describe("when clicking the button and consent is already given", () => {
     beforeEach(() => {
-      screen.getByText("Open video").click()
-      screen.getByText("Den Inhalt anzeigen").click()
-      screen.getByTitle("Schließen").click()
-      screen.getByText("Open video").click()
+      act(() => {
+        screen.getByText("Open video").click()
+        screen.getByText("Den Inhalt anzeigen").click()
+        screen.getByTitle("Schließen").click()
+        screen.getByText("Open video").click()
+      })
     })
 
     it("does not show the consent popup", () => {

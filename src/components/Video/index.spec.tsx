@@ -1,5 +1,5 @@
 import React from "react"
-import { render, screen } from "@testing-library/react"
+import { act, render, screen } from "@testing-library/react"
 import Video from "."
 import { testVideoId } from "../../test-fixtures/video"
 
@@ -48,7 +48,7 @@ describe("Video", () => {
 
   describe("when clicking the preview", () => {
     beforeEach(() => {
-      screen.getByRole("button").click()
+      act(() => screen.getByRole("button").click())
     })
 
     it("shows the consent popup", () => {
@@ -61,7 +61,7 @@ describe("Video", () => {
 
     describe("and then closing the consent popup", () => {
       beforeEach(() => {
-        screen.getByTitle("Schließen").click()
+        act(() => screen.getByTitle("Schließen").click())
       })
 
       it("shows the preview", () => {
@@ -79,7 +79,7 @@ describe("Video", () => {
 
     describe("and denying consent", () => {
       beforeEach(() => {
-        screen.getByText("Abbrechen").click()
+        act(() => screen.getByText("Abbrechen").click())
       })
 
       it("shows the preview", () => {
@@ -97,7 +97,7 @@ describe("Video", () => {
 
     describe("and giving consent", () => {
       beforeEach(() => {
-        screen.getByText("Den Inhalt anzeigen").click()
+        act(() => screen.getByText("Den Inhalt anzeigen").click())
       })
 
       it("does not render the preview", () => {

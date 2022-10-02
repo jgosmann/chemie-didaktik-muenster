@@ -14,10 +14,12 @@ const it_shows_the_login_form = () =>
     })
   })
 
-const login = () => {
-  userEvent.type(screen.getByLabelText("Benutzername"), "username")
-  userEvent.type(screen.getByLabelText("Passwort"), "password")
-  screen.getByText("Einloggen").click()
+const login = async () => {
+  await act(async () => {
+    userEvent.type(screen.getByLabelText("Benutzername"), "username")
+    userEvent.type(screen.getByLabelText("Passwort"), "password")
+    screen.getByText("Einloggen").click()
+  })
 }
 
 describe("AuthController", () => {
@@ -116,7 +118,7 @@ describe("AuthController", () => {
   describe("while the login is ongoing", () => {
     beforeEach(async () => {
       stallRequest = true
-      login()
+      await login()
       await waitFor(() => {
         expect(mockClient.request.request).toHaveBeenCalled()
       })
@@ -138,7 +140,7 @@ describe("AuthController", () => {
 
   describe("after logging in", () => {
     beforeEach(async () => {
-      login()
+      await login()
       await waitFor(() => {
         expect(mockClient.request.request).toHaveBeenCalled()
       })
@@ -170,7 +172,7 @@ describe("AuthController", () => {
 
     describe("after logging out", () => {
       beforeEach(() => {
-        screen.getByTestId("logout").click()
+        act(() => screen.getByTestId("logout").click())
       })
 
       it_shows_the_login_form()
@@ -186,9 +188,9 @@ describe("AuthController", () => {
   })
 
   describe("when trying to log in with invalid credentials", () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       failLogin = true
-      login()
+      await login()
     })
 
     afterEach(() => {
@@ -208,10 +210,10 @@ describe("AuthController", () => {
   })
 
   describe("when an error occurs during login", () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       jest.spyOn(console, "error").mockImplementation(() => undefined)
       failLoginRequest = true
-      login()
+      await login()
     })
 
     afterEach(() => {

@@ -1,5 +1,5 @@
 import React from "react"
-import { render, screen } from "@testing-library/react"
+import { act, render, screen } from "@testing-library/react"
 import CopyButton from "./CopyButton"
 
 describe("CopyButton", () => {
@@ -13,7 +13,7 @@ describe("CopyButton", () => {
     const getCopyText = () => "text to copy"
     render(<CopyButton getCopyText={getCopyText} />)
 
-    screen.getByRole("button").click()
+    act(() => screen.getByRole("button").click())
 
     expect(global.navigator.clipboard.writeText).toHaveBeenLastCalledWith(
       "text to copy"
